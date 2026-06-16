@@ -7,11 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useRegisterMutation } from '@/features/auth/hooks/use-register-mutation'
-import {
-  registerSchema,
-  type RegisterSchema,
-  type RegisterSchemaInput,
-} from '@/features/auth/schemas/register-schema'
+import { registerSchema, type RegisterFormValues } from '@/features/auth/schemas/register-schema'
 import { getApiErrorMessage, getApiFieldErrors } from '@/lib/api/api-error'
 import { useAuth } from '@/lib/auth/use-auth'
 
@@ -25,14 +21,15 @@ export function RegisterForm() {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<RegisterSchemaInput, undefined, RegisterSchema>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema as never),
     defaultValues: {
       name: '',
-      age: undefined,
+      age: null,
       email: '',
       phone: '',
       password: '',
+      password_confirmation: '',
     },
   })
 
@@ -56,12 +53,16 @@ export function RegisterForm() {
       const emailError = fieldErrors?.email?.[0]
       const phoneError = fieldErrors?.phone?.[0]
       const passwordError = fieldErrors?.password?.[0]
+      const passwordConfirmationError = fieldErrors?.password_confirmation?.[0]
 
       if (nameError) setError('name', { type: 'server', message: nameError })
       if (ageError) setError('age', { type: 'server', message: ageError })
       if (emailError) setError('email', { type: 'server', message: emailError })
       if (phoneError) setError('phone', { type: 'server', message: phoneError })
       if (passwordError) setError('password', { type: 'server', message: passwordError })
+      if (passwordConfirmationError) {
+        setError('password_confirmation', { type: 'server', message: passwordConfirmationError })
+      }
 
       setServerError(getApiErrorMessage(error, 'Unable to create your account right now.'))
     }
@@ -90,7 +91,14 @@ export function RegisterForm() {
 
       <div className="space-y-2">
         <Label htmlFor="register-email">Email</Label>
-        <Input id="register-email" type="email" autoComplete="email" {...register('email')} />
+        <Input
+          id="register-email"
+          type="email"
+          autoComplete="email"
+          {...register('email', {
+            setValueAs: (value: string) => (value.trim() === '' ? undefined : value.trim()),
+          })}
+        />
         {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
       </div>
 
@@ -101,16 +109,31 @@ export function RegisterForm() {
           type="tel"
           autoComplete="tel"
           {...register('phone', {
-            setValueAs: (value: string) => (value === '' ? null : value),
+            setValueAs: (value: string) => (value.trim() === '' ? undefined : value.trim()),
           })}
         />
         {errors.phone ? <p className="text-sm text-destructive">{errors.phone.message}</p> : null}
       </div>
 
+      <p className="text-sm text-muted-foreground">Provide at least one contact method: email or phone.</p>
+
       <div className="space-y-2">
         <Label htmlFor="register-password">Password</Label>
         <Input id="register-password" type="password" autoComplete="new-password" {...register('password')} />
         {errors.password ? <p className="text-sm text-destructive">{errors.password.message}</p> : null}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="register-password-confirmation">Confirm password</Label>
+        <Input
+          id="register-password-confirmation"
+          type="password"
+          autoComplete="new-password"
+          {...register('password_confirmation')}
+        />
+        {errors.password_confirmation ? (
+          <p className="text-sm text-destructive">{errors.password_confirmation.message}</p>
+        ) : null}
       </div>
 
       {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}

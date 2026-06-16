@@ -5,6 +5,7 @@ import type { AuthSession } from '@/features/auth/types/auth.types'
 export interface AuthContextValue {
   session: AuthSession | null
   isAuthenticated: boolean
+  isBootstrapping: boolean
   setSession: (session: AuthSession) => void
   clearSession: () => void
 }
