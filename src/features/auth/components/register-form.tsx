@@ -96,7 +96,7 @@ export function RegisterForm() {
           type="email"
           autoComplete="email"
           {...register('email', {
-            setValueAs: (value: string) => (value.trim() === '' ? undefined : value.trim()),
+            setValueAs: (value: string) => value.trim(),
           })}
         />
         {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
@@ -114,8 +114,6 @@ export function RegisterForm() {
         />
         {errors.phone ? <p className="text-sm text-destructive">{errors.phone.message}</p> : null}
       </div>
-
-      <p className="text-sm text-muted-foreground">Provide at least one contact method: email or phone.</p>
 
       <div className="space-y-2">
         <Label htmlFor="register-password">Password</Label>

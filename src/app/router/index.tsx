@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
       {
         path: 'account/upgrade/seller',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['customer']}>
             <SellerUpgradePage />
           </ProtectedRoute>
         ),
@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
       {
         path: 'account/upgrade/service-provider',
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['customer']}>
             <ServiceProviderUpgradePage />
           </ProtectedRoute>
         ),

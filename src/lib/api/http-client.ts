@@ -4,8 +4,12 @@ import { getAuthToken } from '@/lib/auth/auth-storage'
 
 const DEFAULT_API_BASE_URL = 'https://bazario-back-production.up.railway.app'
 
+export function resolveApiBaseUrl() {
+  return import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_BASE_URL
+}
+
 export const httpClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_BASE_URL,
+  baseURL: resolveApiBaseUrl(),
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',

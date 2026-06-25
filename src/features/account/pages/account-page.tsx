@@ -22,6 +22,9 @@ export function AccountPage() {
   const meQuery = useMeQuery(true, 5)
 
   const user = meQuery.data?.result.user ?? session?.user
+  const roles = session?.roles ?? user?.roles ?? []
+  const isSeller = roles.includes('seller') || Boolean(user?.seller_profile)
+  const isServiceProvider = roles.includes('service_provider') || Boolean(user?.service_provider_profile)
   const counts = meQuery.data?.result.counts
 
   return (
@@ -42,8 +45,8 @@ export function AccountPage() {
         {[
           ['Orders', counts?.orders ?? 0],
           ['Bookings', counts?.bookings ?? 0],
-          ['Sales', counts?.sales ?? 0],
-          ['Provider bookings', counts?.provider_bookings ?? 0],
+          ...(isSeller ? ([['Sales', counts?.sales ?? 0]] as const) : []),
+          ...(isServiceProvider ? ([['Provider bookings', counts?.provider_bookings ?? 0]] as const) : []),
         ].map(([label, value]) => (
           <Card key={label}>
             <CardContent className="p-4">
@@ -131,6 +134,70 @@ export function AccountPage() {
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent bookings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {meQuery.data?.result.recent_bookings?.length ? (
+            meQuery.data.result.recent_bookings.map((booking) => (
+              <div key={booking.id} className="rounded-lg border p-3 text-sm">
+                <p className="font-medium">Booking #{booking.id}</p>
+                <p className="text-muted-foreground">
+                  {booking.status} - {booking.service.title}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">No recent bookings.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {isSeller ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent sales</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {meQuery.data?.result.recent_sales?.length ? (
+              meQuery.data.result.recent_sales.map((sale) => (
+                <div key={sale.id} className="rounded-lg border p-3 text-sm">
+                  <p className="font-medium">Sale item #{sale.id}</p>
+                  <p className="text-muted-foreground">
+                    {sale.status} - {formatMoney(sale.net_amount)}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No recent sales.</p>
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {isServiceProvider ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent provider bookings</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {meQuery.data?.result.recent_provider_bookings?.length ? (
+              meQuery.data.result.recent_provider_bookings.map((booking) => (
+                <div key={booking.id} className="rounded-lg border p-3 text-sm">
+                  <p className="font-medium">Provider booking #{booking.id}</p>
+                  <p className="text-muted-foreground">
+                    {booking.status} - {booking.service.title}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No recent provider bookings.</p>
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   )
 }

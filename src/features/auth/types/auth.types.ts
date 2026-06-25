@@ -58,7 +58,7 @@ export interface LoginResult {
 export interface RegisterPayload {
   name: string
   age: number | null
-  email?: string
+  email: string
   phone?: string
   password: string
   password_confirmation: string
