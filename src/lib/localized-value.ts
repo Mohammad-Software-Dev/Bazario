@@ -1,31 +1,20 @@
-export type LocalizedValue = string | null | undefined | Record<string, string | null | undefined>
+export type LocalizedValue =
+  | string
+  | null
+  | undefined
+  | {
+      en?: string | null
+      ar?: string | null
+    }
 
-const DEFAULT_LOCALE = 'en'
-
-export function getLocalizedValue(value: LocalizedValue, locale = DEFAULT_LOCALE) {
+export function getLocalizedValue(value: LocalizedValue) {
   if (typeof value === 'string') {
     return value
   }
 
-  if (!value || typeof value !== 'object') {
-    return null
+  if (!value) {
+    return ''
   }
 
-  const directMatch = value[locale]
-
-  if (typeof directMatch === 'string' && directMatch.trim() !== '') {
-    return directMatch
-  }
-
-  const fallbackMatch = value[DEFAULT_LOCALE]
-
-  if (typeof fallbackMatch === 'string' && fallbackMatch.trim() !== '') {
-    return fallbackMatch
-  }
-
-  const firstAvailable = Object.values(value).find(
-    (entry) => typeof entry === 'string' && entry.trim() !== '',
-  )
-
-  return typeof firstAvailable === 'string' ? firstAvailable : null
+  return value.en ?? value.ar ?? ''
 }
