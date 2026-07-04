@@ -45,3 +45,8 @@ export interface ProductListItem {
 }
 
 export type ProductsResult = LaravelPaginatedResponse<ProductListItem>
+
+export interface SellerProductsResult {
+  seller: ProductSeller
+  products: ProductsResult
+}

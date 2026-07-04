@@ -12,6 +12,7 @@ export const httpClient = axios.create({
   baseURL: resolveApiBaseUrl(),
   headers: {
     Accept: 'application/json',
+    'Accept-Language': 'en',
     'Content-Type': 'application/json',
   },
 })

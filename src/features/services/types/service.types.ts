@@ -44,3 +44,8 @@ export interface ServiceListItem {
 }
 
 export type ServicesResult = LaravelPaginatedResponse<ServiceListItem>
+
+export interface ServiceProviderServicesResult {
+  service_provider: ServiceProviderProfile
+  services: ServicesResult
+}

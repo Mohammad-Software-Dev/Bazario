@@ -5,6 +5,7 @@ import { getServices } from '@/features/services/api/services-api'
 interface UseServicesQueryOptions {
   categoryId?: number
   page?: number
+  perPage?: number
 }
 
 export function useServicesQuery(options: UseServicesQueryOptions = {}) {

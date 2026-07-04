@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import {
   Card,
   CardContent,
@@ -32,48 +34,53 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
     getLocalizedValue(product.category?.name) ?? "Uncategorized";
 
   return (
-    <Card className="overflow-hidden border-border/70 bg-card/90 pt-0">
-      <div className="aspect-4/3 bg-muted">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={productName}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
-            No image
+    <Link
+      to={`/products/${product.id}`}
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl"
+    >
+      <Card className="overflow-hidden border-border/70 bg-card/90 pt-0 transition-colors hover:border-foreground/20">
+        <div className="aspect-4/3 bg-muted">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={productName}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
+              No image
+            </div>
+          )}
+        </div>
+
+        <CardHeader className="space-y-2">
+          <div className="flex items-start justify-between gap-3">
+            <CardTitle className="line-clamp-1">{productName}</CardTitle>
+            {product.isNew ? (
+              <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                New
+              </span>
+            ) : null}
           </div>
-        )}
-      </div>
+          <CardDescription className="line-clamp-2 min-h-10">
+            {productDescription}
+          </CardDescription>
+        </CardHeader>
 
-      <CardHeader className="space-y-2">
-        <div className="flex items-start justify-between gap-3">
-          <CardTitle className="line-clamp-1">{productName}</CardTitle>
-          {product.isNew ? (
-            <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-              New
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">{categoryName}</span>
+            <span className="font-semibold text-foreground">
+              {formatMoney(product.price)}
             </span>
-          ) : null}
-        </div>
-        <CardDescription className="line-clamp-2 min-h-10">
-          {productDescription}
-        </CardDescription>
-      </CardHeader>
+          </div>
 
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">{categoryName}</span>
-          <span className="font-semibold text-foreground">
-            {formatMoney(product.price)}
-          </span>
-        </div>
-
-        <div className="rounded-lg bg-muted/60 px-3 py-2 text-sm">
-          <p className="font-medium text-foreground">{storeName}</p>
-          <p className="text-muted-foreground">by {sellerUserName}</p>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="rounded-lg bg-muted/60 px-3 py-2 text-sm">
+            <p className="font-medium text-foreground">{storeName}</p>
+            <p className="text-muted-foreground">by {sellerUserName}</p>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

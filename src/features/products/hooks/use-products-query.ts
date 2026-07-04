@@ -5,6 +5,7 @@ import { getProducts } from '@/features/products/api/products-api'
 interface UseProductsQueryOptions {
   categoryId?: number
   page?: number
+  perPage?: number
 }
 
 export function useProductsQuery(options: UseProductsQueryOptions = {}) {
