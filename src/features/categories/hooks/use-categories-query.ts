@@ -7,6 +7,5 @@ export function useCategoriesQuery(type: CategoryType) {
   return useQuery({
     queryKey: ['categories', type],
     queryFn: () => getCategories(type),
-    staleTime: 1000 * 60 * 10,
   })
 }

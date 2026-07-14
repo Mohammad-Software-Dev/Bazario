@@ -2,12 +2,12 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import type { PropsWithChildren } from 'react'
 
 import { queryClient } from '@/app/providers/query-client'
-import { AuthProvider } from '@/lib/auth/auth-provider'
+import { AuthBootstrap } from '@/lib/auth/auth-bootstrap'
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthBootstrap>{children}</AuthBootstrap>
     </QueryClientProvider>
   )
 }
