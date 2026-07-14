@@ -1,6 +1,11 @@
 import type { LaravelPaginatedResponse } from '@/lib/api/laravel-pagination'
 import type { LocalizedValue } from '@/lib/localized-value'
 
+export interface LocalizedTextFields {
+  en?: string | null
+  ar?: string | null
+}
+
 export interface ServiceImage {
   id: number
   service_id: number
@@ -33,17 +38,30 @@ export interface ServiceListItem {
   id: number
   title: LocalizedValue
   description: LocalizedValue
+  title_translations?: LocalizedTextFields | null
+  description_translations?: LocalizedTextFields | null
   price: number
   category_id: number
   provider_id: number
   created_at: string
   isNew?: boolean
+  duration_minutes?: number | null
+  location_type?: string | null
+  is_active?: boolean | null
+  max_concurrent_bookings?: number | null
+  slot_interval_minutes?: number | null
+  cancel_cutoff_hours?: number | null
+  edit_cutoff_hours?: number | null
+  cancel_late_policy?: 'deny' | 'allow' | null
+  edit_late_policy?: 'deny' | 'allow' | null
   images: ServiceImage[]
   category: ServiceCategory | null
   serviceProvider?: ServiceProviderProfile | null
 }
 
 export type ServicesResult = LaravelPaginatedResponse<ServiceListItem>
+
+export type MyServicesResult = LaravelPaginatedResponse<ServiceListItem>
 
 export interface ServiceProviderServicesResult {
   service_provider: ServiceProviderProfile

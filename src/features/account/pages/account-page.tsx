@@ -111,6 +111,16 @@ export function AccountPage() {
             <p>
               <span className="font-medium">Status:</span> {user.service_provider_profile.status}
             </p>
+            {isServiceProvider ? (
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button asChild variant="outline">
+                  <Link to="/account/provider/services">Manage services</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/account/provider/availability">Manage availability</Link>
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}
