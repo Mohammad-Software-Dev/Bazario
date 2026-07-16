@@ -17,12 +17,41 @@ import type {
 } from '@/features/provider-availability/types/provider-availability.types'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
+const fallbackTimezones = [
+  'UTC',
+  'Europe/Berlin',
+  'Europe/London',
+  'Asia/Dubai',
+  'Asia/Riyadh',
+  'Asia/Amman',
+  'Asia/Baghdad',
+  'Asia/Kuwait',
+  'Asia/Qatar',
+  'Asia/Bahrain',
+  'Asia/Muscat',
+  'Asia/Karachi',
+  'Asia/Istanbul',
+  'Africa/Cairo',
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+] as const
+
+const supportedTimezones =
+  typeof Intl.supportedValuesOf === 'function'
+    ? Intl.supportedValuesOf('timeZone')
+    : [...fallbackTimezones]
+
 function buildInitialDays(provider: ProviderAvailabilityResult | undefined): WorkingHourDayInput[] {
   return Array.from({ length: 7 }, (_, dayOfWeek) => ({
     day_of_week: dayOfWeek,
     intervals: (provider?.working_hours ?? [])
       .filter((item) => item.day_of_week === dayOfWeek)
-      .map((item) => ({ end_time: item.end_time, start_time: item.start_time })),
+      .map((item) => ({
+        end_time: normalizeTimeValue(item.end_time),
+        start_time: normalizeTimeValue(item.start_time),
+      })),
   }))
 }
 
@@ -37,6 +66,24 @@ function cloneDays(days: WorkingHourDayInput[]) {
     day_of_week: day.day_of_week,
     intervals: day.intervals.map((interval) => ({ ...interval })),
   }))
+}
+
+function formatTimeOffDate(value: string, timezone: string) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: timezone,
+  }).format(date)
+}
+
+function normalizeTimeValue(value: string) {
+  return value.slice(0, 5)
 }
 
 export function ProviderAvailabilityPage() {
@@ -58,6 +105,15 @@ export function ProviderAvailabilityPage() {
     () => [...(provider?.time_offs ?? [])].sort((a, b) => a.starts_at.localeCompare(b.starts_at)),
     [provider?.time_offs],
   )
+  const timezoneOptions = useMemo(() => {
+    const options = new Set(supportedTimezones)
+
+    if (timezone) {
+      options.add(timezone)
+    }
+
+    return Array.from(options).sort((first, second) => first.localeCompare(second))
+  }, [timezone])
 
   function updateDraft(updater: (current: AvailabilityDraft) => AvailabilityDraft) {
     setDraft((currentDraft) => {
@@ -112,8 +168,23 @@ export function ProviderAvailabilityPage() {
   async function handleSaveWorkingHours() {
     setServerError(null)
 
+    const normalizedDays = days
+      .map((day) => ({
+        day_of_week: day.day_of_week,
+        intervals: day.intervals.map((interval) => ({
+          start_time: normalizeTimeValue(interval.start_time),
+          end_time: normalizeTimeValue(interval.end_time),
+        })),
+      }))
+      .filter((day) => day.intervals.length > 0)
+
+    if (!normalizedDays.length) {
+      setServerError('Add at least one working-hours interval before saving.')
+      return
+    }
+
     try {
-      await updateWorkingHoursMutation.mutateAsync({ timezone, days })
+      await updateWorkingHoursMutation.mutateAsync({ timezone, days: normalizedDays })
       setDraft(null)
     } catch (error) {
       setServerError(getApiErrorMessage(error, 'Unable to update working hours right now.'))
@@ -206,7 +277,7 @@ export function ProviderAvailabilityPage() {
             <label className="text-sm font-medium text-foreground" htmlFor="provider-timezone">
               Timezone
             </label>
-            <input
+            <select
               id="provider-timezone"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={timezone}
@@ -218,7 +289,13 @@ export function ProviderAvailabilityPage() {
                   timezone: nextTimezone,
                 }))
               }}
-            />
+            >
+              {timezoneOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </div>
 
           <WorkingHoursEditor
@@ -256,7 +333,10 @@ export function ProviderAvailabilityPage() {
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div className="space-y-1">
                       <p className="font-medium text-foreground">{timeOff.is_holiday ? 'Holiday' : 'Time off'}</p>
-                      <p className="text-muted-foreground">{timeOff.starts_at} to {timeOff.ends_at}</p>
+                      <p className="text-muted-foreground">
+                        {formatTimeOffDate(timeOff.starts_at, timezone)} to {formatTimeOffDate(timeOff.ends_at, timezone)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Timezone: {timezone}</p>
                       {timeOff.reason ? <p className="text-muted-foreground">{timeOff.reason}</p> : null}
                     </div>
                     <Button
