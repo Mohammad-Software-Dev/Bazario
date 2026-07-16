@@ -4,87 +4,20 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TimeOffForm } from '@/features/provider-availability/components/time-off-form'
+import { TimeOffList } from '@/features/provider-availability/components/time-off-list'
 import { WorkingHoursEditor } from '@/features/provider-availability/components/working-hours-editor'
 import { useAddTimeOffMutation } from '@/features/provider-availability/hooks/use-add-time-off-mutation'
 import { useDeleteTimeOffMutation } from '@/features/provider-availability/hooks/use-delete-time-off-mutation'
+import { useProviderAvailabilityDraft } from '@/features/provider-availability/hooks/use-provider-availability-draft'
 import { useProviderAvailabilityQuery } from '@/features/provider-availability/hooks/use-provider-availability-query'
 import { useUpdateWorkingHoursMutation } from '@/features/provider-availability/hooks/use-update-working-hours-mutation'
+import {
+  normalizeWorkingHoursPayload,
+  sortTimeOffs,
+} from '@/features/provider-availability/lib/provider-availability'
 import type { TimeOffFormValues } from '@/features/provider-availability/schemas/time-off-form-schema'
-import type {
-  AddTimeOffPayload,
-  ProviderAvailabilityResult,
-  WorkingHourDayInput,
-} from '@/features/provider-availability/types/provider-availability.types'
+import type { AddTimeOffPayload } from '@/features/provider-availability/types/provider-availability.types'
 import { getApiErrorMessage } from '@/lib/api/api-error'
-
-const fallbackTimezones = [
-  'UTC',
-  'Europe/Berlin',
-  'Europe/London',
-  'Asia/Dubai',
-  'Asia/Riyadh',
-  'Asia/Amman',
-  'Asia/Baghdad',
-  'Asia/Kuwait',
-  'Asia/Qatar',
-  'Asia/Bahrain',
-  'Asia/Muscat',
-  'Asia/Karachi',
-  'Asia/Istanbul',
-  'Africa/Cairo',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-] as const
-
-const supportedTimezones =
-  typeof Intl.supportedValuesOf === 'function'
-    ? Intl.supportedValuesOf('timeZone')
-    : [...fallbackTimezones]
-
-function buildInitialDays(provider: ProviderAvailabilityResult | undefined): WorkingHourDayInput[] {
-  return Array.from({ length: 7 }, (_, dayOfWeek) => ({
-    day_of_week: dayOfWeek,
-    intervals: (provider?.working_hours ?? [])
-      .filter((item) => item.day_of_week === dayOfWeek)
-      .map((item) => ({
-        end_time: normalizeTimeValue(item.end_time),
-        start_time: normalizeTimeValue(item.start_time),
-      })),
-  }))
-}
-
-interface AvailabilityDraft {
-  providerId: number | null
-  timezone: string
-  days: WorkingHourDayInput[]
-}
-
-function cloneDays(days: WorkingHourDayInput[]) {
-  return days.map((day) => ({
-    day_of_week: day.day_of_week,
-    intervals: day.intervals.map((interval) => ({ ...interval })),
-  }))
-}
-
-function formatTimeOffDate(value: string, timezone: string) {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: timezone,
-  }).format(date)
-}
-
-function normalizeTimeValue(value: string) {
-  return value.slice(0, 5)
-}
 
 export function ProviderAvailabilityPage() {
   const providerAvailabilityQuery = useProviderAvailabilityQuery()
@@ -93,90 +26,14 @@ export function ProviderAvailabilityPage() {
   const deleteTimeOffMutation = useDeleteTimeOffMutation()
   const [serverError, setServerError] = useState<string | null>(null)
   const provider = providerAvailabilityQuery.data
-  const initialTimezone = provider?.timezone ?? 'Asia/Dubai'
-  const initialDays = useMemo(() => buildInitialDays(provider), [provider])
-  const [draft, setDraft] = useState<AvailabilityDraft | null>(null)
-
-  const isDraftForCurrentProvider = draft?.providerId === (provider?.id ?? null)
-  const timezone = isDraftForCurrentProvider ? draft.timezone : initialTimezone
-  const days = isDraftForCurrentProvider ? draft.days : initialDays
-
-  const sortedTimeOffs = useMemo(
-    () => [...(provider?.time_offs ?? [])].sort((a, b) => a.starts_at.localeCompare(b.starts_at)),
-    [provider?.time_offs],
-  )
-  const timezoneOptions = useMemo(() => {
-    const options = new Set(supportedTimezones)
-
-    if (timezone) {
-      options.add(timezone)
-    }
-
-    return Array.from(options).sort((first, second) => first.localeCompare(second))
-  }, [timezone])
-
-  function updateDraft(updater: (current: AvailabilityDraft) => AvailabilityDraft) {
-    setDraft((currentDraft) => {
-      const baseDraft: AvailabilityDraft =
-        currentDraft?.providerId === (provider?.id ?? null)
-          ? currentDraft
-          : {
-              providerId: provider?.id ?? null,
-              timezone: initialTimezone,
-              days: cloneDays(initialDays),
-            }
-
-      return updater(baseDraft)
-    })
-  }
-
-  function updateDay(dayOfWeek: number, updater: (day: WorkingHourDayInput) => WorkingHourDayInput) {
-    updateDraft((currentDraft) => ({
-      ...currentDraft,
-      days: currentDraft.days.map((day) => (day.day_of_week === dayOfWeek ? updater(day) : day)),
-    }))
-  }
-
-  function handleAddInterval(dayOfWeek: number) {
-    updateDay(dayOfWeek, (day) => ({
-      ...day,
-      intervals: [...day.intervals, { start_time: '09:00', end_time: '17:00' }],
-    }))
-  }
-
-  function handleRemoveInterval(dayOfWeek: number, intervalIndex: number) {
-    updateDay(dayOfWeek, (day) => ({
-      ...day,
-      intervals: day.intervals.filter((_, index) => index !== intervalIndex),
-    }))
-  }
-
-  function handleIntervalChange(
-    dayOfWeek: number,
-    intervalIndex: number,
-    field: 'start_time' | 'end_time',
-    value: string,
-  ) {
-    updateDay(dayOfWeek, (day) => ({
-      ...day,
-      intervals: day.intervals.map((interval, index) =>
-        index === intervalIndex ? { ...interval, [field]: value } : interval,
-      ),
-    }))
-  }
+  const { days, timezone, timezoneOptions, addInterval, changeInterval, clearDraft, removeInterval, setTimezone } =
+    useProviderAvailabilityDraft(provider)
+  const sortedTimeOffs = useMemo(() => sortTimeOffs(provider?.time_offs ?? []), [provider?.time_offs])
 
   async function handleSaveWorkingHours() {
     setServerError(null)
 
-    const normalizedDays = days
-      .map((day) => ({
-        day_of_week: day.day_of_week,
-        intervals: day.intervals.map((interval) => ({
-          start_time: normalizeTimeValue(interval.start_time),
-          end_time: normalizeTimeValue(interval.end_time),
-        })),
-      }))
-      .filter((day) => day.intervals.length > 0)
+    const normalizedDays = normalizeWorkingHoursPayload(days)
 
     if (!normalizedDays.length) {
       setServerError('Add at least one working-hours interval before saving.')
@@ -185,7 +42,7 @@ export function ProviderAvailabilityPage() {
 
     try {
       await updateWorkingHoursMutation.mutateAsync({ timezone, days: normalizedDays })
-      setDraft(null)
+      clearDraft()
     } catch (error) {
       setServerError(getApiErrorMessage(error, 'Unable to update working hours right now.'))
     }
@@ -281,14 +138,7 @@ export function ProviderAvailabilityPage() {
               id="provider-timezone"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={timezone}
-              onChange={(event) => {
-                const nextTimezone = event.target.value
-
-                updateDraft((currentDraft) => ({
-                  ...currentDraft,
-                  timezone: nextTimezone,
-                }))
-              }}
+              onChange={(event) => setTimezone(event.target.value)}
             >
               {timezoneOptions.map((option) => (
                 <option key={option} value={option}>
@@ -300,9 +150,9 @@ export function ProviderAvailabilityPage() {
 
           <WorkingHoursEditor
             days={days}
-            onAddInterval={handleAddInterval}
-            onIntervalChange={handleIntervalChange}
-            onRemoveInterval={handleRemoveInterval}
+            onAddInterval={addInterval}
+            onIntervalChange={changeInterval}
+            onRemoveInterval={removeInterval}
           />
 
           <Button onClick={handleSaveWorkingHours} disabled={updateWorkingHoursMutation.isPending}>
@@ -326,32 +176,13 @@ export function ProviderAvailabilityPage() {
           <CardHeader>
             <CardTitle>Existing time off</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {sortedTimeOffs.length ? (
-              sortedTimeOffs.map((timeOff) => (
-                <div key={timeOff.id} className="rounded-lg border p-4 text-sm">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div className="space-y-1">
-                      <p className="font-medium text-foreground">{timeOff.is_holiday ? 'Holiday' : 'Time off'}</p>
-                      <p className="text-muted-foreground">
-                        {formatTimeOffDate(timeOff.starts_at, timezone)} to {formatTimeOffDate(timeOff.ends_at, timezone)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Timezone: {timezone}</p>
-                      {timeOff.reason ? <p className="text-muted-foreground">{timeOff.reason}</p> : null}
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleDeleteTimeOff(timeOff.id)}
-                      disabled={deleteTimeOffMutation.isPending}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">No time off entries yet.</p>
-            )}
+          <CardContent>
+            <TimeOffList
+              isDeleting={deleteTimeOffMutation.isPending}
+              timeOffs={sortedTimeOffs}
+              timezone={timezone}
+              onDelete={handleDeleteTimeOff}
+            />
           </CardContent>
         </Card>
       </div>
