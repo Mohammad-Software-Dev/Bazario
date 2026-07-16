@@ -4,49 +4,59 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Link } from 'react-router-dom'
-import { useMeQuery } from '@/features/account/hooks/use-me-query'
-import { useAuth } from '@/lib/auth/use-auth'
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { useMeQuery } from "@/features/account/hooks/use-me-query";
+import { useAuth } from "@/lib/auth/use-auth";
 
 function formatMoney(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount / 100)
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount / 100);
 }
 
 export function AccountPage() {
-  const { session } = useAuth()
-  const meQuery = useMeQuery(true, 5)
+  const { session } = useAuth();
+  const meQuery = useMeQuery(true, 5);
 
-  const user = meQuery.data?.result.user ?? session?.user
-  const roles = session?.roles ?? user?.roles ?? []
-  const isSeller = roles.includes('seller') || Boolean(user?.seller_profile)
-  const isServiceProvider = roles.includes('service_provider') || Boolean(user?.service_provider_profile)
-  const counts = meQuery.data?.result.counts
+  const user = meQuery.data?.result.user ?? session?.user;
+  const roles = session?.roles ?? user?.roles ?? [];
+  const isSeller = roles.includes("seller") || Boolean(user?.seller_profile);
+  const isServiceProvider =
+    roles.includes("service_provider") ||
+    Boolean(user?.service_provider_profile);
+  const counts = meQuery.data?.result.counts;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-12">
       <Card>
         <CardHeader>
           <CardTitle>Account</CardTitle>
-          <CardDescription>Authenticated profile and dashboard summary from the backend.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-2 text-sm">
-          <p><span className="font-medium">Name:</span> {user?.name}</p>
-          <p><span className="font-medium">Email:</span> {user?.email}</p>
-          <p><span className="font-medium">Roles:</span> {session?.roles.join(', ')}</p>
+          <p>
+            <span className="font-medium">Name:</span> {user?.name}
+          </p>
+          <p>
+            <span className="font-medium">Email:</span> {user?.email}
+          </p>
+          <p>
+            <span className="font-medium">Roles:</span>{" "}
+            {session?.roles.join(", ")}
+          </p>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          ['Orders', counts?.orders ?? 0],
-          ['Bookings', counts?.bookings ?? 0],
-          ...(isSeller ? ([['Sales', counts?.sales ?? 0]] as const) : []),
-          ...(isServiceProvider ? ([['Provider bookings', counts?.provider_bookings ?? 0]] as const) : []),
+          ["Orders", counts?.orders ?? 0],
+          ["Bookings", counts?.bookings ?? 0],
+          ...(isSeller ? ([["Sales", counts?.sales ?? 0]] as const) : []),
+          ...(isServiceProvider
+            ? ([["Provider bookings", counts?.provider_bookings ?? 0]] as const)
+            : []),
         ].map(([label, value]) => (
           <Card key={label}>
             <CardContent className="p-4">
@@ -87,10 +97,12 @@ export function AccountPage() {
           </CardHeader>
           <CardContent className="text-sm">
             <p>
-              <span className="font-medium">Store:</span> {user.seller_profile.store_name}
+              <span className="font-medium">Store:</span>{" "}
+              {user.seller_profile.store_name}
             </p>
             <p>
-              <span className="font-medium">Status:</span> {user.seller_profile.status}
+              <span className="font-medium">Status:</span>{" "}
+              {user.seller_profile.status}
             </p>
           </CardContent>
         </Card>
@@ -100,16 +112,15 @@ export function AccountPage() {
         <Card>
           <CardHeader>
             <CardTitle>Service provider application</CardTitle>
-            <CardDescription>
-              Current service provider request status from the backend.
-            </CardDescription>
           </CardHeader>
           <CardContent className="text-sm">
             <p>
-              <span className="font-medium">Name:</span> {user.service_provider_profile.name}
+              <span className="font-medium">Name:</span>{" "}
+              {user.service_provider_profile.name}
             </p>
             <p>
-              <span className="font-medium">Status:</span> {user.service_provider_profile.status}
+              <span className="font-medium">Status:</span>{" "}
+              {user.service_provider_profile.status}
             </p>
             {isServiceProvider ? (
               <div className="mt-4 flex flex-wrap gap-3">
@@ -117,7 +128,9 @@ export function AccountPage() {
                   <Link to="/account/provider/services">Manage services</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/account/provider/availability">Manage availability</Link>
+                  <Link to="/account/provider/availability">
+                    Manage availability
+                  </Link>
                 </Button>
               </div>
             ) : null}
@@ -203,11 +216,13 @@ export function AccountPage() {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No recent provider bookings.</p>
+              <p className="text-sm text-muted-foreground">
+                No recent provider bookings.
+              </p>
             )}
           </CardContent>
         </Card>
       ) : null}
     </div>
-  )
+  );
 }
