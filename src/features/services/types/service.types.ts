@@ -67,3 +67,18 @@ export interface ServiceProviderServicesResult {
   service_provider: ServiceProviderProfile
   services: ServicesResult
 }
+
+export interface ServiceAvailabilitySlot {
+  starts_at: string
+  ends_at: string
+  remaining_capacity: number
+}
+
+export interface ServiceAvailabilityResult {
+  date: string
+  timezone: string
+  duration_minutes: number
+  slot_interval_minutes: number
+  capacity: number
+  slots: ServiceAvailabilitySlot[]
+}

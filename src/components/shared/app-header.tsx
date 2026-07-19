@@ -2,6 +2,7 @@ import { Link, NavLink } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { useLogoutMutation } from '@/features/auth/hooks/use-logout-mutation'
+import { useCartCount } from '@/features/cart/hooks/use-cart'
 import { useAuth } from '@/lib/auth/use-auth'
 import { useUiStore } from '@/stores/ui-store'
 
@@ -16,6 +17,7 @@ export function AppHeader() {
   const { session, isAuthenticated } = useAuth()
   const logoutMutation = useLogoutMutation()
   const openLoginDialog = useUiStore((state) => state.openLoginDialog)
+  const cartCount = useCartCount()
 
   return (
     <header className="border-b bg-background">
@@ -41,24 +43,37 @@ export function AppHeader() {
           </nav>
         </div>
 
-        {isAuthenticated ? (
-          <div className="flex items-center gap-3">
-            <Button asChild variant="ghost" className="px-3">
-              <Link to="/account">{session?.user.name ?? 'Account'}</Link>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                logoutMutation.mutate()
-              }}
-              disabled={logoutMutation.isPending}
-            >
-              {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
-            </Button>
-          </div>
-        ) : (
-          <Button onClick={openLoginDialog}>Login</Button>
-        )}
+        <div className="flex items-center gap-3">
+          <Button asChild variant="ghost" className="px-3">
+            <Link to="/cart">
+              Cart
+              {cartCount ? (
+                <span className="ml-2 rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">
+                  {cartCount}
+                </span>
+              ) : null}
+            </Link>
+          </Button>
+
+          {isAuthenticated ? (
+            <>
+              <Button asChild variant="ghost" className="px-3">
+                <Link to="/account">{session?.user.name ?? 'Account'}</Link>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  logoutMutation.mutate()
+                }}
+                disabled={logoutMutation.isPending}
+              >
+                {logoutMutation.isPending ? 'Logging out...' : 'Logout'}
+              </Button>
+            </>
+          ) : (
+            <Button onClick={openLoginDialog}>Login</Button>
+          )}
+        </div>
       </div>
     </header>
   )

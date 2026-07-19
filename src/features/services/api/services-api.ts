@@ -5,6 +5,7 @@ import { serviceEndpoints } from '@/features/services/api/service-endpoints'
 import type { ServiceFormValues } from '@/features/services/schemas/service-form-schema'
 import type {
   MyServicesResult,
+  ServiceAvailabilityResult,
   ServiceListItem,
   ServiceProviderServicesResult,
   ServicesResult,
@@ -118,6 +119,17 @@ export async function getServicesByServiceProvider(
 
 export async function getService(serviceId: number) {
   const response = await httpClient.get<ApiSuccessResponse<ServiceListItem>>(serviceEndpoints.detail(serviceId))
+
+  return response.data
+}
+
+export async function getServiceAvailability(serviceId: number, date: string, timezone: string) {
+  const response = await httpClient.get<ServiceAvailabilityResult>(serviceEndpoints.availability(serviceId), {
+    params: {
+      date,
+      timezone,
+    },
+  })
 
   return response.data
 }
