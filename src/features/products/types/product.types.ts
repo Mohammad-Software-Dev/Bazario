@@ -1,6 +1,11 @@
 import type { LaravelPaginatedResponse } from '@/lib/api/laravel-pagination'
 import type { LocalizedValue } from '@/lib/localized-value'
 
+export interface LocalizedTextFields {
+  en?: string | null
+  ar?: string | null
+}
+
 export interface ProductImage {
   id: number
   product_id: number
@@ -34,6 +39,8 @@ export interface ProductListItem {
   id: number
   name: LocalizedValue
   description: LocalizedValue
+  name_translations?: LocalizedTextFields | null
+  description_translations?: LocalizedTextFields | null
   price: number
   category_id: number
   seller_id: number
@@ -45,6 +52,8 @@ export interface ProductListItem {
 }
 
 export type ProductsResult = LaravelPaginatedResponse<ProductListItem>
+
+export type MyProductsResult = LaravelPaginatedResponse<ProductListItem>
 
 export interface SellerProductsResult {
   seller: ProductSeller

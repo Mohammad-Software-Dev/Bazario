@@ -5,9 +5,12 @@ import { AccountPage } from '@/features/account/pages/account-page'
 import { SellerUpgradePage } from '@/features/account/pages/seller-upgrade-page'
 import { ServiceProviderUpgradePage } from '@/features/account/pages/service-provider-upgrade-page'
 import { RegisterPage } from '@/features/auth/pages/register-page'
+import { CartPage } from '@/features/cart/pages/cart-page'
 import { HomePage } from '@/features/home/pages/home-page'
 import { ProductDetailsPage } from '@/features/products/pages/product-details-page'
+import { ProductEditorPage } from '@/features/products/pages/product-editor-page'
 import { ProductsPage } from '@/features/products/pages/products-page'
+import { SellerProductsManagementPage } from '@/features/products/pages/seller-products-management-page'
 import { SellerProductsPage } from '@/features/products/pages/seller-products-page'
 import { ProviderAvailabilityPage } from '@/features/provider-availability/pages/provider-availability-page'
 import { SellersPage } from '@/features/sellers/pages/sellers-page'
@@ -25,6 +28,7 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'cart', element: <CartPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/:productId', element: <ProductDetailsPage /> },
       { path: 'services', element: <ServicesPage /> },
@@ -58,6 +62,30 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRoles={['customer']}>
             <ServiceProviderUpgradePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/seller/products',
+        element: (
+          <ProtectedRoute requiredRoles={['seller']}>
+            <SellerProductsManagementPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/seller/products/new',
+        element: (
+          <ProtectedRoute requiredRoles={['seller']}>
+            <ProductEditorPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/seller/products/:productId/edit',
+        element: (
+          <ProtectedRoute requiredRoles={['seller']}>
+            <ProductEditorPage />
           </ProtectedRoute>
         ),
       },

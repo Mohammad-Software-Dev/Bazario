@@ -1,12 +1,12 @@
+import { Link } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useMeQuery } from "@/features/account/hooks/use-me-query";
 import { useAuth } from "@/lib/auth/use-auth";
 
@@ -91,9 +91,6 @@ export function AccountPage() {
         <Card>
           <CardHeader>
             <CardTitle>Seller application</CardTitle>
-            <CardDescription>
-              Current seller request status from the backend.
-            </CardDescription>
           </CardHeader>
           <CardContent className="text-sm">
             <p>
@@ -104,6 +101,13 @@ export function AccountPage() {
               <span className="font-medium">Status:</span>{" "}
               {user.seller_profile.status}
             </p>
+            {isSeller ? (
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button asChild variant="outline">
+                  <Link to="/account/seller/products">Manage products</Link>
+                </Button>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       ) : null}
