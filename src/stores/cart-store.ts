@@ -20,12 +20,15 @@ import type {
 interface CartStoreState {
   items: CartItem[]
   currency: 'EUR'
+  ownerType: 'guest' | 'user'
+  ownerId: number | null
   addProductItem: (input: AddProductToCartInput) => void
   addServiceItem: (input: AddServiceToCartInput) => void
   updateProductQuantity: (cartItemId: string, quantity: number) => void
   removeItem: (cartItemId: string) => void
   clearCart: () => void
   replaceItems: (items: CartItem[]) => void
+  syncOwner: (userId: number | null) => void
   getSubtotal: () => number
   getItemCount: () => number
   getProductItems: () => ProductCartItem[]
@@ -54,11 +57,27 @@ function isSameServiceBooking(left: ServiceCartItem, right: AddServiceToCartInpu
   )
 }
 
+function getOwnerSnapshot(userId: number | null) {
+  if (userId === null) {
+    return {
+      ownerType: 'guest' as const,
+      ownerId: null,
+    }
+  }
+
+  return {
+    ownerType: 'user' as const,
+    ownerId: userId,
+  }
+}
+
 export const useCartStore = create<CartStoreState>()(
   persist(
     (set, get) => ({
       items: [],
       currency: 'EUR',
+      ownerType: 'guest',
+      ownerId: null,
       addProductItem: (input) => {
         if (input.quantity < 1) {
           return
@@ -163,6 +182,24 @@ export const useCartStore = create<CartStoreState>()(
       replaceItems: (items) => {
         set({ items })
       },
+      syncOwner: (userId) => {
+        set((state) => {
+          const nextOwner = getOwnerSnapshot(userId)
+
+          if (state.ownerType === nextOwner.ownerType && state.ownerId === nextOwner.ownerId) {
+            return state
+          }
+
+          if (state.ownerType === 'guest' && nextOwner.ownerType === 'user') {
+            return nextOwner
+          }
+
+          return {
+            ...nextOwner,
+            items: [],
+          }
+        })
+      },
       getSubtotal: () => getCartSubtotal(get().items),
       getItemCount: () => getCartItemCount(get().items),
       getProductItems: () => get().items.filter((item): item is ProductCartItem => item.type === 'product'),
@@ -177,6 +214,8 @@ export const useCartStore = create<CartStoreState>()(
       partialize: (state) => ({
         items: state.items,
         currency: state.currency,
+        ownerType: state.ownerType,
+        ownerId: state.ownerId,
       }),
     },
   ),

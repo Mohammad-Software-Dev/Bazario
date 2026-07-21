@@ -13,6 +13,7 @@ interface CartLineItemProps {
 
 export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemProps) {
   const imageUrl = buildAssetUrl(item.image)
+  const lineTotal = item.price * item.quantity
 
   return (
     <div className="flex flex-col gap-4 rounded-lg border p-4 md:flex-row md:items-start">
@@ -40,7 +41,10 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
             </p>
             {item.category_name ? <p className="text-sm text-muted-foreground">{item.category_name}</p> : null}
           </div>
-          <p className="text-base font-semibold text-foreground">{formatCartMoney(item.price * item.quantity)}</p>
+          <div className="space-y-1 text-left md:text-right">
+            <p className="text-sm text-muted-foreground">Unit price: {formatCartMoney(item.price)}</p>
+            <p className="text-base font-semibold text-foreground">Line total: {formatCartMoney(lineTotal)}</p>
+          </div>
         </div>
 
         {item.type === 'service' ? (

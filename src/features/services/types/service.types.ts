@@ -57,6 +57,7 @@ export interface ServiceListItem {
   images: ServiceImage[]
   category: ServiceCategory | null
   serviceProvider?: ServiceProviderProfile | null
+  service_provider?: ServiceProviderProfile | null
 }
 
 export type ServicesResult = LaravelPaginatedResponse<ServiceListItem>

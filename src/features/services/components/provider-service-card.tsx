@@ -15,7 +15,7 @@ function formatMoney(amount: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'EUR',
-  }).format(amount / 100)
+  }).format(amount)
 }
 
 export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardProps) {

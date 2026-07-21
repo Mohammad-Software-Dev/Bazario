@@ -1,33 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useMeQuery } from "@/features/account/hooks/use-me-query";
-import { useAuth } from "@/lib/auth/use-auth";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useMeQuery } from '@/features/account/hooks/use-me-query'
+import { useAuth } from '@/lib/auth/use-auth'
+import { getLocalizedValue } from '@/lib/localized-value'
 
 function formatMoney(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "EUR",
-  }).format(amount / 100);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'EUR',
+  }).format(amount / 100)
 }
 
 export function AccountPage() {
-  const { session } = useAuth();
-  const meQuery = useMeQuery(true, 5);
+  const { session } = useAuth()
+  const meQuery = useMeQuery(true, 5)
 
-  const user = meQuery.data?.result.user ?? session?.user;
-  const roles = session?.roles ?? user?.roles ?? [];
-  const isSeller = roles.includes("seller") || Boolean(user?.seller_profile);
+  const user = meQuery.data?.result.user ?? session?.user
+  const roles = session?.roles ?? user?.roles ?? []
+  const isSeller = roles.includes('seller') || Boolean(user?.seller_profile)
   const isServiceProvider =
-    roles.includes("service_provider") ||
-    Boolean(user?.service_provider_profile);
-  const counts = meQuery.data?.result.counts;
+    roles.includes('service_provider') || Boolean(user?.service_provider_profile)
+  const counts = meQuery.data?.result.counts
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-12">
@@ -43,19 +38,18 @@ export function AccountPage() {
             <span className="font-medium">Email:</span> {user?.email}
           </p>
           <p>
-            <span className="font-medium">Roles:</span>{" "}
-            {session?.roles.join(", ")}
+            <span className="font-medium">Roles:</span> {session?.roles.join(', ')}
           </p>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          ["Orders", counts?.orders ?? 0],
-          ["Bookings", counts?.bookings ?? 0],
-          ...(isSeller ? ([["Sales", counts?.sales ?? 0]] as const) : []),
+          ['Orders', counts?.orders ?? 0],
+          ['Bookings', counts?.bookings ?? 0],
+          ...(isSeller ? ([['Sales', counts?.sales ?? 0]] as const) : []),
           ...(isServiceProvider
-            ? ([["Provider bookings", counts?.provider_bookings ?? 0]] as const)
+            ? ([['Provider bookings', counts?.provider_bookings ?? 0]] as const)
             : []),
         ].map(([label, value]) => (
           <Card key={label}>
@@ -69,6 +63,20 @@ export function AccountPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Customer workspace</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-3">
+          <Button asChild variant="outline">
+            <Link to="/account/orders">My orders</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/account/bookings">My bookings</Link>
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Upgrade options</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
@@ -79,9 +87,7 @@ export function AccountPage() {
           ) : null}
           {user?.available_upgrades?.service_provider ? (
             <Button asChild variant="outline">
-              <Link to="/account/upgrade/service-provider">
-                Upgrade to service provider
-              </Link>
+              <Link to="/account/upgrade/service-provider">Upgrade to service provider</Link>
             </Button>
           ) : null}
         </CardContent>
@@ -94,17 +100,21 @@ export function AccountPage() {
           </CardHeader>
           <CardContent className="text-sm">
             <p>
-              <span className="font-medium">Store:</span>{" "}
-              {user.seller_profile.store_name}
+              <span className="font-medium">Store:</span> {user.seller_profile.store_name}
             </p>
             <p>
-              <span className="font-medium">Status:</span>{" "}
-              {user.seller_profile.status}
+              <span className="font-medium">Status:</span> {user.seller_profile.status}
             </p>
             {isSeller ? (
               <div className="mt-4 flex flex-wrap gap-3">
                 <Button asChild variant="outline">
                   <Link to="/account/seller/products">Manage products</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/account/stripe">Stripe account</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/account/earnings">Earnings</Link>
                 </Button>
               </div>
             ) : null}
@@ -119,12 +129,10 @@ export function AccountPage() {
           </CardHeader>
           <CardContent className="text-sm">
             <p>
-              <span className="font-medium">Name:</span>{" "}
-              {user.service_provider_profile.name}
+              <span className="font-medium">Name:</span> {user.service_provider_profile.name}
             </p>
             <p>
-              <span className="font-medium">Status:</span>{" "}
-              {user.service_provider_profile.status}
+              <span className="font-medium">Status:</span> {user.service_provider_profile.status}
             </p>
             {isServiceProvider ? (
               <div className="mt-4 flex flex-wrap gap-3">
@@ -132,9 +140,13 @@ export function AccountPage() {
                   <Link to="/account/provider/services">Manage services</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/account/provider/availability">
-                    Manage availability
-                  </Link>
+                  <Link to="/account/provider/availability">Manage availability</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/account/stripe">Stripe account</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/account/earnings">Earnings</Link>
                 </Button>
               </div>
             ) : null}
@@ -172,7 +184,10 @@ export function AccountPage() {
               <div key={booking.id} className="rounded-lg border p-3 text-sm">
                 <p className="font-medium">Booking #{booking.id}</p>
                 <p className="text-muted-foreground">
-                  {booking.status} - {booking.service.title}
+                  {booking.status} -{' '}
+                  {typeof booking.service.title === 'string'
+                    ? booking.service.title
+                    : getLocalizedValue(booking.service.title) || 'Service'}
                 </p>
               </div>
             ))
@@ -215,18 +230,19 @@ export function AccountPage() {
                 <div key={booking.id} className="rounded-lg border p-3 text-sm">
                   <p className="font-medium">Provider booking #{booking.id}</p>
                   <p className="text-muted-foreground">
-                    {booking.status} - {booking.service.title}
+                    {booking.status} -{' '}
+                    {typeof booking.service.title === 'string'
+                      ? booking.service.title
+                      : getLocalizedValue(booking.service.title) || 'Service'}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">
-                No recent provider bookings.
-              </p>
+              <p className="text-sm text-muted-foreground">No recent provider bookings.</p>
             )}
           </CardContent>
         </Card>
       ) : null}
     </div>
-  );
+  )
 }

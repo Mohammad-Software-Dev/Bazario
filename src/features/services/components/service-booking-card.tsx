@@ -143,7 +143,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
       title: getLocalizedValue(service.title) || 'Untitled service',
       image: service.images[0]?.image ?? null,
       price: service.price,
-      provider_name: service.serviceProvider?.name ?? 'Independent provider',
+      provider_name: (service.service_provider ?? service.serviceProvider)?.name ?? 'Independent provider',
       category_name: getLocalizedValue(service.category?.name) || undefined,
       duration_minutes: service.duration_minutes ?? null,
       starts_at: selectedSlot.starts_at,

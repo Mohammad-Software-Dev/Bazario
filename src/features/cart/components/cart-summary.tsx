@@ -1,15 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import { formatCartMoney } from "@/features/cart/lib/cart-calculations";
-import type { CartSummary as CartSummaryType } from "@/features/cart/types/cart.types";
+import { formatCartMoney } from '@/features/cart/lib/cart-calculations'
+import type { CartSummary as CartSummaryType } from '@/features/cart/types/cart.types'
 
 interface CartSummaryProps {
-  onClear: () => void;
-  summary: CartSummaryType;
+  onCheckout: () => void
+  onClear: () => void
+  summary: CartSummaryType
+  isCheckoutPending?: boolean
 }
 
-export function CartSummary({ onClear, summary }: CartSummaryProps) {
+export function CartSummary({ onCheckout, onClear, summary, isCheckoutPending = false }: CartSummaryProps) {
   return (
     <Card>
       <CardHeader>
@@ -30,22 +32,18 @@ export function CartSummary({ onClear, summary }: CartSummaryProps) {
         </div>
         <div className="flex items-center justify-between gap-3 border-t pt-4">
           <span className="font-medium text-foreground">Subtotal</span>
-          <span className="font-semibold text-foreground">
-            {formatCartMoney(summary.subtotal)}
-          </span>
+          <span className="font-semibold text-foreground">{formatCartMoney(summary.subtotal)}</span>
         </div>
 
         <div className="flex flex-col gap-3">
-          <Button>Checkout</Button>
-          <Button
-            variant="outline"
-            onClick={onClear}
-            disabled={summary.item_count === 0}
-          >
+          <Button onClick={onCheckout} disabled={summary.item_count === 0 || isCheckoutPending}>
+            {isCheckoutPending ? 'Starting checkout...' : 'Checkout'}
+          </Button>
+          <Button variant="outline" onClick={onClear} disabled={summary.item_count === 0 || isCheckoutPending}>
             Clear cart
           </Button>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

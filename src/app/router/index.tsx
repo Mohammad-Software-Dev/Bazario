@@ -5,8 +5,15 @@ import { AccountPage } from '@/features/account/pages/account-page'
 import { SellerUpgradePage } from '@/features/account/pages/seller-upgrade-page'
 import { ServiceProviderUpgradePage } from '@/features/account/pages/service-provider-upgrade-page'
 import { RegisterPage } from '@/features/auth/pages/register-page'
+import { ConnectAccountPage } from '@/features/connect/pages/connect-account-page'
+import { EarningsPage } from '@/features/earnings/pages/earnings-page'
 import { CartPage } from '@/features/cart/pages/cart-page'
 import { HomePage } from '@/features/home/pages/home-page'
+import { BookingsPage } from '@/features/orders/pages/bookings-page'
+import { CheckoutCancelPage } from '@/features/orders/pages/checkout-cancel-page'
+import { CheckoutSuccessPage } from '@/features/orders/pages/checkout-success-page'
+import { OrderDetailsPage } from '@/features/orders/pages/order-details-page'
+import { OrdersPage } from '@/features/orders/pages/orders-page'
 import { ProductDetailsPage } from '@/features/products/pages/product-details-page'
 import { ProductEditorPage } from '@/features/products/pages/product-editor-page'
 import { ProductsPage } from '@/features/products/pages/products-page'
@@ -29,6 +36,22 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'cart', element: <CartPage /> },
+      {
+        path: 'checkout/success',
+        element: (
+          <ProtectedRoute>
+            <CheckoutSuccessPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'checkout/cancel',
+        element: (
+          <ProtectedRoute>
+            <CheckoutCancelPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/:productId', element: <ProductDetailsPage /> },
       { path: 'services', element: <ServicesPage /> },
@@ -46,6 +69,46 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AccountPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/orders',
+        element: (
+          <ProtectedRoute>
+            <OrdersPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/orders/:orderId',
+        element: (
+          <ProtectedRoute>
+            <OrderDetailsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/bookings',
+        element: (
+          <ProtectedRoute>
+            <BookingsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/stripe',
+        element: (
+          <ProtectedRoute requiredRoles={['seller', 'service_provider']}>
+            <ConnectAccountPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/earnings',
+        element: (
+          <ProtectedRoute requiredRoles={['seller', 'service_provider']}>
+            <EarningsPage />
           </ProtectedRoute>
         ),
       },

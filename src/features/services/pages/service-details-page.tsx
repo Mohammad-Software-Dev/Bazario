@@ -12,7 +12,7 @@ function formatMoney(amount: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'EUR',
-  }).format(amount / 100)
+  }).format(amount)
 }
 
 function parseServiceId(value: string | undefined) {
@@ -86,8 +86,9 @@ export function ServiceDetailsPage() {
   const serviceTitle = getLocalizedValue(service.title) || 'Untitled service'
   const serviceDescription = getLocalizedValue(service.description) || 'No description yet.'
   const categoryName = getLocalizedValue(service.category?.name) || 'Uncategorized'
-  const providerName = service.serviceProvider?.name ?? 'Independent provider'
-  const providerUserName = service.serviceProvider?.user?.name ?? 'Provider profile pending'
+  const provider = service.service_provider ?? service.serviceProvider ?? null
+  const providerName = provider?.name ?? 'Independent provider'
+  const providerUserName = provider?.user?.name ?? 'Provider profile pending'
   const images = service.images.map((image) => buildAssetUrl(image.image)).filter(Boolean) as string[]
   const primaryImage = images[0] ?? null
 
