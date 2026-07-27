@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useMeQuery } from '@/features/account/hooks/use-me-query'
+import { ProviderBookingCard } from '@/features/orders/components/provider-booking-card'
 import { useAuth } from '@/lib/auth/use-auth'
 import { getLocalizedValue } from '@/lib/localized-value'
 
@@ -227,15 +228,7 @@ export function AccountPage() {
           <CardContent className="space-y-3">
             {meQuery.data?.result.recent_provider_bookings?.length ? (
               meQuery.data.result.recent_provider_bookings.map((booking) => (
-                <div key={booking.id} className="rounded-lg border p-3 text-sm">
-                  <p className="font-medium">Provider booking #{booking.id}</p>
-                  <p className="text-muted-foreground">
-                    {booking.status} -{' '}
-                    {typeof booking.service.title === 'string'
-                      ? booking.service.title
-                      : getLocalizedValue(booking.service.title) || 'Service'}
-                  </p>
-                </div>
+                <ProviderBookingCard key={booking.id} booking={booking} />
               ))
             ) : (
               <p className="text-sm text-muted-foreground">No recent provider bookings.</p>

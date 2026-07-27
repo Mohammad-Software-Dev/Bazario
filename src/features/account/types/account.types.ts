@@ -1,4 +1,5 @@
 import type { Role, User } from '@/features/auth/types/auth.types'
+import type { LocalizedValue } from '@/lib/localized-value'
 
 export interface AvailableUpgrades {
   seller: boolean
@@ -57,7 +58,7 @@ export interface RecentOrder {
 
 export interface RecentBookingService {
   id: number
-  title: string
+  title: string | LocalizedValue
   price: string
 }
 

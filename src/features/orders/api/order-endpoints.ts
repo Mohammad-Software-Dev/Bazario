@@ -8,4 +8,6 @@ export const orderEndpoints = {
   reconcileCheckoutSession: (orderId: number) => `/api/orders/${orderId}/checkout-session/reconcile`,
   cancelBooking: (bookingId: number) => `/api/bookings/${bookingId}/cancel`,
   rescheduleBooking: (bookingId: number) => `/api/bookings/${bookingId}/reschedule`,
+  confirmBooking: (bookingId: number) => `/api/bookings/${bookingId}/confirm`,
+  completeBooking: (bookingId: number) => `/api/bookings/${bookingId}/complete`,
 } as const

@@ -76,3 +76,16 @@ export async function rescheduleBooking(bookingId: number, payload: RescheduleBo
 
   return response.data
 }
+
+export async function confirmBooking(bookingId: number) {
+  const response = await httpClient.patch<BookingDetailResult>(orderEndpoints.confirmBooking(bookingId))
+
+  return response.data
+}
+
+export async function completeBooking(bookingId: number) {
+  const response = await httpClient.patch<BookingDetailResult>(orderEndpoints.completeBooking(bookingId))
+
+  return response.data
+}
+
