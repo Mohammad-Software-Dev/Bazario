@@ -39,6 +39,7 @@ export function CheckoutSuccessPage() {
     hasHandledSuccessRef.current = true
     clearCart()
     queryClient.invalidateQueries({ queryKey: ['orders', orderId] })
+    queryClient.invalidateQueries({ queryKey: ['orders', 'current'] })
     queryClient.invalidateQueries({ queryKey: ['orders', 'mine'] })
     queryClient.invalidateQueries({ queryKey: ['bookings', 'mine'] })
   }, [checkoutResultQuery.data?.is_paid, clearCart, orderId, queryClient])

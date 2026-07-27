@@ -68,6 +68,7 @@ export function CartPage() {
             onCheckout={handleCheckout}
             onClear={clearCart}
             summary={summary}
+            checkoutLabel="Checkout"
             isCheckoutPending={checkoutMutation.isPending}
           />
         </aside>

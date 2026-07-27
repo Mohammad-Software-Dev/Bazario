@@ -36,6 +36,18 @@ export function formatBookingWindow(startsAt: string, endsAt: string, timezone?:
   return `${formatter.format(new Date(startsAt))} - ${formatter.format(new Date(endsAt))}`
 }
 
+export function formatBookingCutoff(value?: string | null, timezone?: string | null) {
+  if (!value) {
+    return null
+  }
+
+  return new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: timezone || 'UTC',
+  }).format(new Date(value))
+}
+
 export function getOrderItemDisplayTitle(item: OrderItemRecord) {
   return item.title_snapshot || 'Order item'
 }
@@ -58,4 +70,19 @@ export function getOrderPrimaryDate(order: OrderRecord) {
 
 export function getBookingPrimaryProviderName(booking: CustomerBookingRecord) {
   return booking.provider_user?.name || 'Service provider'
+}
+
+export function getBookingLocalDateValue(booking: Pick<CustomerBookingRecord, 'starts_at' | 'timezone'>) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: booking.timezone || 'UTC',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+
+  return formatter.format(new Date(booking.starts_at))
+}
+
+export function isSameBookingWindow(booking: Pick<CustomerBookingRecord, 'starts_at' | 'ends_at'>, startsAt: string, endsAt: string) {
+  return booking.starts_at === startsAt && booking.ends_at === endsAt
 }

@@ -1,10 +1,11 @@
 export const orderEndpoints = {
-  create: '/api/orders',
+  startCheckout: '/api/checkout/session',
   mine: '/api/orders/my-orders',
   bookings: '/api/me/bookings',
   detail: (orderId: number) => `/api/orders/${orderId}`,
-  addItem: (orderId: number) => `/api/orders/${orderId}/items`,
+  bookingDetail: (bookingId: number) => `/api/bookings/${bookingId}`,
   checkoutSession: (orderId: number) => `/api/orders/${orderId}/checkout-session`,
   reconcileCheckoutSession: (orderId: number) => `/api/orders/${orderId}/checkout-session/reconcile`,
   cancelBooking: (bookingId: number) => `/api/bookings/${bookingId}/cancel`,
+  rescheduleBooking: (bookingId: number) => `/api/bookings/${bookingId}/reschedule`,
 } as const

@@ -8,10 +8,17 @@ interface CartSummaryProps {
   onCheckout: () => void
   onClear: () => void
   summary: CartSummaryType
+  checkoutLabel?: string
   isCheckoutPending?: boolean
 }
 
-export function CartSummary({ onCheckout, onClear, summary, isCheckoutPending = false }: CartSummaryProps) {
+export function CartSummary({
+  onCheckout,
+  onClear,
+  summary,
+  checkoutLabel = 'Checkout',
+  isCheckoutPending = false,
+}: CartSummaryProps) {
   return (
     <Card>
       <CardHeader>
@@ -37,7 +44,7 @@ export function CartSummary({ onCheckout, onClear, summary, isCheckoutPending = 
 
         <div className="flex flex-col gap-3">
           <Button onClick={onCheckout} disabled={summary.item_count === 0 || isCheckoutPending}>
-            {isCheckoutPending ? 'Starting checkout...' : 'Checkout'}
+            {isCheckoutPending ? 'Starting checkout...' : checkoutLabel}
           </Button>
           <Button variant="outline" onClick={onClear} disabled={summary.item_count === 0 || isCheckoutPending}>
             Clear cart

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { addOrderItem, createCheckoutSession, createOrder } from '@/features/orders/api/orders-api'
+import { startCheckout } from '@/features/orders/api/orders-api'
 import type { AddOrderItemPayload } from '@/features/orders/types/order.types'
 import type { CartItem } from '@/features/cart/types/cart.types'
 
@@ -28,13 +28,9 @@ function mapCartItemToOrderItemPayload(item: CartItem): AddOrderItemPayload {
 export function useCheckoutMutation() {
   return useMutation({
     mutationFn: async (items: CartItem[]) => {
-      const order = await createOrder()
-
-      for (const item of items) {
-        await addOrderItem(order.id, mapCartItemToOrderItemPayload(item))
-      }
-
-      return createCheckoutSession(order.id)
+      return startCheckout({
+        items: items.map(mapCartItemToOrderItemPayload),
+      })
     },
     onSuccess: (result) => {
       window.location.assign(result.checkout_url)

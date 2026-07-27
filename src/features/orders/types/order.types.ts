@@ -104,6 +104,13 @@ export interface BookingServiceSummary {
   id: number
   title: LocalizedValue | string
   price?: number | string
+  duration_minutes?: number | null
+  location_type?: string | null
+  is_active?: boolean | null
+  cancel_cutoff_hours?: number | null
+  edit_cutoff_hours?: number | null
+  cancel_late_policy?: 'deny' | 'allow' | null
+  edit_late_policy?: 'deny' | 'allow' | null
 }
 
 export interface BookingUserSummary {
@@ -111,6 +118,26 @@ export interface BookingUserSummary {
   name: string
   email?: string | null
   phone?: string | null
+}
+
+export interface BookingActionState {
+  can_cancel: boolean
+  can_reschedule: boolean
+  cancel_block_reason: string | null
+  reschedule_block_reason: string | null
+}
+
+export interface BookingCutoffState {
+  cancel_deadline: string | null
+  reschedule_deadline: string | null
+}
+
+export interface BookingRefundSummary {
+  applied: boolean
+  status: string | null
+  amount: number | null
+  currency_iso: string | null
+  stripe_refund_id: string | null
 }
 
 export interface CustomerBookingRecord {
@@ -131,11 +158,14 @@ export interface CustomerBookingRecord {
   provider_user?: BookingUserSummary | null
   customer_user?: BookingUserSummary | null
   order_item?: OrderItemRecord | null
+  actions: BookingActionState
+  cutoffs: BookingCutoffState
+  refund_summary: BookingRefundSummary
 }
 
 export type OrdersResult = LaravelPaginatedResponse<OrderRecord>
 export type BookingsResult = LaravelPaginatedResponse<CustomerBookingRecord>
-export type CreateOrderResult = OrderRecord
+export type BookingDetailResult = CustomerBookingRecord
 
 export interface ProductOrderItemPayload {
   type: 'product'
@@ -155,6 +185,9 @@ export interface ServiceOrderItemPayload {
 }
 
 export type AddOrderItemPayload = ProductOrderItemPayload | ServiceOrderItemPayload
+export interface StartCheckoutPayload {
+  items: AddOrderItemPayload[]
+}
 
 export interface CreateCheckoutSessionResult {
   checkout_url: string
@@ -184,4 +217,10 @@ export interface CancelBookingResult {
   booking: CustomerBookingRecord
   refund: CancelBookingRefundResult
   order_status: OrderStatus | null
+}
+
+export interface RescheduleBookingPayload {
+  starts_at: string
+  ends_at: string
+  timezone: string
 }

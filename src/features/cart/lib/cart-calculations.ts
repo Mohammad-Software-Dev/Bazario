@@ -4,7 +4,7 @@ export function formatCartMoney(amount: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'EUR',
-  }).format(amount / 100)
+  }).format(amount)
 }
 
 export function getCartSubtotal(items: CartItem[]) {

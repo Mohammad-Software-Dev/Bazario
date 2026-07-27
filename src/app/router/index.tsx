@@ -10,6 +10,7 @@ import { EarningsPage } from '@/features/earnings/pages/earnings-page'
 import { CartPage } from '@/features/cart/pages/cart-page'
 import { HomePage } from '@/features/home/pages/home-page'
 import { BookingsPage } from '@/features/orders/pages/bookings-page'
+import { BookingReschedulePage } from '@/features/orders/pages/booking-reschedule-page'
 import { CheckoutCancelPage } from '@/features/orders/pages/checkout-cancel-page'
 import { CheckoutSuccessPage } from '@/features/orders/pages/checkout-success-page'
 import { OrderDetailsPage } from '@/features/orders/pages/order-details-page'
@@ -93,6 +94,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <BookingsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/bookings/:bookingId/reschedule',
+        element: (
+          <ProtectedRoute>
+            <BookingReschedulePage />
           </ProtectedRoute>
         ),
       },

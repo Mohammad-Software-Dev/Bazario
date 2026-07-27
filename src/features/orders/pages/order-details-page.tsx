@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { OrderItemList } from '@/features/orders/components/order-item-list'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
-import { formatOrderDate, formatOrderMoney, getOrderPrimaryDate } from '@/features/orders/lib/order-format'
 import { useOrderQuery } from '@/features/orders/hooks/use-order-query'
+import { useStartCheckoutSessionMutation } from '@/features/orders/hooks/use-start-checkout-session-mutation'
+import { formatOrderDate, formatOrderMoney, getOrderPrimaryDate } from '@/features/orders/lib/order-format'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
 function parseOrderId(value: string | undefined) {
@@ -22,6 +23,7 @@ export function OrderDetailsPage() {
   const { orderId: orderIdParam } = useParams()
   const orderId = parseOrderId(orderIdParam)
   const orderQuery = useOrderQuery(orderId ?? 0, Boolean(orderId))
+  const startCheckoutSessionMutation = useStartCheckoutSessionMutation()
 
   if (!orderId) {
     return (
@@ -64,15 +66,26 @@ export function OrderDetailsPage() {
               </div>
               <OrderStatusBadge status={orderQuery.data.status} />
             </CardHeader>
-            <CardContent className="grid gap-3 text-sm md:grid-cols-2">
-              <p>
-                <span className="font-medium text-foreground">Total:</span>{' '}
-                {formatOrderMoney(orderQuery.data.total_amount, orderQuery.data.currency_iso)}
-              </p>
-              <p>
-                <span className="font-medium text-foreground">Payment status:</span>{' '}
-                {orderQuery.data.stripe_payment?.status ?? 'Not paid'}
-              </p>
+            <CardContent className="space-y-4 text-sm">
+              <div className="grid gap-3 md:grid-cols-2">
+                <p>
+                  <span className="font-medium text-foreground">Total:</span>{' '}
+                  {formatOrderMoney(orderQuery.data.total_amount, orderQuery.data.currency_iso)}
+                </p>
+                <p>
+                  <span className="font-medium text-foreground">Payment status:</span>{' '}
+                  {orderQuery.data.stripe_payment?.status ?? 'Not paid'}
+                </p>
+              </div>
+
+              {orderQuery.data.status === 'requires_payment' ? (
+                <Button
+                  onClick={() => startCheckoutSessionMutation.mutate(orderQuery.data!.id)}
+                  disabled={startCheckoutSessionMutation.isPending}
+                >
+                  {startCheckoutSessionMutation.isPending ? 'Starting checkout...' : 'Complete payment'}
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
 

@@ -2,25 +2,20 @@ import { httpClient } from '@/lib/api/http-client'
 
 import { orderEndpoints } from '@/features/orders/api/order-endpoints'
 import type {
-  AddOrderItemPayload,
+  BookingDetailResult,
   BookingsResult,
   CancelBookingResult,
   CreateCheckoutSessionResult,
-  CreateOrderResult,
   OrderRecord,
   OrdersResult,
   ReconcileCheckoutSessionPayload,
   ReconcileCheckoutSessionResult,
+  RescheduleBookingPayload,
+  StartCheckoutPayload,
 } from '@/features/orders/types/order.types'
 
-export async function createOrder() {
-  const response = await httpClient.post<CreateOrderResult>(orderEndpoints.create)
-
-  return response.data
-}
-
-export async function addOrderItem(orderId: number, payload: AddOrderItemPayload) {
-  const response = await httpClient.post<OrderRecord>(orderEndpoints.addItem(orderId), payload)
+export async function startCheckout(payload: StartCheckoutPayload) {
+  const response = await httpClient.post<CreateCheckoutSessionResult>(orderEndpoints.startCheckout, payload)
 
   return response.data
 }
@@ -62,10 +57,22 @@ export async function getMyBookings(page = 1) {
   return response.data
 }
 
+export async function getBooking(bookingId: number) {
+  const response = await httpClient.get<BookingDetailResult>(orderEndpoints.bookingDetail(bookingId))
+
+  return response.data
+}
+
 export async function cancelBooking(bookingId: number, reason?: string) {
   const response = await httpClient.patch<CancelBookingResult>(orderEndpoints.cancelBooking(bookingId), {
     reason,
   })
+
+  return response.data
+}
+
+export async function rescheduleBooking(bookingId: number, payload: RescheduleBookingPayload) {
+  const response = await httpClient.patch<BookingDetailResult>(orderEndpoints.rescheduleBooking(bookingId), payload)
 
   return response.data
 }
