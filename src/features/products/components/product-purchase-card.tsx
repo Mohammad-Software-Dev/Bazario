@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useCartActions } from '@/features/cart/hooks/use-cart'
+import { buildProductCartItem } from '@/features/products/lib/build-product-cart-item'
 import type { ProductListItem } from '@/features/products/types/product.types'
-import { getLocalizedValue } from '@/lib/localized-value'
 
 interface ProductPurchaseCardProps {
   product: ProductListItem
@@ -19,16 +19,7 @@ export function ProductPurchaseCard({ product }: ProductPurchaseCardProps) {
   function handleAddToCart() {
     const nextQuantity = Number.isFinite(quantity) ? quantity : 1
 
-    addProductItem({
-      product_id: product.id,
-      quantity: nextQuantity < 1 ? 1 : nextQuantity,
-      name: getLocalizedValue(product.name) || 'Untitled product',
-      image: product.images[0]?.image ?? null,
-      price: product.price,
-      seller_name: product.seller?.store_name ?? 'Independent seller',
-      category_name: getLocalizedValue(product.category?.name) || undefined,
-    })
-
+    addProductItem(buildProductCartItem(product, nextQuantity))
     setIsAdded(true)
   }
 

@@ -3,6 +3,7 @@ export const orderEndpoints = {
   mine: '/api/orders/my-orders',
   bookings: '/api/me/bookings',
   detail: (orderId: number) => `/api/orders/${orderId}`,
+  deleteOrder: (orderId: number) => `/api/orders/${orderId}`,
   bookingDetail: (bookingId: number) => `/api/bookings/${bookingId}`,
   checkoutSession: (orderId: number) => `/api/orders/${orderId}/checkout-session`,
   reconcileCheckoutSession: (orderId: number) => `/api/orders/${orderId}/checkout-session/reconcile`,

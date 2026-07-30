@@ -49,6 +49,10 @@ export async function getOrder(orderId: number) {
   return response.data
 }
 
+export async function deleteOrder(orderId: number) {
+  await httpClient.delete(orderEndpoints.deleteOrder(orderId))
+}
+
 export async function getMyBookings(page = 1) {
   const response = await httpClient.get<BookingsResult>(orderEndpoints.bookings, {
     params: { page },

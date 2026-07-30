@@ -7,6 +7,7 @@ interface UseServiceAvailabilityQueryOptions {
   date: string
   timezone: string
   ignoreBookingId?: number
+  enabled?: boolean
 }
 
 export function useServiceAvailabilityQuery({
@@ -14,10 +15,11 @@ export function useServiceAvailabilityQuery({
   date,
   timezone,
   ignoreBookingId,
+  enabled = true,
 }: UseServiceAvailabilityQueryOptions) {
   return useQuery({
     queryKey: ['service-availability', serviceId, date, timezone, ignoreBookingId ?? null],
     queryFn: () => getServiceAvailability(serviceId, date, timezone, ignoreBookingId),
-    enabled: serviceId > 0 && date.length > 0,
+    enabled: enabled && serviceId > 0 && date.length > 0,
   })
 }

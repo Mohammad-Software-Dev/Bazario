@@ -59,6 +59,7 @@ export function BookingReschedulePage() {
     date,
     timezone,
     ignoreBookingId: booking?.id,
+    enabled: Boolean(booking?.actions.can_reschedule),
   })
 
   if (!bookingId) {
