@@ -61,6 +61,14 @@ export async function getMyBookings(page = 1) {
   return response.data
 }
 
+export async function getProviderBookings(page = 1) {
+  const response = await httpClient.get<BookingsResult>(orderEndpoints.providerBookings, {
+    params: { page },
+  })
+
+  return response.data
+}
+
 export async function getBooking(bookingId: number) {
   const response = await httpClient.get<BookingDetailResult>(orderEndpoints.bookingDetail(bookingId))
 
@@ -92,4 +100,3 @@ export async function completeBooking(bookingId: number) {
 
   return response.data
 }
-

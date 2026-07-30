@@ -2,6 +2,7 @@ export const orderEndpoints = {
   startCheckout: '/api/checkout/session',
   mine: '/api/orders/my-orders',
   bookings: '/api/me/bookings',
+  providerBookings: '/api/provider/bookings',
   detail: (orderId: number) => `/api/orders/${orderId}`,
   deleteOrder: (orderId: number) => `/api/orders/${orderId}`,
   bookingDetail: (bookingId: number) => `/api/bookings/${bookingId}`,

@@ -7,16 +7,17 @@ import { EditProfilePage } from '@/features/account/pages/edit-profile-page'
 import { SellerUpgradePage } from '@/features/account/pages/seller-upgrade-page'
 import { ServiceProviderUpgradePage } from '@/features/account/pages/service-provider-upgrade-page'
 import { RegisterPage } from '@/features/auth/pages/register-page'
+import { CartPage } from '@/features/cart/pages/cart-page'
 import { ConnectAccountPage } from '@/features/connect/pages/connect-account-page'
 import { EarningsPage } from '@/features/earnings/pages/earnings-page'
-import { CartPage } from '@/features/cart/pages/cart-page'
 import { HomePage } from '@/features/home/pages/home-page'
-import { BookingsPage } from '@/features/orders/pages/bookings-page'
 import { BookingReschedulePage } from '@/features/orders/pages/booking-reschedule-page'
+import { BookingsPage } from '@/features/orders/pages/bookings-page'
 import { CheckoutCancelPage } from '@/features/orders/pages/checkout-cancel-page'
 import { CheckoutSuccessPage } from '@/features/orders/pages/checkout-success-page'
 import { OrderDetailsPage } from '@/features/orders/pages/order-details-page'
 import { OrdersPage } from '@/features/orders/pages/orders-page'
+import { ProviderBookingsPage } from '@/features/orders/pages/provider-bookings-page'
 import { ProductDetailsPage } from '@/features/products/pages/product-details-page'
 import { ProductEditorPage } from '@/features/products/pages/product-editor-page'
 import { ProductsPage } from '@/features/products/pages/products-page'
@@ -24,12 +25,12 @@ import { SellerProductsManagementPage } from '@/features/products/pages/seller-p
 import { SellerProductsPage } from '@/features/products/pages/seller-products-page'
 import { ProviderAvailabilityPage } from '@/features/provider-availability/pages/provider-availability-page'
 import { SellersPage } from '@/features/sellers/pages/sellers-page'
+import { ServiceProvidersPage } from '@/features/service-providers/pages/service-providers-page'
 import { ServiceDetailsPage } from '@/features/services/pages/service-details-page'
-import { ProviderServicesPage } from '@/features/services/pages/provider-services-page'
 import { ServiceEditorPage } from '@/features/services/pages/service-editor-page'
+import { ProviderServicesPage } from '@/features/services/pages/provider-services-page'
 import { ServiceProviderServicesPage } from '@/features/services/pages/service-provider-services-page'
 import { ServicesPage } from '@/features/services/pages/services-page'
-import { ServiceProvidersPage } from '@/features/service-providers/pages/service-providers-page'
 import { MainLayout } from '@/layouts/main-layout'
 
 export const router = createBrowserRouter([
@@ -208,6 +209,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRoles={['service_provider']}>
             <ProviderAvailabilityPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/provider/bookings',
+        element: (
+          <ProtectedRoute requiredRoles={['service_provider']}>
+            <ProviderBookingsPage />
           </ProtectedRoute>
         ),
       },

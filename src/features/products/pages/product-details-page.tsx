@@ -43,7 +43,7 @@ export function ProductDetailsPage() {
   if (productQuery.isLoading) {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
-        <Card className="overflow-hidden pt-0">
+        <Card className="self-start overflow-hidden pt-0">
           <div className="aspect-[16/9] animate-pulse bg-muted" />
           <CardHeader className="space-y-2">
             <div className="h-6 w-2/3 animate-pulse rounded bg-muted" />
@@ -103,8 +103,8 @@ export function ProductDetailsPage() {
         </Button>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="overflow-hidden pt-0">
+      <div className="grid items-start gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+        <Card className="self-start overflow-hidden pt-0">
           <div className="aspect-[16/10] bg-muted">
             {primaryImage ? (
               <img src={primaryImage} alt={productName} className="h-full w-full object-cover" />
