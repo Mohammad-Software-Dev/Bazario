@@ -2,6 +2,8 @@ import { createBrowserRouter } from 'react-router-dom'
 
 import { ProtectedRoute } from '@/app/router/protected-route'
 import { AccountPage } from '@/features/account/pages/account-page'
+import { ChangePasswordPage } from '@/features/account/pages/change-password-page'
+import { EditProfilePage } from '@/features/account/pages/edit-profile-page'
 import { SellerUpgradePage } from '@/features/account/pages/seller-upgrade-page'
 import { ServiceProviderUpgradePage } from '@/features/account/pages/service-provider-upgrade-page'
 import { RegisterPage } from '@/features/auth/pages/register-page'
@@ -70,6 +72,22 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AccountPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/edit-profile',
+        element: (
+          <ProtectedRoute>
+            <EditProfilePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'account/change-password',
+        element: (
+          <ProtectedRoute>
+            <ChangePasswordPage />
           </ProtectedRoute>
         ),
       },

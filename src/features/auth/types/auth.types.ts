@@ -76,3 +76,12 @@ export interface AuthSession {
   user: User
   roles: Role[]
 }
+
+export interface UpdatePasswordPayload {
+  old_password: string
+  password: string
+}
+
+export interface DeleteAccountPayload {
+  password: string
+}

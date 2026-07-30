@@ -139,3 +139,14 @@ export interface UpgradeToServiceProviderResult {
   user: User
   service_provider: ServiceProviderProfile
 }
+
+export interface UpdateProfilePayload {
+  name: string
+  email: string
+  phone?: string | null
+  age?: number | null
+}
+
+export interface UpdateProfileResult {
+  user: User
+}

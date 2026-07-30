@@ -4,6 +4,8 @@ import { httpClient } from '@/lib/api/http-client'
 import { accountEndpoints } from '@/features/account/api/account-endpoints'
 import type {
   MeResult,
+  UpdateProfilePayload,
+  UpdateProfileResult,
   UpgradeToSellerPayload,
   UpgradeToSellerResult,
   UpgradeToServiceProviderPayload,
@@ -112,4 +114,10 @@ export async function upgradeToServiceProvider(payload: UpgradeToServiceProvider
   )
 
   return response.data
+}
+
+export async function updateProfile(payload: UpdateProfilePayload) {
+  const response = await httpClient.put<ApiSuccessResponse<UpdateProfileResult>>(accountEndpoints.updateProfile, payload)
+
+  return response.data.result
 }
