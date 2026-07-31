@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TimeOffForm } from '@/features/provider-availability/components/time-off-form'
@@ -16,7 +17,7 @@ import {
   sortTimeOffs,
 } from '@/features/provider-availability/lib/provider-availability'
 import type { TimeOffFormValues } from '@/features/provider-availability/schemas/time-off-form-schema'
-import type { AddTimeOffPayload } from '@/features/provider-availability/types/provider-availability.types'
+import type { AddTimeOffPayload, ProviderTimeOff } from '@/features/provider-availability/types/provider-availability.types'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
 export function ProviderAvailabilityPage() {
@@ -25,10 +26,12 @@ export function ProviderAvailabilityPage() {
   const addTimeOffMutation = useAddTimeOffMutation()
   const deleteTimeOffMutation = useDeleteTimeOffMutation()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [timeOffToDelete, setTimeOffToDelete] = useState<ProviderTimeOff | null>(null)
   const provider = providerAvailabilityQuery.data
   const { days, timezone, timezoneOptions, addInterval, changeInterval, clearDraft, removeInterval, setTimezone } =
     useProviderAvailabilityDraft(provider)
   const sortedTimeOffs = useMemo(() => sortTimeOffs(provider?.time_offs ?? []), [provider?.time_offs])
+  const isDeleting = deleteTimeOffMutation.isPending && deleteTimeOffMutation.variables === timeOffToDelete?.id
 
   async function handleSaveWorkingHours() {
     setServerError(null)
@@ -66,17 +69,16 @@ export function ProviderAvailabilityPage() {
     }
   }
 
-  async function handleDeleteTimeOff(timeOffId: number) {
-    const confirmed = window.confirm('Delete this time-off entry?')
-
-    if (!confirmed) {
+  async function confirmDeleteTimeOff() {
+    if (!timeOffToDelete) {
       return
     }
 
     setServerError(null)
 
     try {
-      await deleteTimeOffMutation.mutateAsync(timeOffId)
+      await deleteTimeOffMutation.mutateAsync(timeOffToDelete.id)
+      setTimeOffToDelete(null)
     } catch (error) {
       setServerError(getApiErrorMessage(error, 'Unable to delete this time-off entry right now.'))
     }
@@ -105,87 +107,107 @@ export function ProviderAvailabilityPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Provider workspace</p>
-          <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">Availability</h1>
-        </div>
-        <Button asChild variant="outline">
-          <Link to="/account/provider/services">Back to services</Link>
-        </Button>
-      </div>
-
-      {serverError ? (
-        <Card>
-          <CardContent className="py-4 text-sm text-destructive">{serverError}</CardContent>
-        </Card>
-      ) : null}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Provider schedule</CardTitle>
-          <CardDescription>
-            Set your general working hours. Service slots are calculated from this schedule plus each service&apos;s booking rules.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="max-w-sm space-y-2">
-            <label className="text-sm font-medium text-foreground" htmlFor="provider-timezone">
-              Timezone
-            </label>
-            <select
-              id="provider-timezone"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={timezone}
-              onChange={(event) => setTimezone(event.target.value)}
-            >
-              {timezoneOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+    <>
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Provider workspace</p>
+            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">Availability</h1>
           </div>
-
-          <WorkingHoursEditor
-            days={days}
-            onAddInterval={addInterval}
-            onIntervalChange={changeInterval}
-            onRemoveInterval={removeInterval}
-          />
-
-          <Button onClick={handleSaveWorkingHours} disabled={updateWorkingHoursMutation.isPending}>
-            {updateWorkingHoursMutation.isPending ? 'Saving schedule...' : 'Save working hours'}
+          <Button asChild variant="outline">
+            <Link to="/account/provider/services">Back to services</Link>
           </Button>
-        </CardContent>
-      </Card>
+        </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle>Add time off</CardTitle>
-            <CardDescription>Use time off for holidays, days off, or temporary unavailability.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TimeOffForm isSubmitting={addTimeOffMutation.isPending} onSubmit={handleAddTimeOff} />
-          </CardContent>
-        </Card>
+        {serverError ? (
+          <Card>
+            <CardContent className="py-4 text-sm text-destructive">{serverError}</CardContent>
+          </Card>
+        ) : null}
 
         <Card>
           <CardHeader>
-            <CardTitle>Existing time off</CardTitle>
+            <CardTitle>Provider schedule</CardTitle>
+            <CardDescription>
+              Set your general working hours. Service slots are calculated from this schedule plus each service&apos;s booking rules.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <TimeOffList
-              isDeleting={deleteTimeOffMutation.isPending}
-              timeOffs={sortedTimeOffs}
-              timezone={timezone}
-              onDelete={handleDeleteTimeOff}
+          <CardContent className="space-y-6">
+            <div className="max-w-sm space-y-2">
+              <label className="text-sm font-medium text-foreground" htmlFor="provider-timezone">
+                Timezone
+              </label>
+              <select
+                id="provider-timezone"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={timezone}
+                onChange={(event) => setTimezone(event.target.value)}
+              >
+                {timezoneOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <WorkingHoursEditor
+              days={days}
+              onAddInterval={addInterval}
+              onIntervalChange={changeInterval}
+              onRemoveInterval={removeInterval}
             />
+
+            <Button onClick={handleSaveWorkingHours} disabled={updateWorkingHoursMutation.isPending}>
+              {updateWorkingHoursMutation.isPending ? 'Saving schedule...' : 'Save working hours'}
+            </Button>
           </CardContent>
         </Card>
+
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add time off</CardTitle>
+              <CardDescription>Use time off for holidays, days off, or temporary unavailability.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TimeOffForm isSubmitting={addTimeOffMutation.isPending} onSubmit={handleAddTimeOff} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Existing time off</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TimeOffList
+                isDeleting={deleteTimeOffMutation.isPending}
+                timeOffs={sortedTimeOffs}
+                timezone={timezone}
+                onDelete={(timeOffId) => {
+                  setTimeOffToDelete(sortedTimeOffs.find((timeOff) => timeOff.id === timeOffId) ?? null)
+                }}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <ConfirmDialog
+        open={Boolean(timeOffToDelete)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTimeOffToDelete(null)
+          }
+        }}
+        title="Delete time off"
+        description="Delete this time-off entry? This will make the blocked time available again."
+        confirmLabel={isDeleting ? 'Deleting...' : 'Delete time off'}
+        cancelLabel="Keep entry"
+        onConfirm={confirmDeleteTimeOff}
+        isPending={isDeleting}
+        variant="destructive"
+      />
+    </>
   )
 }

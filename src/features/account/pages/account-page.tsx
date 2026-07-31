@@ -107,14 +107,23 @@ function RecentOrderCard({ order }: { order: RecentOrder }) {
 }
 
 function RecentSaleCard({ sale }: { sale: RecentSaleItem }) {
+  const orderDate = sale.order?.paid_at ?? sale.order?.placed_at ?? sale.created_at ?? null
+
   return (
     <div className="rounded-2xl border border-border/70 bg-background p-4 text-sm">
       <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="font-medium text-foreground">Product order #{sale.id}</p>
-          <p className="text-muted-foreground">Status: {sale.status}</p>
+        <div className="min-w-0 space-y-2">
+          <p className="line-clamp-2 font-medium text-foreground">{sale.title_snapshot || `Product order #${sale.id}`}</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+            {sale.order?.id ? <span>Order #{sale.order.id}</span> : null}
+            {orderDate ? <span>{formatOrderDate(orderDate)}</span> : null}
+            <span>Qty: {sale.quantity}</span>
+          </div>
+          {sale.order?.buyer?.name ? (
+            <p className="text-muted-foreground">Customer: {sale.order.buyer.name}</p>
+          ) : null}
         </div>
-        <p className="font-medium text-foreground">{formatOrderMoney(sale.net_amount)}</p>
+        <p className="shrink-0 font-medium text-foreground">{formatOrderMoney(sale.net_amount)}</p>
       </div>
     </div>
   )
@@ -230,7 +239,7 @@ function BusinessActivityCard({
             </div>
 
             {recentSales.length ? (
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-3">
                 {recentSales.map((sale) => (
                   <RecentSaleCard key={sale.id} sale={sale} />
                 ))}

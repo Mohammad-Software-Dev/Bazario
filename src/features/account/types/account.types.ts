@@ -78,12 +78,22 @@ export interface RecentBooking {
   provider_user: RecentBookingUser
 }
 
+export interface RecentSaleOrderSummary {
+  id: number
+  placed_at?: string | null
+  paid_at?: string | null
+  buyer?: RecentBookingUser | null
+}
+
 export interface RecentSaleItem {
   id: number
   title_snapshot: string
   gross_amount: number
   net_amount: number
+  quantity: number
   status: string
+  created_at?: string
+  order?: RecentSaleOrderSummary | null
 }
 
 export interface RecentProviderBooking {
