@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -6,14 +7,8 @@ import { ProductPurchaseCard } from '@/features/products/components/product-purc
 import { useProductQuery } from '@/features/products/hooks/use-product-query'
 import { buildAssetUrl } from '@/lib/api/asset-url'
 import { getApiErrorMessage } from '@/lib/api/api-error'
+import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
-
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount)
-}
 
 function parseProductId(value: string | undefined) {
   const parsed = Number(value)
@@ -26,6 +21,7 @@ function parseProductId(value: string | undefined) {
 }
 
 export function ProductDetailsPage() {
+  const { t } = useTranslation()
   const { productId: productIdParam } = useParams()
   const productId = parseProductId(productIdParam)
   const productQuery = useProductQuery(productId ?? 0, Boolean(productId))
@@ -34,7 +30,7 @@ export function ProductDetailsPage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-destructive">Invalid product id.</CardContent>
+          <CardContent className="py-6 text-sm text-destructive">{t('details.invalidProductId')}</CardContent>
         </Card>
       </div>
     )
@@ -64,7 +60,7 @@ export function ProductDetailsPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(productQuery.error, 'Unable to load this product right now.')}
+            {getApiErrorMessage(productQuery.error, t('details.loadProductError'))}
           </CardContent>
         </Card>
       </div>
@@ -77,17 +73,17 @@ export function ProductDetailsPage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-muted-foreground">Product not found.</CardContent>
+          <CardContent className="py-6 text-sm text-muted-foreground">{t('details.productNotFound')}</CardContent>
         </Card>
       </div>
     )
   }
 
-  const productName = getLocalizedValue(product.name) || 'Untitled product'
-  const productDescription = getLocalizedValue(product.description) || 'No description yet.'
-  const categoryName = getLocalizedValue(product.category?.name) || 'Uncategorized'
-  const storeName = product.seller?.store_name ?? 'Independent seller'
-  const sellerName = product.seller?.user?.name ?? 'Seller profile pending'
+  const productName = getLocalizedValue(product.name) || t('common.untitledProduct')
+  const productDescription = getLocalizedValue(product.description) || t('common.noDescriptionYet')
+  const categoryName = getLocalizedValue(product.category?.name) || t('common.uncategorized')
+  const storeName = product.seller?.store_name ?? t('catalog.independentSeller')
+  const sellerName = product.seller?.user?.name ?? t('catalog.sellerProfilePending')
   const images = product.images.map((image) => buildAssetUrl(image.image)).filter(Boolean) as string[]
   const primaryImage = images[0] ?? null
 
@@ -95,11 +91,11 @@ export function ProductDetailsPage() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 md:py-12">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Product details</p>
+          <p className="text-sm text-muted-foreground">{t('details.productDetails')}</p>
           <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">{productName}</h1>
         </div>
         <Button asChild variant="outline">
-          <Link to="/products">Back to products</Link>
+          <Link to="/products">{t('common.backToProducts')}</Link>
         </Button>
       </div>
 
@@ -110,7 +106,7 @@ export function ProductDetailsPage() {
               <img src={primaryImage} alt={productName} className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
-                No image
+                {t('common.noImage')}
               </div>
             )}
           </div>
@@ -129,23 +125,23 @@ export function ProductDetailsPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Overview</CardTitle>
+              <CardTitle>{t('details.overview')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Price</span>
+                <span className="text-muted-foreground">{t('details.price')}</span>
                 <span className="font-semibold text-foreground">{formatMoney(product.price)}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Category</span>
+                <span className="text-muted-foreground">{t('details.category')}</span>
                 <span className="text-foreground">{categoryName}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Seller</span>
+                <span className="text-muted-foreground">{t('details.seller')}</span>
                 <span className="text-foreground">{storeName}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Contact</span>
+                <span className="text-muted-foreground">{t('details.contact')}</span>
                 <span className="text-foreground">{sellerName}</span>
               </div>
             </CardContent>
@@ -155,7 +151,7 @@ export function ProductDetailsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Description</CardTitle>
+              <CardTitle>{t('details.description')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-6 text-muted-foreground">{productDescription}</p>

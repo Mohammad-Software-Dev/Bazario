@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ServiceListItem } from '@/features/services/types/service.types'
 import { buildAssetUrl } from '@/lib/api/asset-url'
+import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
 interface ProviderServiceCardProps {
@@ -11,18 +13,12 @@ interface ProviderServiceCardProps {
   service: ServiceListItem
 }
 
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount)
-}
-
 export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardProps) {
+  const { t } = useTranslation()
   const imageUrl = buildAssetUrl(service.images[0]?.image)
-  const title = getLocalizedValue(service.title) || 'Untitled service'
-  const description = getLocalizedValue(service.description) || 'No description yet.'
-  const categoryName = getLocalizedValue(service.category?.name) || 'Uncategorized'
+  const title = getLocalizedValue(service.title) || t('common.untitledService')
+  const description = getLocalizedValue(service.description) || t('common.noDescriptionYet')
+  const categoryName = getLocalizedValue(service.category?.name) || t('common.uncategorized')
 
   return (
     <Card className="overflow-hidden pt-0">
@@ -31,7 +27,7 @@ export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardPr
           <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-            No image
+            {t('common.noImage')}
           </div>
         )}
       </div>
@@ -44,7 +40,7 @@ export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardPr
               service.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-200 text-stone-700'
             }`}
           >
-            {service.is_active ? 'Active' : 'Inactive'}
+            {service.is_active ? t('details.active') : t('details.inactive')}
           </span>
         </div>
         <CardDescription className="line-clamp-2 min-h-10">{description}</CardDescription>
@@ -53,28 +49,28 @@ export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardPr
       <CardContent className="space-y-4 text-sm">
         <div className="grid gap-2 text-muted-foreground">
           <div className="flex items-center justify-between gap-3">
-            <span>Category</span>
+            <span>{t('details.category')}</span>
             <span className="text-foreground">{categoryName}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <span>Price</span>
+            <span>{t('details.price')}</span>
             <span className="text-foreground">{formatMoney(service.price)}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <span>Duration</span>
-            <span className="text-foreground">{service.duration_minutes ?? '-'} min</span>
+            <span>{t('details.duration')}</span>
+            <span className="text-foreground">{service.duration_minutes ? t('details.minutesShort', { count: service.duration_minutes }) : '-'}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <Button asChild size="sm" variant="outline">
-            <Link to={`/services/${service.id}`}>View</Link>
+            <Link to={`/services/${service.id}`}>{t('common.viewDetails')}</Link>
           </Button>
           <Button asChild size="sm" variant="outline">
-            <Link to={`/account/provider/services/${service.id}/edit`}>Edit</Link>
+            <Link to={`/account/provider/services/${service.id}/edit`}>{t('common.edit')}</Link>
           </Button>
           <Button size="sm" variant="outline" onClick={() => onDelete(service)}>
-            Delete
+            {t('common.delete')}
           </Button>
         </div>
       </CardContent>

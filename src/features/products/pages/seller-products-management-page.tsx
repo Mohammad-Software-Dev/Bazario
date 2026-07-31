@@ -139,7 +139,7 @@ export function SellerProductsManagementPage() {
           }
         }}
         title="Delete product"
-        description={`Delete \"${productDeleteName}\"? This will remove it from your seller workspace.`}
+        description={`Delete "${productDeleteName}"? This will remove it from your seller workspace.`}
         confirmLabel={isDeleting ? 'Deleting...' : 'Delete product'}
         cancelLabel="Keep product"
         onConfirm={confirmDelete}

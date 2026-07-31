@@ -142,7 +142,7 @@ export function ProviderServicesPage() {
           }
         }}
         title="Delete service"
-        description={`Delete \"${serviceDeleteName}\"? This will remove it from your provider workspace.`}
+        description={`Delete "${serviceDeleteName}"? This will remove it from your provider workspace.`}
         confirmLabel={isDeleting ? 'Deleting...' : 'Delete service'}
         cancelLabel="Keep service"
         onConfirm={confirmDelete}

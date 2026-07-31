@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -6,14 +7,8 @@ import { ServiceBookingCard } from '@/features/services/components/service-booki
 import { useServiceQuery } from '@/features/services/hooks/use-service-query'
 import { buildAssetUrl } from '@/lib/api/asset-url'
 import { getApiErrorMessage } from '@/lib/api/api-error'
+import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
-
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount)
-}
 
 function parseServiceId(value: string | undefined) {
   const parsed = Number(value)
@@ -26,6 +21,7 @@ function parseServiceId(value: string | undefined) {
 }
 
 export function ServiceDetailsPage() {
+  const { t } = useTranslation()
   const { serviceId: serviceIdParam } = useParams()
   const serviceId = parseServiceId(serviceIdParam)
   const serviceQuery = useServiceQuery(serviceId ?? 0, Boolean(serviceId))
@@ -34,7 +30,7 @@ export function ServiceDetailsPage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-destructive">Invalid service id.</CardContent>
+          <CardContent className="py-6 text-sm text-destructive">{t('details.invalidServiceId')}</CardContent>
         </Card>
       </div>
     )
@@ -64,7 +60,7 @@ export function ServiceDetailsPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(serviceQuery.error, 'Unable to load this service right now.')}
+            {getApiErrorMessage(serviceQuery.error, t('details.loadServiceError'))}
           </CardContent>
         </Card>
       </div>
@@ -77,18 +73,18 @@ export function ServiceDetailsPage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-muted-foreground">Service not found.</CardContent>
+          <CardContent className="py-6 text-sm text-muted-foreground">{t('details.serviceNotFound')}</CardContent>
         </Card>
       </div>
     )
   }
 
-  const serviceTitle = getLocalizedValue(service.title) || 'Untitled service'
-  const serviceDescription = getLocalizedValue(service.description) || 'No description yet.'
-  const categoryName = getLocalizedValue(service.category?.name) || 'Uncategorized'
+  const serviceTitle = getLocalizedValue(service.title) || t('common.untitledService')
+  const serviceDescription = getLocalizedValue(service.description) || t('common.noDescriptionYet')
+  const categoryName = getLocalizedValue(service.category?.name) || t('common.uncategorized')
   const provider = service.service_provider ?? service.serviceProvider ?? null
-  const providerName = provider?.name ?? 'Independent provider'
-  const providerUserName = provider?.user?.name ?? 'Provider profile pending'
+  const providerName = provider?.name ?? t('catalog.independentProvider')
+  const providerUserName = provider?.user?.name ?? t('catalog.providerProfilePending')
   const images = service.images.map((image) => buildAssetUrl(image.image)).filter(Boolean) as string[]
   const primaryImage = images[0] ?? null
 
@@ -96,11 +92,11 @@ export function ServiceDetailsPage() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 md:py-12">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Service details</p>
+          <p className="text-sm text-muted-foreground">{t('details.serviceDetails')}</p>
           <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">{serviceTitle}</h1>
         </div>
         <Button asChild variant="outline">
-          <Link to="/services">Back to services</Link>
+          <Link to="/services">{t('common.backToServices')}</Link>
         </Button>
       </div>
 
@@ -111,7 +107,7 @@ export function ServiceDetailsPage() {
               <img src={primaryImage} alt={serviceTitle} className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-amber-100 to-stone-200 text-sm text-muted-foreground">
-                No image
+                {t('common.noImage')}
               </div>
             )}
           </div>
@@ -130,23 +126,23 @@ export function ServiceDetailsPage() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Overview</CardTitle>
+              <CardTitle>{t('details.overview')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Price</span>
+                <span className="text-muted-foreground">{t('details.price')}</span>
                 <span className="font-semibold text-foreground">{formatMoney(service.price)}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Category</span>
+                <span className="text-muted-foreground">{t('details.category')}</span>
                 <span className="text-foreground">{categoryName}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Provider</span>
+                <span className="text-muted-foreground">{t('details.provider')}</span>
                 <span className="text-foreground">{providerName}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="text-muted-foreground">Contact</span>
+                <span className="text-muted-foreground">{t('details.contact')}</span>
                 <span className="text-foreground">{providerUserName}</span>
               </div>
             </CardContent>
@@ -156,7 +152,7 @@ export function ServiceDetailsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Description</CardTitle>
+              <CardTitle>{t('details.description')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-6 text-muted-foreground">{serviceDescription}</p>

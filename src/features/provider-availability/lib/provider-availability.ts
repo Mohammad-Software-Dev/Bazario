@@ -3,6 +3,7 @@ import type {
   ProviderTimeOff,
   WorkingHourDayInput,
 } from '@/features/provider-availability/types/provider-availability.types'
+import { formatDateTime } from '@/lib/i18n/format'
 
 const fallbackTimezones = [
   'UTC',
@@ -66,17 +67,11 @@ export function buildTimezoneOptions(selectedTimezone: string) {
 }
 
 export function formatTimeOffDate(value: string, timezone: string) {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat('en-GB', {
+  return formatDateTime(value, {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: timezone,
-  }).format(date)
+  })
 }
 
 export function sortTimeOffs(timeOffs: ProviderTimeOff[]) {

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -19,8 +20,8 @@ interface OrderDetailsItemCardProps {
   currencyIso: string
 }
 
-function getItemKindLabel(item: OrderItemRecord) {
-  return item.service_booking ? 'Service' : 'Product'
+function getItemKindLabel(item: OrderItemRecord, t: (key: string, options?: Record<string, unknown>) => string) {
+  return item.service_booking ? t('orders.service') : t('orders.product')
 }
 
 function canManageBooking(item: OrderItemRecord) {
@@ -56,6 +57,7 @@ function isDeadlinePassed(deadline: string | null | undefined) {
 }
 
 export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCardProps) {
+  const { t } = useTranslation()
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const latestRefund = getLatestRefund(item)
   const booking = item.service_booking
@@ -95,16 +97,16 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
       booking.actions?.reschedule_block_reason ??
       (fallbackRescheduleBlocked
         ? formattedRescheduleDeadline
-          ? `Reschedule window passed on ${formattedRescheduleDeadline}.`
-          : 'Reschedule window has passed.'
+          ? t('orders.rescheduleWindowPassedOn', { date: formattedRescheduleDeadline })
+          : t('orders.rescheduleWindowPassed')
         : null)
 
     const cancelReason =
       booking.actions?.cancel_block_reason ??
       (fallbackCancelBlocked
         ? formattedCancelDeadline
-          ? `Cancellation window passed on ${formattedCancelDeadline}.`
-          : 'Cancellation window has passed.'
+          ? t('orders.cancellationWindowPassedOn', { date: formattedCancelDeadline })
+          : t('orders.cancellationWindowPassed')
         : null)
 
     return {
@@ -113,7 +115,7 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
       rescheduleReason,
       cancelReason,
     }
-  }, [booking, canShowBookingActions])
+  }, [booking, canShowBookingActions, t])
 
   return (
     <Card className="border-border/70 shadow-sm">
@@ -126,8 +128,8 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
             </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <span>{getItemKindLabel(item)}</span>
-              {item.quantity > 1 ? <span>Quantity: {item.quantity}</span> : null}
+              <span>{getItemKindLabel(item, t)}</span>
+              {item.quantity > 1 ? <span>{t('orders.quantity', { count: item.quantity })}</span> : null}
             </div>
 
             {item.description_snapshot ? (
@@ -145,7 +147,7 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium text-foreground">Booking</p>
+                  <p className="font-medium text-foreground">{t('orders.booking')}</p>
                   <OrderStatusBadge status={booking.status} />
                 </div>
                 <p>{formatBookingWindow(booking.starts_at, booking.ends_at, booking.timezone)}</p>
@@ -160,11 +162,11 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
                   <div className="flex flex-wrap gap-2 md:justify-end">
                     {actionState.canReschedule ? (
                       <Button asChild variant="outline" size="sm">
-                        <Link to={`/account/bookings/${booking.id}/reschedule`}>Reschedule</Link>
+                        <Link to={`/account/bookings/${booking.id}/reschedule`}>{t('orders.reschedule')}</Link>
                       </Button>
                     ) : (
                       <Button variant="outline" size="sm" disabled>
-                        Reschedule
+                        {t('orders.reschedule')}
                       </Button>
                     )}
                     <Button
@@ -173,14 +175,12 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
                       onClick={() => setIsCancelDialogOpen(true)}
                       disabled={!actionState.canCancel}
                     >
-                      Cancel booking
+                      {t('orders.cancelBooking')}
                     </Button>
                   </div>
 
                   <div className="space-y-1 text-xs text-muted-foreground">
-                    {!actionState.canReschedule && actionState.rescheduleReason ? (
-                      <p>{actionState.rescheduleReason}</p>
-                    ) : null}
+                    {!actionState.canReschedule && actionState.rescheduleReason ? <p>{actionState.rescheduleReason}</p> : null}
                     {!actionState.canCancel && actionState.cancelReason ? <p>{actionState.cancelReason}</p> : null}
                   </div>
                 </div>
@@ -193,8 +193,8 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
           <div className="rounded-2xl border border-dashed border-border/80 px-4 py-3 text-sm text-muted-foreground">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-3">
-                <p className="font-medium text-foreground">Refund</p>
-                <span>Status: {latestRefund.status ?? 'Pending'}</span>
+                <p className="font-medium text-foreground">{t('orders.refund')}</p>
+                <span>{t('orders.refundStatus', { status: latestRefund.status ?? t('orders.pending') })}</span>
               </div>
               <p className="font-medium text-foreground">{formatOrderMoney(latestRefund.amount, latestRefund.currency_iso)}</p>
             </div>

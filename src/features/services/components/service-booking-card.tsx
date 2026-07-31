@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -58,12 +58,6 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
   const isSlotBlockedByCart = (slot: ServiceAvailabilitySlot) =>
     conflictingCartBookings.some((item) => isSlotOverlapping(slot, item))
 
-  useEffect(() => {
-    if (selectedSlot && isSlotBlockedByCart(selectedSlot)) {
-      setSelectedSlot(null)
-    }
-  }, [selectedSlot, conflictingCartBookings])
-
   function handleSelectDate(value: string) {
     setDate(value)
     setSelectedSlot(null)
@@ -78,8 +72,10 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
     setSelectedSlot(slot)
   }
 
+  const activeSelectedSlot = selectedSlot && !isSlotBlockedByCart(selectedSlot) ? selectedSlot : null
+
   function handleAddToCart() {
-    if (!selectedSlot || isSlotBlockedByCart(selectedSlot)) {
+    if (!activeSelectedSlot) {
       return
     }
 
@@ -91,8 +87,8 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
       provider_name: (service.service_provider ?? service.serviceProvider)?.name ?? 'Independent provider',
       category_name: getLocalizedValue(service.category?.name) || undefined,
       duration_minutes: service.duration_minutes ?? null,
-      starts_at: selectedSlot.starts_at,
-      ends_at: selectedSlot.ends_at,
+      starts_at: activeSelectedSlot.starts_at,
+      ends_at: activeSelectedSlot.ends_at,
       timezone,
       location_type: service.location_type ?? '',
       location_payload: null,
@@ -113,7 +109,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
           date={date}
           timezone={timezone}
           minDate={minimumDate}
-          selectedSlot={selectedSlot}
+          selectedSlot={activeSelectedSlot}
           slots={availabilityQuery.data?.slots ?? []}
           disabled={!isBookable}
           isLoading={availabilityQuery.isLoading}
@@ -132,7 +128,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
 
         <Button
           onClick={handleAddToCart}
-          disabled={!selectedSlot || !isBookable || isSlotBlockedByCart(selectedSlot)}
+          disabled={!activeSelectedSlot || !isBookable}
           className="w-full"
         >
           Add booking to cart

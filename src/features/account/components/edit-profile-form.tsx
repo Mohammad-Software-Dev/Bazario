@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -23,7 +24,7 @@ function getAgeValidationError(value: string) {
   const parsed = Number(value)
 
   if (!Number.isInteger(parsed) || parsed < 12 || parsed > 100) {
-    return 'Age must be a whole number between 12 and 100.'
+    return 'age'
   }
 
   return null
@@ -38,6 +39,7 @@ function normalizeAge(value: string): number | null {
 }
 
 export function EditProfileForm({ user }: EditProfileFormProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const updateProfileMutation = useUpdateProfileMutation()
 
@@ -60,7 +62,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
     const ageError = getAgeValidationError(values.age)
 
     if (ageError) {
-      setError('age', { type: 'validate', message: ageError })
+      setError('age', { type: 'validate', message: t('profile.ageValidation') })
       return
     }
 
@@ -97,49 +99,49 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
   return (
     <Card className="border-border/70 shadow-sm">
       <CardHeader>
-        <CardTitle>Edit profile</CardTitle>
-        <CardDescription>Update the personal details shown on your account.</CardDescription>
+        <CardTitle>{t('profile.formTitle')}</CardTitle>
+        <CardDescription>{t('profile.formDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-2">
-            <Label htmlFor="profile-name">Name</Label>
+            <Label htmlFor="profile-name">{t('common.name')}</Label>
             <Input id="profile-name" {...register('name')} />
             {errors.name ? <p className="text-sm text-destructive">{errors.name.message}</p> : null}
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="profile-email">Email</Label>
+              <Label htmlFor="profile-email">{t('common.email')}</Label>
               <Input id="profile-email" type="email" autoComplete="email" {...register('email')} />
               {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="profile-phone">Phone</Label>
+              <Label htmlFor="profile-phone">{t('auth.phone')}</Label>
               <Input id="profile-phone" autoComplete="tel" {...register('phone')} />
               {errors.phone ? <p className="text-sm text-destructive">{errors.phone.message}</p> : null}
             </div>
           </div>
 
           <div className="space-y-2 md:max-w-40">
-            <Label htmlFor="profile-age">Age</Label>
+            <Label htmlFor="profile-age">{t('auth.age')}</Label>
             <Input id="profile-age" inputMode="numeric" {...register('age')} />
             {errors.age ? <p className="text-sm text-destructive">{errors.age.message}</p> : null}
           </div>
 
           {updateProfileMutation.isError ? (
             <p className="text-sm text-destructive">
-              {getApiErrorMessage(updateProfileMutation.error, 'Unable to update your profile right now.')}
+              {getApiErrorMessage(updateProfileMutation.error, t('profile.updateProfileError'))}
             </p>
           ) : null}
 
           <div className="flex flex-wrap justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => navigate('/account')}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={updateProfileMutation.isPending}>
-              {updateProfileMutation.isPending ? 'Saving...' : 'Save changes'}
+              {updateProfileMutation.isPending ? t('bookings.saving') : t('profile.saveChanges')}
             </Button>
           </div>
         </form>

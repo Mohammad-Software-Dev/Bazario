@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { formatDateTime } from '@/lib/i18n/format'
 import { cn } from '@/lib/utils'
 
 interface BookingDatePickerProps {
@@ -10,8 +12,6 @@ interface BookingDatePickerProps {
   onChange: (value: string) => void
   value: string
 }
-
-const weekDayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
 
 function parseDateParts(value: string) {
   const [year, month, day] = value.split('-').map(Number)
@@ -28,10 +28,10 @@ function formatDateValue(date: Date) {
 }
 
 function buildMonthLabel(year: number, monthIndex: number) {
-  return new Intl.DateTimeFormat('en-GB', {
+  return formatDateTime(new Date(year, monthIndex, 1), {
     month: 'long',
     year: 'numeric',
-  }).format(new Date(year, monthIndex, 1))
+  })
 }
 
 function buildCalendarDays(year: number, monthIndex: number) {
@@ -66,6 +66,19 @@ function buildCalendarDays(year: number, monthIndex: number) {
 }
 
 export function BookingDatePicker({ disabled = false, minDate, onChange, value }: BookingDatePickerProps) {
+  const { t } = useTranslation()
+  const weekDayLabels = useMemo(
+    () => [
+      t('slotPicker.weekDayMon'),
+      t('slotPicker.weekDayTue'),
+      t('slotPicker.weekDayWed'),
+      t('slotPicker.weekDayThu'),
+      t('slotPicker.weekDayFri'),
+      t('slotPicker.weekDaySat'),
+      t('slotPicker.weekDaySun'),
+    ],
+    [t],
+  )
   const minDateValue = minDate || formatDateValue(new Date())
   const initialReferenceDate = value || minDateValue
   const initialParts = parseDateParts(initialReferenceDate)
@@ -76,14 +89,8 @@ export function BookingDatePicker({ disabled = false, minDate, onChange, value }
 
   const minParts = parseDateParts(minDateValue)
   const selectedValue = value || ''
-  const monthLabel = useMemo(
-    () => buildMonthLabel(visibleMonth.year, visibleMonth.monthIndex),
-    [visibleMonth.monthIndex, visibleMonth.year],
-  )
-  const days = useMemo(
-    () => buildCalendarDays(visibleMonth.year, visibleMonth.monthIndex),
-    [visibleMonth.monthIndex, visibleMonth.year],
-  )
+  const monthLabel = useMemo(() => buildMonthLabel(visibleMonth.year, visibleMonth.monthIndex), [visibleMonth.monthIndex, visibleMonth.year])
+  const days = useMemo(() => buildCalendarDays(visibleMonth.year, visibleMonth.monthIndex), [visibleMonth.monthIndex, visibleMonth.year])
 
   function showPreviousMonth() {
     setVisibleMonth((current) => {
@@ -118,7 +125,7 @@ export function BookingDatePicker({ disabled = false, minDate, onChange, value }
           size="icon"
           onClick={showPreviousMonth}
           disabled={disabled || !canGoToPreviousMonth}
-          aria-label="Show previous month"
+          aria-label={t('slotPicker.previousMonth')}
         >
           <ChevronLeft className="size-4" />
         </Button>
@@ -131,7 +138,7 @@ export function BookingDatePicker({ disabled = false, minDate, onChange, value }
           size="icon"
           onClick={showNextMonth}
           disabled={disabled}
-          aria-label="Show next month"
+          aria-label={t('slotPicker.nextMonth')}
         >
           <ChevronRight className="size-4" />
         </Button>
@@ -159,9 +166,7 @@ export function BookingDatePicker({ disabled = false, minDate, onChange, value }
               disabled={disabled || isPast}
               className={cn(
                 'flex h-10 items-center justify-center rounded-lg text-sm transition-colors',
-                isSelected
-                  ? 'bg-foreground text-background'
-                  : 'hover:bg-muted/60',
+                isSelected ? 'bg-foreground text-background' : 'hover:bg-muted/60',
                 !inCurrentMonth && !isSelected ? 'text-muted-foreground/50' : '',
                 isPast ? 'cursor-not-allowed opacity-40 hover:bg-transparent' : '',
               )}

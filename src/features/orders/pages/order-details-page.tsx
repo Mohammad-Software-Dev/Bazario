@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
@@ -27,6 +28,7 @@ function parseOrderId(value: string | undefined) {
 }
 
 export function OrderDetailsPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const { orderId: orderIdParam } = useParams()
@@ -39,7 +41,7 @@ export function OrderDetailsPage() {
     return (
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 md:px-6 md:py-10">
         <Card className="border-border/70 shadow-sm">
-          <CardContent className="py-6 text-sm text-destructive">Invalid order id.</CardContent>
+          <CardContent className="py-6 text-sm text-destructive">{t('orders.invalidOrderId')}</CardContent>
         </Card>
       </div>
     )
@@ -70,28 +72,26 @@ export function OrderDetailsPage() {
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
             <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              Account
+              {t('orders.pageEyebrow')}
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-                Order #{orderId}
+                {t('orders.orderLabel', { id: orderId })}
               </h1>
               {order ? <OrderStatusBadge status={order.status} /> : null}
             </div>
           </div>
 
           <Button asChild variant="outline">
-            <Link to="/account/orders">Back to orders</Link>
+            <Link to="/account/orders">{t('common.backToOrders')}</Link>
           </Button>
         </div>
 
-        {orderQuery.isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading order...</p>
-        ) : null}
+        {orderQuery.isLoading ? <p className="text-sm text-muted-foreground">{t('orders.loadingOrder')}</p> : null}
         {orderQuery.isError ? (
           <Card className="border-border/70 shadow-sm">
             <CardContent className="py-6 text-sm text-destructive">
-              {getApiErrorMessage(orderQuery.error, 'Unable to load this order right now.')}
+              {getApiErrorMessage(orderQuery.error, t('orders.loadOrderError'))}
             </CardContent>
           </Card>
         ) : null}
@@ -100,12 +100,12 @@ export function OrderDetailsPage() {
           <>
             <Card className="border-border/70 shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle>Order summary</CardTitle>
+                <CardTitle>{t('orders.orderSummary')}</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 p-6 md:grid-cols-3 lg:grid-cols-4">
                 <div className="space-y-1">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                    Placed
+                    {t('orders.placed')}
                   </p>
                   <p className="font-medium text-foreground">
                     {formatOrderDate(getOrderPrimaryDate(order))}
@@ -113,21 +113,21 @@ export function OrderDetailsPage() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                    Payment
+                    {t('orders.payment')}
                   </p>
                   <p className="font-medium text-foreground">
-                    {order.stripe_payment?.status ?? 'Not paid'}
+                    {order.stripe_payment?.status ? t(`statuses.${order.stripe_payment.status}`, { defaultValue: order.stripe_payment.status }) : t('orders.notPaid')}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                    Items
+                    {t('common.items')}
                   </p>
                   <p className="font-medium text-foreground">{order.items.length}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                    Total
+                    {t('orders.total')}
                   </p>
                   <p className="font-medium text-foreground">
                     {formatOrderMoney(order.total_amount, order.currency_iso)}
@@ -140,9 +140,9 @@ export function OrderDetailsPage() {
               <Card className="border-border/70 shadow-sm">
                 <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
                   <div className="space-y-1">
-                    <p className="font-medium text-foreground">Payment still required</p>
+                    <p className="font-medium text-foreground">{t('orders.paymentRequiredTitle')}</p>
                     <p className="text-sm text-muted-foreground">
-                      Your order is saved, but payment is still pending. Complete checkout to confirm it.
+                      {t('orders.paymentRequiredDescription')}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2 md:justify-end">
@@ -151,12 +151,12 @@ export function OrderDetailsPage() {
                       disabled={startCheckoutSessionMutation.isPending || isDeleting}
                     >
                       {startCheckoutSessionMutation.isPending
-                        ? 'Starting checkout...'
-                        : 'Complete payment'}
+                        ? t('cart.startingCheckout')
+                        : t('orders.completePayment')}
                     </Button>
                     {canDelete ? (
                       <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting || isStartingCheckout}>
-                        {isDeleting ? 'Deleting...' : 'Delete order'}
+                        {isDeleting ? t('orders.deleting') : t('orders.deleteOrderFull')}
                       </Button>
                     ) : null}
                   </div>
@@ -167,14 +167,14 @@ export function OrderDetailsPage() {
             {deleteOrderMutation.isError && deleteOrderMutation.variables === order.id ? (
               <Card className="border-border/70 shadow-sm">
                 <CardContent className="py-4 text-sm text-destructive">
-                  {getApiErrorMessage(deleteOrderMutation.error, 'Unable to delete this order right now.')}
+                  {getApiErrorMessage(deleteOrderMutation.error, t('orders.deleteOrderError'))}
                 </CardContent>
               </Card>
             ) : null}
 
             <section className="space-y-4">
               <div className="space-y-1">
-                <h2 className="text-lg font-semibold text-foreground">Order items</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t('orders.orderItems')}</h2>
               </div>
               <div className="space-y-3">
                 {order.items.map((item) => (
@@ -194,10 +194,10 @@ export function OrderDetailsPage() {
         <ConfirmDialog
           open={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
-          title={`Delete order #${order.id}`}
-          description="This will remove the unpaid order and its items. This action cannot be undone."
-          confirmLabel={isDeleting ? 'Deleting...' : 'Delete order'}
-          cancelLabel="Keep order"
+          title={t('orders.deleteOrderTitle', { id: order.id })}
+          description={t('orders.deleteOrderDescription')}
+          confirmLabel={isDeleting ? t('orders.deleting') : t('orders.deleteOrderFull')}
+          cancelLabel={t('orders.keepOrder')}
           onConfirm={handleDeleteOrder}
           isPending={isDeleting}
           variant="destructive"

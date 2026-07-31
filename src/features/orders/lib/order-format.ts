@@ -1,3 +1,5 @@
+import i18n from '@/lib/i18n'
+import { formatDateTime, formatMinorMoney, getAppLanguage } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
 import type {
@@ -9,10 +11,7 @@ import type {
 } from '@/features/orders/types/order.types'
 
 export function formatOrderMoney(amount: number, currencyIso = 'EUR') {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currencyIso,
-  }).format(amount / 100)
+  return formatMinorMoney(amount, currencyIso)
 }
 
 export function formatOrderDate(value?: string | null) {
@@ -20,20 +19,22 @@ export function formatOrderDate(value?: string | null) {
     return 'N/A'
   }
 
-  return new Intl.DateTimeFormat('en-GB', {
+  return formatDateTime(value, {
     dateStyle: 'medium',
     timeStyle: 'short',
-  }).format(new Date(value))
+  })
 }
 
 export function formatBookingWindow(startsAt: string, endsAt: string, timezone?: string | null) {
-  const formatter = new Intl.DateTimeFormat('en-GB', {
+  return `${formatDateTime(startsAt, {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: timezone || 'UTC',
-  })
-
-  return `${formatter.format(new Date(startsAt))} - ${formatter.format(new Date(endsAt))}`
+  })} - ${formatDateTime(endsAt, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: timezone || 'UTC',
+  })}`
 }
 
 export function formatBookingCutoff(value?: string | null, timezone?: string | null) {
@@ -41,19 +42,21 @@ export function formatBookingCutoff(value?: string | null, timezone?: string | n
     return null
   }
 
-  return new Intl.DateTimeFormat('en-GB', {
+  return formatDateTime(value, {
     dateStyle: 'medium',
     timeStyle: 'short',
     timeZone: timezone || 'UTC',
-  }).format(new Date(value))
+  })
 }
 
 export function getOrderItemDisplayTitle(item: OrderItemRecord) {
-  return item.title_snapshot || 'Order item'
+  return item.title_snapshot || i18n.t('orders.noItemsAdded')
 }
 
 export function getBookingServiceTitle(service: BookingServiceSummary) {
-  return typeof service.title === 'string' ? service.title : getLocalizedValue(service.title) || 'Service'
+  return typeof service.title === 'string'
+    ? service.title
+    : getLocalizedValue(service.title, getAppLanguage()) || i18n.t('providerBookings.service')
 }
 
 export function getLatestRefund(item: { stripe_refunds?: StripeRefundRecord[] } | undefined | null) {
@@ -69,11 +72,12 @@ export function getOrderPrimaryDate(order: OrderRecord) {
 }
 
 export function getBookingPrimaryProviderName(booking: CustomerBookingRecord) {
-  return booking.provider_user?.name || 'Service provider'
+  return booking.provider_user?.name || i18n.t('catalog.independentProvider')
 }
 
 export function getBookingLocalDateValue(booking: Pick<CustomerBookingRecord, 'starts_at' | 'timezone'>) {
-  const formatter = new Intl.DateTimeFormat('en-CA', {
+  const locale = getAppLanguage() === 'de' ? 'de-DE' : 'en-CA'
+  const formatter = new Intl.DateTimeFormat(locale, {
     timeZone: booking.timezone || 'UTC',
     year: 'numeric',
     month: '2-digit',

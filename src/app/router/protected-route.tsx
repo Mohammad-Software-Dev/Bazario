@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Navigate, Outlet } from 'react-router-dom'
 
 import type { Role } from '@/features/auth/types/auth.types'
@@ -10,12 +11,13 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps) {
+  const { t } = useTranslation()
   const { isAuthenticated, isBootstrapping, session } = useAuth()
 
   if (isBootstrapping) {
     return (
       <div className="mx-auto flex min-h-[60vh] w-full max-w-6xl items-center justify-center px-4 text-sm text-muted-foreground">
-        Loading account...
+        {t('profile.loadingAccount')}
       </div>
     )
   }
