@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { CancelBookingDialog } from '@/features/orders/components/cancel-booking-dialog'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
 import {
+  formatBookingCutoff,
   formatBookingWindow,
   formatOrderMoney,
   getLatestRefund,
@@ -32,10 +33,87 @@ function canManageBooking(item: OrderItemRecord) {
   return !['completed', 'cancelled_by_customer', 'cancelled_by_provider'].includes(status)
 }
 
+function getCutoffDeadline(startsAt: string, cutoffHours: number | null | undefined) {
+  if (!cutoffHours || cutoffHours <= 0) {
+    return null
+  }
+
+  const startsAtMs = new Date(startsAt).getTime()
+
+  if (Number.isNaN(startsAtMs)) {
+    return null
+  }
+
+  return new Date(startsAtMs - cutoffHours * 60 * 60 * 1000).toISOString()
+}
+
+function isDeadlinePassed(deadline: string | null | undefined) {
+  if (!deadline) {
+    return false
+  }
+
+  return new Date(deadline).getTime() <= Date.now()
+}
+
 export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCardProps) {
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const latestRefund = getLatestRefund(item)
   const booking = item.service_booking
+  const canShowBookingActions = canManageBooking(item)
+
+  const actionState = useMemo(() => {
+    if (!booking || !canShowBookingActions) {
+      return {
+        canReschedule: false,
+        canCancel: false,
+        rescheduleReason: null as string | null,
+        cancelReason: null as string | null,
+      }
+    }
+
+    const service = booking.service
+
+    const rescheduleDeadline =
+      booking.cutoffs?.reschedule_deadline ?? getCutoffDeadline(booking.starts_at, service?.edit_cutoff_hours ?? 24)
+    const cancelDeadline =
+      booking.cutoffs?.cancel_deadline ?? getCutoffDeadline(booking.starts_at, service?.cancel_cutoff_hours ?? 24)
+
+    const rescheduleLatePolicy = service?.edit_late_policy ?? 'deny'
+    const cancelLatePolicy = service?.cancel_late_policy ?? 'deny'
+
+    const fallbackRescheduleBlocked =
+      rescheduleLatePolicy !== 'allow' && isDeadlinePassed(rescheduleDeadline)
+    const fallbackCancelBlocked = cancelLatePolicy !== 'allow' && isDeadlinePassed(cancelDeadline)
+
+    const formattedRescheduleDeadline = formatBookingCutoff(rescheduleDeadline, booking.timezone)
+    const formattedCancelDeadline = formatBookingCutoff(cancelDeadline, booking.timezone)
+
+    const canReschedule = booking.actions?.can_reschedule ?? !fallbackRescheduleBlocked
+    const canCancel = booking.actions?.can_cancel ?? !fallbackCancelBlocked
+
+    const rescheduleReason =
+      booking.actions?.reschedule_block_reason ??
+      (fallbackRescheduleBlocked
+        ? formattedRescheduleDeadline
+          ? `Reschedule window passed on ${formattedRescheduleDeadline}.`
+          : 'Reschedule window has passed.'
+        : null)
+
+    const cancelReason =
+      booking.actions?.cancel_block_reason ??
+      (fallbackCancelBlocked
+        ? formattedCancelDeadline
+          ? `Cancellation window passed on ${formattedCancelDeadline}.`
+          : 'Cancellation window has passed.'
+        : null)
+
+    return {
+      canReschedule,
+      canCancel,
+      rescheduleReason,
+      cancelReason,
+    }
+  }, [booking, canShowBookingActions])
 
   return (
     <Card className="border-border/70 shadow-sm">
@@ -77,14 +155,34 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
                 </div>
               </div>
 
-              {canManageBooking(item) ? (
-                <div className="flex flex-wrap gap-2 md:justify-end">
-                  <Button asChild variant="outline" size="sm">
-                    <Link to={`/account/bookings/${booking.id}/reschedule`}>Reschedule</Link>
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => setIsCancelDialogOpen(true)}>
-                    Cancel booking
-                  </Button>
+              {canShowBookingActions ? (
+                <div className="space-y-2 md:text-right">
+                  <div className="flex flex-wrap gap-2 md:justify-end">
+                    {actionState.canReschedule ? (
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/account/bookings/${booking.id}/reschedule`}>Reschedule</Link>
+                      </Button>
+                    ) : (
+                      <Button variant="outline" size="sm" disabled>
+                        Reschedule
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsCancelDialogOpen(true)}
+                      disabled={!actionState.canCancel}
+                    >
+                      Cancel booking
+                    </Button>
+                  </div>
+
+                  <div className="space-y-1 text-xs text-muted-foreground">
+                    {!actionState.canReschedule && actionState.rescheduleReason ? (
+                      <p>{actionState.rescheduleReason}</p>
+                    ) : null}
+                    {!actionState.canCancel && actionState.cancelReason ? <p>{actionState.cancelReason}</p> : null}
+                  </div>
                 </div>
               ) : null}
             </div>

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
@@ -50,6 +52,7 @@ function getItemSummary(order: OrderRecord) {
 }
 
 export function OrderListCard({ order }: OrderListCardProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const startCheckoutSessionMutation = useStartCheckoutSessionMutation()
   const deleteOrderMutation = useDeleteOrderMutation()
   const canDelete = order.status === 'draft' || order.status === 'requires_payment'
@@ -57,70 +60,82 @@ export function OrderListCard({ order }: OrderListCardProps) {
   const isStartingCheckout = startCheckoutSessionMutation.isPending && startCheckoutSessionMutation.variables === order.id
 
   function handleDeleteOrder() {
-    const confirmed = window.confirm(`Delete order #${order.id}?`)
-
-    if (!confirmed) {
-      return
-    }
-
-    deleteOrderMutation.mutate(order.id)
+    deleteOrderMutation.mutate(order.id, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false)
+      },
+    })
   }
 
   return (
-    <Card className="border-border/70 shadow-sm">
-      <CardContent className="p-4 md:p-5">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_180px_120px_220px] xl:items-center">
-          <div className="min-w-0 space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-base font-semibold text-foreground">Order #{order.id}</h2>
-              <OrderStatusBadge status={order.status} />
+    <>
+      <Card className="border-border/70 shadow-sm">
+        <CardContent className="p-4 md:p-5">
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_180px_120px_220px] xl:items-center">
+            <div className="min-w-0 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-base font-semibold text-foreground">Order #{order.id}</h2>
+                <OrderStatusBadge status={order.status} />
+              </div>
+
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                <span>{formatOrderDate(getOrderPrimaryDate(order))}</span>
+                <span>{order.items.length} item{order.items.length === 1 ? '' : 's'}</span>
+              </div>
+
+              <p className="truncate text-sm text-muted-foreground">{getItemSummary(order)}</p>
             </div>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-              <span>{formatOrderDate(getOrderPrimaryDate(order))}</span>
-              <span>{order.items.length} item{order.items.length === 1 ? '' : 's'}</span>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground xl:justify-self-start">
+              <span>{getOrderMixLabel(order)}</span>
             </div>
 
-            <p className="truncate text-sm text-muted-foreground">{getItemSummary(order)}</p>
-          </div>
+            <div className="xl:text-right">
+              <p className="text-lg font-semibold text-foreground">{formatOrderMoney(order.total_amount, order.currency_iso)}</p>
+            </div>
 
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground xl:justify-self-start">
-            <span>{getOrderMixLabel(order)}</span>
-          </div>
+            <div className="flex flex-wrap gap-2 xl:justify-end">
+              {order.status === 'requires_payment' ? (
+                <Button
+                  onClick={() => startCheckoutSessionMutation.mutate(order.id)}
+                  disabled={isStartingCheckout || isDeleting}
+                  size="sm"
+                >
+                  {isStartingCheckout ? 'Starting...' : 'Complete payment'}
+                </Button>
+              ) : null}
 
-          <div className="xl:text-right">
-            <p className="text-lg font-semibold text-foreground">{formatOrderMoney(order.total_amount, order.currency_iso)}</p>
-          </div>
+              {canDelete ? (
+                <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting || isStartingCheckout} size="sm">
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </Button>
+              ) : null}
 
-          <div className="flex flex-wrap gap-2 xl:justify-end">
-            {order.status === 'requires_payment' ? (
-              <Button
-                onClick={() => startCheckoutSessionMutation.mutate(order.id)}
-                disabled={isStartingCheckout || isDeleting}
-                size="sm"
-              >
-                {isStartingCheckout ? 'Starting...' : 'Complete payment'}
+              <Button asChild variant="outline" size="sm">
+                <Link to={`/account/orders/${order.id}`}>View details</Link>
               </Button>
-            ) : null}
-
-            {canDelete ? (
-              <Button variant="outline" onClick={handleDeleteOrder} disabled={isDeleting || isStartingCheckout} size="sm">
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </Button>
-            ) : null}
-
-            <Button asChild variant="outline" size="sm">
-              <Link to={`/account/orders/${order.id}`}>View details</Link>
-            </Button>
+            </div>
           </div>
-        </div>
 
-        {deleteOrderMutation.isError && deleteOrderMutation.variables === order.id ? (
-          <p className="mt-3 text-sm text-destructive">
-            {getApiErrorMessage(deleteOrderMutation.error, 'Unable to delete this order right now.')}
-          </p>
-        ) : null}
-      </CardContent>
-    </Card>
+          {deleteOrderMutation.isError && deleteOrderMutation.variables === order.id ? (
+            <p className="mt-3 text-sm text-destructive">
+              {getApiErrorMessage(deleteOrderMutation.error, 'Unable to delete this order right now.')}
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title={`Delete order #${order.id}`}
+        description="This will remove the unpaid order and its items. This action cannot be undone."
+        confirmLabel={isDeleting ? 'Deleting...' : 'Delete order'}
+        cancelLabel="Keep order"
+        onConfirm={handleDeleteOrder}
+        isPending={isDeleting}
+        variant="destructive"
+      />
+    </>
   )
 }

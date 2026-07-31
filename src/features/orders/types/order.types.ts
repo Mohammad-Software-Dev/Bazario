@@ -56,6 +56,9 @@ export interface OrderServiceBooking {
   location_payload?: Record<string, unknown> | null
   cancelled_at?: string | null
   cancellation_reason?: string | null
+  service?: BookingServiceSummary | null
+  actions?: BookingActionState
+  cutoffs?: BookingCutoffState
 }
 
 export interface OrderItemRecord {

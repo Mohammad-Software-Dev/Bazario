@@ -20,6 +20,7 @@ interface ServiceSlotPickerProps {
   isLoading?: boolean
   errorMessage?: string | null
   emptyMessage?: string
+  getSlotDisabledReason?: (slot: ServiceAvailabilitySlot) => string | null
   onDateChange: (value: string) => void
   onTimezoneChange: (value: string) => void
   onSlotSelect: (slot: ServiceAvailabilitySlot) => void
@@ -112,6 +113,7 @@ export function ServiceSlotPicker({
   isLoading = false,
   errorMessage = null,
   emptyMessage = 'No slots available for this date.',
+  getSlotDisabledReason,
   onDateChange,
   onTimezoneChange,
   onSlotSelect,
@@ -171,23 +173,29 @@ export function ServiceSlotPicker({
                     {group.slots.map((slot) => {
                       const isSelected =
                         selectedSlot?.starts_at === slot.starts_at && selectedSlot?.ends_at === slot.ends_at
+                      const disabledReason = disabled ? 'Booking is currently unavailable.' : getSlotDisabledReason?.(slot) ?? null
+                      const isSlotDisabled = Boolean(disabledReason)
 
                       return (
                         <button
                           key={`${slot.starts_at}-${slot.ends_at}`}
                           type="button"
                           onClick={() => onSlotSelect(slot)}
+                          disabled={isSlotDisabled}
                           className={cn(
                             'rounded-xl border px-4 py-3 text-left transition-colors',
                             isSelected
                               ? 'border-foreground bg-foreground text-background'
                               : 'border-border bg-background hover:border-foreground/40 hover:bg-muted/40',
+                            isSlotDisabled &&
+                              'cursor-not-allowed border-dashed border-muted-foreground/30 bg-muted/20 text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/20',
                           )}
                         >
                           <p className="text-sm font-medium">{formatSlotTimeRange(slot, timezone)}</p>
                           <p className={cn('mt-1 text-xs', isSelected ? 'text-background/80' : 'text-muted-foreground')}>
                             {slot.remaining_capacity > 1 ? `${slot.remaining_capacity} spots left` : '1 spot left'}
                           </p>
+                          {disabledReason ? <p className="mt-2 text-xs text-muted-foreground">{disabledReason}</p> : null}
                         </button>
                       )
                     })}

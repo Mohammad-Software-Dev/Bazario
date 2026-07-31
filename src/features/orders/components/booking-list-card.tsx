@@ -23,6 +23,20 @@ export function BookingListCard({ booking }: BookingListCardProps) {
   const cancelDeadline = formatBookingCutoff(booking.cutoffs.cancel_deadline, booking.timezone)
   const rescheduleDeadline = formatBookingCutoff(booking.cutoffs.reschedule_deadline, booking.timezone)
   const refundSummary = booking.refund_summary.applied ? booking.refund_summary : null
+  const shouldShowRescheduleAction =
+    booking.actions.can_reschedule || Boolean(booking.actions.reschedule_block_reason)
+  const shouldShowCancelAction =
+    booking.actions.can_cancel || Boolean(booking.actions.cancel_block_reason)
+  const cancelSummary = booking.actions.can_cancel
+    ? cancelDeadline
+      ? `Available until ${cancelDeadline}`
+      : 'Available until the service starts.'
+    : booking.actions.cancel_block_reason ?? 'Cancellation is not available.'
+  const rescheduleSummary = booking.actions.can_reschedule
+    ? rescheduleDeadline
+      ? `Available until ${rescheduleDeadline}`
+      : 'Available until the service starts.'
+    : booking.actions.reschedule_block_reason ?? 'Rescheduling is not available.'
 
   return (
     <>
@@ -41,12 +55,15 @@ export function BookingListCard({ booking }: BookingListCardProps) {
             {booking.location_type ? <p>Location: {booking.location_type}</p> : null}
           </div>
 
-          <div className="space-y-1 rounded-lg border border-dashed p-3 text-muted-foreground">
-            <p className="font-medium text-foreground">Booking policy</p>
-            {cancelDeadline ? <p>Cancel until: {cancelDeadline}</p> : <p>Cancellation is allowed until the service starts.</p>}
-            {rescheduleDeadline ? <p>Reschedule until: {rescheduleDeadline}</p> : <p>Rescheduling is allowed until the service starts.</p>}
-            {booking.actions.cancel_block_reason ? <p>Cancel status: {booking.actions.cancel_block_reason}</p> : null}
-            {booking.actions.reschedule_block_reason ? <p>Reschedule status: {booking.actions.reschedule_block_reason}</p> : null}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg bg-muted/30 p-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Cancellation</p>
+              <p className="mt-1 text-sm text-foreground">{cancelSummary}</p>
+            </div>
+            <div className="rounded-lg bg-muted/30 p-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Rescheduling</p>
+              <p className="mt-1 text-sm text-foreground">{rescheduleSummary}</p>
+            </div>
           </div>
 
           {refundSummary ? (
@@ -60,14 +77,24 @@ export function BookingListCard({ booking }: BookingListCardProps) {
           ) : null}
 
           <div className="flex flex-wrap gap-3">
-            {booking.actions.can_reschedule ? (
-              <Button asChild variant="outline">
-                <Link to={`/account/bookings/${booking.id}/reschedule`}>Reschedule</Link>
-              </Button>
+            {shouldShowRescheduleAction ? (
+              booking.actions.can_reschedule ? (
+                <Button asChild variant="outline">
+                  <Link to={`/account/bookings/${booking.id}/reschedule`}>Reschedule</Link>
+                </Button>
+              ) : (
+                <Button variant="outline" disabled>
+                  Reschedule
+                </Button>
+              )
             ) : null}
 
-            {booking.actions.can_cancel ? (
-              <Button variant="outline" onClick={() => setIsCancelDialogOpen(true)}>
+            {shouldShowCancelAction ? (
+              <Button
+                variant="outline"
+                onClick={() => setIsCancelDialogOpen(true)}
+                disabled={!booking.actions.can_cancel}
+              >
                 Cancel booking
               </Button>
             ) : null}
