@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
@@ -15,26 +16,26 @@ interface OrderListCardProps {
   order: OrderRecord
 }
 
-function getOrderMixLabel(order: OrderRecord) {
+function getOrderMixLabel(order: OrderRecord, t: (key: string, options?: Record<string, unknown>) => string) {
   const serviceCount = order.items.filter((item) => item.service_booking).length
   const productCount = order.items.length - serviceCount
 
   if (productCount > 0 && serviceCount > 0) {
-    return 'Products and services'
+    return t('orders.productsAndServices')
   }
 
   if (serviceCount > 0) {
-    return serviceCount === 1 ? 'Service booking' : 'Service bookings'
+    return t(serviceCount === 1 ? 'orders.serviceBooking_one' : 'orders.serviceBooking_other')
   }
 
-  return productCount === 1 ? 'Product order' : 'Product orders'
+  return t(productCount === 1 ? 'orders.productOrder_one' : 'orders.productOrder_other')
 }
 
-function getItemSummary(order: OrderRecord) {
+function getItemSummary(order: OrderRecord, t: (key: string, options?: Record<string, unknown>) => string) {
   const titles = order.items.map(getOrderItemDisplayTitle).filter(Boolean)
 
   if (!titles.length) {
-    return 'No items added yet.'
+    return t('orders.noItemsAdded')
   }
 
   if (titles.length === 1) {
@@ -45,13 +46,14 @@ function getItemSummary(order: OrderRecord) {
   const remainingCount = titles.length - 2
 
   if (remainingCount > 0) {
-    return `${visibleTitles} +${remainingCount} more`
+    return `${visibleTitles} ${t('orders.moreItems', { count: remainingCount })}`
   }
 
   return visibleTitles
 }
 
 export function OrderListCard({ order }: OrderListCardProps) {
+  const { t } = useTranslation()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const startCheckoutSessionMutation = useStartCheckoutSessionMutation()
   const deleteOrderMutation = useDeleteOrderMutation()
@@ -74,20 +76,20 @@ export function OrderListCard({ order }: OrderListCardProps) {
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_180px_120px_220px] xl:items-center">
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-semibold text-foreground">Order #{order.id}</h2>
+                <h2 className="text-base font-semibold text-foreground">{t('orders.orderLabel', { id: order.id })}</h2>
                 <OrderStatusBadge status={order.status} />
               </div>
 
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 <span>{formatOrderDate(getOrderPrimaryDate(order))}</span>
-                <span>{order.items.length} item{order.items.length === 1 ? '' : 's'}</span>
+                <span>{t('orders.itemCount', { count: order.items.length })}</span>
               </div>
 
-              <p className="truncate text-sm text-muted-foreground">{getItemSummary(order)}</p>
+              <p className="truncate text-sm text-muted-foreground">{getItemSummary(order, t)}</p>
             </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground xl:justify-self-start">
-              <span>{getOrderMixLabel(order)}</span>
+              <span>{getOrderMixLabel(order, t)}</span>
             </div>
 
             <div className="xl:text-right">
@@ -101,25 +103,25 @@ export function OrderListCard({ order }: OrderListCardProps) {
                   disabled={isStartingCheckout || isDeleting}
                   size="sm"
                 >
-                  {isStartingCheckout ? 'Starting...' : 'Complete payment'}
+                  {isStartingCheckout ? t('orders.starting') : t('orders.completePayment')}
                 </Button>
               ) : null}
 
               {canDelete ? (
                 <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting || isStartingCheckout} size="sm">
-                  {isDeleting ? 'Deleting...' : 'Delete'}
+                  {isDeleting ? t('orders.deleting') : t('orders.deleteOrder')}
                 </Button>
               ) : null}
 
               <Button asChild variant="outline" size="sm">
-                <Link to={`/account/orders/${order.id}`}>View details</Link>
+                <Link to={`/account/orders/${order.id}`}>{t('common.viewDetails')}</Link>
               </Button>
             </div>
           </div>
 
           {deleteOrderMutation.isError && deleteOrderMutation.variables === order.id ? (
             <p className="mt-3 text-sm text-destructive">
-              {getApiErrorMessage(deleteOrderMutation.error, 'Unable to delete this order right now.')}
+              {getApiErrorMessage(deleteOrderMutation.error, t('orders.deleteOrderError'))}
             </p>
           ) : null}
         </CardContent>
@@ -128,10 +130,10 @@ export function OrderListCard({ order }: OrderListCardProps) {
       <ConfirmDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        title={`Delete order #${order.id}`}
-        description="This will remove the unpaid order and its items. This action cannot be undone."
-        confirmLabel={isDeleting ? 'Deleting...' : 'Delete order'}
-        cancelLabel="Keep order"
+        title={t('orders.deleteOrderTitle', { id: order.id })}
+        description={t('orders.deleteOrderDescription')}
+        confirmLabel={isDeleting ? t('orders.deleting') : t('orders.deleteOrderFull')}
+        cancelLabel={t('orders.keepOrder')}
         onConfirm={handleDeleteOrder}
         isPending={isDeleting}
         variant="destructive"

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 
 interface PaginationControlsProps {
@@ -11,6 +13,8 @@ export function PaginationControls({
   lastPage,
   onPageChange,
 }: PaginationControlsProps) {
+  const { t } = useTranslation()
+
   if (lastPage <= 1) {
     return null
   }
@@ -18,7 +22,7 @@ export function PaginationControls({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
       <p className="text-sm text-muted-foreground">
-        Page {currentPage} of {lastPage}
+        {t('orders.pageIndicator', { current: currentPage, total: lastPage })}
       </p>
 
       <div className="flex items-center gap-2">
@@ -28,7 +32,7 @@ export function PaginationControls({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
         >
-          Previous
+          {t('common.previous')}
         </Button>
         <Button
           type="button"
@@ -36,7 +40,7 @@ export function PaginationControls({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= lastPage}
         >
-          Next
+          {t('common.next')}
         </Button>
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { cn } from '@/lib/utils'
 
 import type { BookingStatus, OrderItemStatus, OrderStatus } from '@/features/orders/types/order.types'
@@ -24,6 +26,9 @@ const statusClassNames: Record<string, string> = {
 }
 
 export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
+  const { t } = useTranslation()
+  const label = t(`statuses.${status}`, { defaultValue: status.replaceAll('_', ' ') })
+
   return (
     <span
       className={cn(
@@ -31,7 +36,7 @@ export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
         statusClassNames[status] ?? 'bg-muted text-muted-foreground',
       )}
     >
-      {status.replaceAll('_', ' ')}
+      {label}
     </span>
   )
 }

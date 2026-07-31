@@ -1,26 +1,29 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { getApiErrorMessage } from "@/lib/api/api-error";
+import { useTranslation } from 'react-i18next'
 
-import { HomePreviewGridSkeleton } from "@/features/home/components/home-preview-grid-skeleton";
-import { HomePreviewSection } from "@/features/home/components/home-preview-section";
-import { useHomeQuery } from "@/features/home/hooks/use-home-query";
-import { ProductPreviewCard } from "@/features/products/components/product-preview-card";
-import { ServicePreviewCard } from "@/features/services/components/service-preview-card";
+import { Card, CardContent } from '@/components/ui/card'
+import { getApiErrorMessage } from '@/lib/api/api-error'
+
+import { HomePreviewGridSkeleton } from '@/features/home/components/home-preview-grid-skeleton'
+import { HomePreviewSection } from '@/features/home/components/home-preview-section'
+import { useHomeQuery } from '@/features/home/hooks/use-home-query'
+import { ProductPreviewCard } from '@/features/products/components/product-preview-card'
+import { ServicePreviewCard } from '@/features/services/components/service-preview-card'
 
 export function HomePage() {
-  const homeQuery = useHomeQuery({ latestLimit: 8 });
+  const { t } = useTranslation()
+  const homeQuery = useHomeQuery({ latestLimit: 8 })
 
-  const products = homeQuery.data?.result.products.latest ?? [];
-  const services = homeQuery.data?.result.services.latest ?? [];
+  const products = homeQuery.data?.result.products.latest ?? []
+  const services = homeQuery.data?.result.services.latest ?? []
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:py-12">
       <section className="space-y-3">
         <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-          Explore Bazario
+          {t('home.title')}
         </h1>
         <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-          Browse the latest products and services from the marketplace.
+          {t('home.subtitle')}
         </p>
       </section>
 
@@ -29,10 +32,7 @@ export function HomePage() {
       {!homeQuery.isLoading && homeQuery.isError ? (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(
-              homeQuery.error,
-              "Unable to load the home page right now.",
-            )}
+            {getApiErrorMessage(homeQuery.error, t('home.loadError'))}
           </CardContent>
         </Card>
       ) : null}
@@ -40,8 +40,8 @@ export function HomePage() {
       {!homeQuery.isLoading && !homeQuery.isError ? (
         <>
           <HomePreviewSection
-            title="Latest products"
-            emptyMessage="No products are available yet."
+            title={t('home.latestProducts')}
+            emptyMessage={t('home.emptyProducts')}
           >
             {products.length ? (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -53,8 +53,8 @@ export function HomePage() {
           </HomePreviewSection>
 
           <HomePreviewSection
-            title="Latest services"
-            emptyMessage="No services are available yet."
+            title={t('home.latestServices')}
+            emptyMessage={t('home.emptyServices')}
           >
             {services.length ? (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -67,5 +67,5 @@ export function HomePage() {
         </>
       ) : null}
     </div>
-  );
+  )
 }

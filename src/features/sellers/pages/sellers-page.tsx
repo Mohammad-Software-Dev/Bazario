@@ -1,11 +1,12 @@
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 
-import { PaginationControls } from "@/components/shared/pagination-controls";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { SellerPreviewCard } from "@/features/sellers/components/seller-preview-card";
-import { useSellersQuery } from "@/features/sellers/hooks/use-sellers-query";
-import { getApiErrorMessage } from "@/lib/api/api-error";
+import { PaginationControls } from '@/components/shared/pagination-controls'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { SellerPreviewCard } from '@/features/sellers/components/seller-preview-card'
+import { useSellersQuery } from '@/features/sellers/hooks/use-sellers-query'
+import { getApiErrorMessage } from '@/lib/api/api-error'
 
 function SellersGridSkeleton() {
   return (
@@ -24,40 +25,45 @@ function SellersGridSkeleton() {
         </Card>
       ))}
     </div>
-  );
+  )
 }
 
 function parsePage(value: string | null) {
-  const page = Number(value);
-  if (!Number.isInteger(page) || page < 1) return 1;
-  return page;
+  const page = Number(value)
+
+  if (!Number.isInteger(page) || page < 1) {
+    return 1
+  }
+
+  return page
 }
 
 export function SellersPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = useMemo(
-    () => parsePage(searchParams.get("page")),
-    [searchParams],
-  );
-  const sellersQuery = useSellersQuery({ page, perPage: 8 });
+  const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const page = useMemo(() => parsePage(searchParams.get('page')), [searchParams])
+  const sellersQuery = useSellersQuery({ page, perPage: 8 })
 
-  const result = sellersQuery.data?.result;
-  const sellers = result?.data ?? [];
+  const result = sellersQuery.data?.result
+  const sellers = result?.data ?? []
 
   function handlePageChange(nextPage: number) {
-    const nextParams = new URLSearchParams(searchParams);
-    if (nextPage <= 1) nextParams.delete("page");
-    else nextParams.set("page", String(nextPage));
-    setSearchParams(nextParams);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const nextParams = new URLSearchParams(searchParams)
+
+    if (nextPage <= 1) {
+      nextParams.delete('page')
+    } else {
+      nextParams.set('page', String(nextPage))
+    }
+
+    setSearchParams(nextParams)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
       <section className="space-y-3">
-        <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-          Sellers
-        </h1>
+        <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">{t('common.sellers')}</h1>
       </section>
 
       {sellersQuery.isLoading ? <SellersGridSkeleton /> : null}
@@ -65,10 +71,7 @@ export function SellersPage() {
       {!sellersQuery.isLoading && sellersQuery.isError ? (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(
-              sellersQuery.error,
-              "Unable to load sellers right now.",
-            )}
+            {getApiErrorMessage(sellersQuery.error, t('catalog.loadSellersError'))}
           </CardContent>
         </Card>
       ) : null}
@@ -83,9 +86,7 @@ export function SellersPage() {
             </div>
           ) : (
             <Card>
-              <CardContent className="py-6 text-sm text-muted-foreground">
-                No sellers are available yet.
-              </CardContent>
+              <CardContent className="py-6 text-sm text-muted-foreground">{t('home.emptyProducts')}</CardContent>
             </Card>
           )}
 
@@ -97,5 +98,5 @@ export function SellersPage() {
         </section>
       ) : null}
     </div>
-  );
+  )
 }

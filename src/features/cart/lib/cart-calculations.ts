@@ -1,10 +1,8 @@
 import type { CartItem, CartSummary, ServiceCartItem } from '@/features/cart/types/cart.types'
+import { formatDateTime, formatMoney } from '@/lib/i18n/format'
 
 export function formatCartMoney(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount)
+  return formatMoney(amount)
 }
 
 export function getCartSubtotal(items: CartItem[]) {
@@ -34,18 +32,20 @@ export function buildCartSummary(items: CartItem[], currency: 'EUR'): CartSummar
 }
 
 export function formatCartBookingWindow(item: ServiceCartItem) {
-  const formatter = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: item.timezone,
-  })
-
   const startDate = new Date(item.starts_at)
   const endDate = new Date(item.ends_at)
 
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return `${item.starts_at} to ${item.ends_at}`
+    return `${item.starts_at} - ${item.ends_at}`
   }
 
-  return `${formatter.format(startDate)} to ${formatter.format(endDate)}`
+  return `${formatDateTime(startDate, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: item.timezone,
+  })} - ${formatDateTime(endDate, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: item.timezone,
+  })}`
 }

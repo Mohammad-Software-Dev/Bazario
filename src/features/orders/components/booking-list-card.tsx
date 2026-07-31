@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -19,6 +20,7 @@ interface BookingListCardProps {
 }
 
 export function BookingListCard({ booking }: BookingListCardProps) {
+  const { t } = useTranslation()
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const cancelDeadline = formatBookingCutoff(booking.cutoffs.cancel_deadline, booking.timezone)
   const rescheduleDeadline = formatBookingCutoff(booking.cutoffs.reschedule_deadline, booking.timezone)
@@ -29,14 +31,14 @@ export function BookingListCard({ booking }: BookingListCardProps) {
     booking.actions.can_cancel || Boolean(booking.actions.cancel_block_reason)
   const cancelSummary = booking.actions.can_cancel
     ? cancelDeadline
-      ? `Available until ${cancelDeadline}`
-      : 'Available until the service starts.'
-    : booking.actions.cancel_block_reason ?? 'Cancellation is not available.'
+      ? t('bookings.availableUntil', { date: cancelDeadline })
+      : t('bookings.availableUntilServiceStarts')
+    : booking.actions.cancel_block_reason ?? t('bookings.cancellationUnavailable')
   const rescheduleSummary = booking.actions.can_reschedule
     ? rescheduleDeadline
-      ? `Available until ${rescheduleDeadline}`
-      : 'Available until the service starts.'
-    : booking.actions.reschedule_block_reason ?? 'Rescheduling is not available.'
+      ? t('bookings.availableUntil', { date: rescheduleDeadline })
+      : t('bookings.availableUntilServiceStarts')
+    : booking.actions.reschedule_block_reason ?? t('bookings.reschedulingUnavailable')
 
   return (
     <>
@@ -51,27 +53,27 @@ export function BookingListCard({ booking }: BookingListCardProps) {
         <CardContent className="space-y-4 text-sm">
           <div className="space-y-1 text-muted-foreground">
             <p>{formatBookingWindow(booking.starts_at, booking.ends_at, booking.timezone)}</p>
-            <p>Timezone: {booking.timezone ?? 'UTC'}</p>
-            {booking.location_type ? <p>Location: {booking.location_type}</p> : null}
+            <p>{t('bookings.timezone', { value: booking.timezone ?? 'UTC' })}</p>
+            {booking.location_type ? <p>{t('bookings.location', { value: booking.location_type })}</p> : null}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg bg-muted/30 p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Cancellation</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('bookings.cancellation')}</p>
               <p className="mt-1 text-sm text-foreground">{cancelSummary}</p>
             </div>
             <div className="rounded-lg bg-muted/30 p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Rescheduling</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('bookings.rescheduling')}</p>
               <p className="mt-1 text-sm text-foreground">{rescheduleSummary}</p>
             </div>
           </div>
 
           {refundSummary ? (
             <div className="rounded-lg border border-dashed p-3 text-muted-foreground">
-              <p className="font-medium text-foreground">Refund</p>
-              <p>Status: {refundSummary.status ?? 'Pending'}</p>
+              <p className="font-medium text-foreground">{t('bookings.refund')}</p>
+              <p>{t('orders.refundStatus', { status: refundSummary.status ?? t('orders.pending') })}</p>
               {refundSummary.amount !== null && refundSummary.currency_iso ? (
-                <p>Amount: {formatOrderMoney(refundSummary.amount, refundSummary.currency_iso)}</p>
+                <p>{t('orders.refundAmount', { amount: formatOrderMoney(refundSummary.amount, refundSummary.currency_iso) })}</p>
               ) : null}
             </div>
           ) : null}
@@ -80,11 +82,11 @@ export function BookingListCard({ booking }: BookingListCardProps) {
             {shouldShowRescheduleAction ? (
               booking.actions.can_reschedule ? (
                 <Button asChild variant="outline">
-                  <Link to={`/account/bookings/${booking.id}/reschedule`}>Reschedule</Link>
+                  <Link to={`/account/bookings/${booking.id}/reschedule`}>{t('orders.reschedule')}</Link>
                 </Button>
               ) : (
                 <Button variant="outline" disabled>
-                  Reschedule
+                  {t('orders.reschedule')}
                 </Button>
               )
             ) : null}
@@ -95,7 +97,7 @@ export function BookingListCard({ booking }: BookingListCardProps) {
                 onClick={() => setIsCancelDialogOpen(true)}
                 disabled={!booking.actions.can_cancel}
               >
-                Cancel booking
+                {t('orders.cancelBooking')}
               </Button>
             ) : null}
           </div>

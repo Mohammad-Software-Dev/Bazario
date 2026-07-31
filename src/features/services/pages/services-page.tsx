@@ -1,13 +1,14 @@
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 
-import { PaginationControls } from "@/components/shared/pagination-controls";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { CategoryFilter } from "@/features/categories/components/category-filter";
-import { useCategoriesQuery } from "@/features/categories/hooks/use-categories-query";
-import { ServicePreviewCard } from "@/features/services/components/service-preview-card";
-import { useServicesQuery } from "@/features/services/hooks/use-services-query";
-import { getApiErrorMessage } from "@/lib/api/api-error";
+import { PaginationControls } from '@/components/shared/pagination-controls'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { CategoryFilter } from '@/features/categories/components/category-filter'
+import { useCategoriesQuery } from '@/features/categories/hooks/use-categories-query'
+import { ServicePreviewCard } from '@/features/services/components/service-preview-card'
+import { useServicesQuery } from '@/features/services/hooks/use-services-query'
+import { getApiErrorMessage } from '@/lib/api/api-error'
 
 function ServicesGridSkeleton() {
   return (
@@ -26,80 +27,75 @@ function ServicesGridSkeleton() {
         </Card>
       ))}
     </div>
-  );
+  )
 }
 
 function parsePage(value: string | null) {
-  const page = Number(value);
+  const page = Number(value)
 
   if (!Number.isInteger(page) || page < 1) {
-    return 1;
+    return 1
   }
 
-  return page;
+  return page
 }
 
 function parseCategoryId(value: string | null) {
-  const categoryId = Number(value);
+  const categoryId = Number(value)
 
   if (!Number.isInteger(categoryId) || categoryId < 1) {
-    return undefined;
+    return undefined
   }
 
-  return categoryId;
+  return categoryId
 }
 
 export function ServicesPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const page = useMemo(
-    () => parsePage(searchParams.get("page")),
-    [searchParams],
-  );
-  const categoryId = useMemo(
-    () => parseCategoryId(searchParams.get("category")),
-    [searchParams],
-  );
+  const { t } = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const page = useMemo(() => parsePage(searchParams.get('page')), [searchParams])
+  const categoryId = useMemo(() => parseCategoryId(searchParams.get('category')), [searchParams])
 
-  const categoriesQuery = useCategoriesQuery("service");
-  const servicesQuery = useServicesQuery({ page, perPage: 8, categoryId });
+  const categoriesQuery = useCategoriesQuery('service')
+  const servicesQuery = useServicesQuery({ page, perPage: 8, categoryId })
 
-  const result = servicesQuery.data?.result;
-  const services = result?.data ?? [];
+  const result = servicesQuery.data?.result
+  const services = result?.data ?? []
 
   function updateSearchParams(nextPage: number, nextCategoryId?: number) {
-    const nextParams = new URLSearchParams();
+    const nextParams = new URLSearchParams()
 
     if (nextPage > 1) {
-      nextParams.set("page", String(nextPage));
+      nextParams.set('page', String(nextPage))
     }
 
     if (nextCategoryId) {
-      nextParams.set("category", String(nextCategoryId));
+      nextParams.set('category', String(nextCategoryId))
     }
 
-    setSearchParams(nextParams);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setSearchParams(nextParams)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function handlePageChange(nextPage: number) {
-    updateSearchParams(nextPage, categoryId);
+    updateSearchParams(nextPage, categoryId)
   }
 
   function handleCategoryChange(nextCategoryId?: number) {
-    updateSearchParams(1, nextCategoryId);
+    updateSearchParams(1, nextCategoryId)
   }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
       <section className="space-y-3">
         <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-          Services
+          {t('common.services')}
         </h1>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-foreground">
-          Filter by category
+          {t('catalog.filterByCategory')}
         </h2>
         {categoriesQuery.isLoading ? (
           <div className="flex flex-wrap gap-2">
@@ -113,10 +109,7 @@ export function ServicesPage() {
         ) : categoriesQuery.isError ? (
           <Card>
             <CardContent className="py-4 text-sm text-destructive">
-              {getApiErrorMessage(
-                categoriesQuery.error,
-                "Unable to load service categories right now.",
-              )}
+              {getApiErrorMessage(categoriesQuery.error, t('catalog.loadServiceCategoriesError'))}
             </CardContent>
           </Card>
         ) : (
@@ -133,10 +126,7 @@ export function ServicesPage() {
       {!servicesQuery.isLoading && servicesQuery.isError ? (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(
-              servicesQuery.error,
-              "Unable to load services right now.",
-            )}
+            {getApiErrorMessage(servicesQuery.error, t('catalog.loadServicesError'))}
           </CardContent>
         </Card>
       ) : null}
@@ -152,7 +142,7 @@ export function ServicesPage() {
           ) : (
             <Card>
               <CardContent className="py-6 text-sm text-muted-foreground">
-                No services matched the selected category.
+                {t('catalog.noServicesMatch')}
               </CardContent>
             </Card>
           )}
@@ -165,5 +155,5 @@ export function ServicesPage() {
         </section>
       ) : null}
     </div>
-  );
+  )
 }

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { buildAssetUrl } from '@/lib/api/asset-url'
@@ -12,6 +14,7 @@ interface CartLineItemProps {
 }
 
 export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemProps) {
+  const { t } = useTranslation()
   const imageUrl = buildAssetUrl(item.image)
   const lineTotal = item.price * item.quantity
 
@@ -22,7 +25,7 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
           <img src={imageUrl} alt={item.type === 'product' ? item.name : item.title} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-            No image
+            {t('common.noImage')}
           </div>
         )}
       </div>
@@ -31,7 +34,7 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div className="space-y-1">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {item.type === 'product' ? 'Product' : 'Service'}
+              {item.type === 'product' ? t('orders.product') : t('orders.service')}
             </p>
             <h3 className="text-base font-semibold text-foreground">
               {item.type === 'product' ? item.name : item.title}
@@ -42,23 +45,23 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
             {item.category_name ? <p className="text-sm text-muted-foreground">{item.category_name}</p> : null}
           </div>
           <div className="space-y-1 text-left md:text-right">
-            <p className="text-sm text-muted-foreground">Unit price: {formatCartMoney(item.price)}</p>
-            <p className="text-base font-semibold text-foreground">Line total: {formatCartMoney(lineTotal)}</p>
+            <p className="text-sm text-muted-foreground">{t('cart.unitPrice')}: {formatCartMoney(item.price)}</p>
+            <p className="text-base font-semibold text-foreground">{t('cart.lineTotal')}: {formatCartMoney(lineTotal)}</p>
           </div>
         </div>
 
         {item.type === 'service' ? (
           <div className="space-y-1 text-sm text-muted-foreground">
             <p>{formatCartBookingWindow(item)}</p>
-            <p>Timezone: {item.timezone}</p>
-            {item.location_type ? <p>Location: {item.location_type}</p> : null}
+            <p>{t('bookings.timezone', { value: item.timezone })}</p>
+            {item.location_type ? <p>{t('bookings.location', { value: item.location_type })}</p> : null}
           </div>
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {item.type === 'product' ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Quantity</span>
+              <span className="text-sm text-muted-foreground">{t('cart.quantity')}</span>
               <Input
                 type="number"
                 min={0}
@@ -68,11 +71,11 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
               />
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">1 booking</p>
+            <p className="text-sm text-muted-foreground">{t('cart.oneBooking')}</p>
           )}
 
           <Button variant="outline" onClick={() => onRemove(item.cart_item_id)}>
-            Remove
+            {t('common.remove')}
           </Button>
         </div>
       </div>

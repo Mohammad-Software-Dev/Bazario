@@ -1,29 +1,25 @@
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Card, CardContent } from '@/components/ui/card'
 import type { ProductListItem } from '@/features/products/types/product.types'
 import { buildAssetUrl } from '@/lib/api/asset-url'
+import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
 interface ProductPreviewCardProps {
   product: ProductListItem
 }
 
-function formatMoney(amount: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(amount)
-}
-
 export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const imageUrl = buildAssetUrl(product.images[0]?.image)
-  const storeName = product.seller?.store_name ?? 'Independent seller'
-  const sellerUserName = product.seller?.user?.name ?? 'Seller profile pending'
-  const productName = getLocalizedValue(product.name) ?? 'Untitled product'
-  const productDescription = getLocalizedValue(product.description) ?? 'No description yet.'
-  const categoryName = getLocalizedValue(product.category?.name) ?? 'Uncategorized'
+  const storeName = product.seller?.store_name ?? t('catalog.independentSeller')
+  const sellerUserName = product.seller?.user?.name ?? t('catalog.sellerProfilePending')
+  const productName = getLocalizedValue(product.name) || t('common.untitledProduct')
+  const productDescription = getLocalizedValue(product.description) || t('common.noDescriptionYet')
+  const categoryName = getLocalizedValue(product.category?.name) || t('common.uncategorized')
 
   function handleOpenProduct() {
     navigate(`/products/${product.id}`)
@@ -49,7 +45,7 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
           <img src={imageUrl} alt={productName} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
-            No image
+            {t('common.noImage')}
           </div>
         )}
       </div>
@@ -63,7 +59,7 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
             </div>
             {product.isNew ? (
               <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                New
+                {t('catalog.new')}
               </span>
             ) : null}
           </div>
@@ -78,7 +74,7 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
 
         <div className="rounded-lg bg-muted/50 px-3 py-2.5 text-sm">
           <p className="line-clamp-1 font-medium text-foreground">{storeName}</p>
-          <p className="line-clamp-1 text-muted-foreground">by {sellerUserName}</p>
+          <p className="line-clamp-1 text-muted-foreground">{t('catalog.bySeller', { name: sellerUserName })}</p>
         </div>
       </CardContent>
     </Card>

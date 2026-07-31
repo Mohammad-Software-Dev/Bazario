@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import { getLocalizedValue } from '@/lib/localized-value'
 
@@ -14,6 +16,8 @@ export function CategoryFilter({
   selectedCategoryId,
   onCategoryChange,
 }: CategoryFilterProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex flex-wrap gap-2">
       <Button
@@ -21,11 +25,11 @@ export function CategoryFilter({
         variant={selectedCategoryId ? 'outline' : 'default'}
         onClick={() => onCategoryChange(undefined)}
       >
-        All
+        {t('common.all')}
       </Button>
 
       {categories.map((category) => {
-        const label = getLocalizedValue(category.name) || `Category ${category.id}`
+        const label = getLocalizedValue(category.name) || `${t('common.uncategorized')} ${category.id}`
         const isSelected = selectedCategoryId === category.id
 
         return (

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { CartLineItem } from '@/features/cart/components/cart-line-item'
@@ -9,6 +11,7 @@ import { getApiErrorMessage } from '@/lib/api/api-error'
 import { useUiStore } from '@/stores/ui-store'
 
 export function CartPage() {
+  const { t } = useTranslation()
   const items = useCartItems()
   const summary = useCartSummary()
   const { clearCart, removeItem, updateProductQuantity } = useCartActions()
@@ -28,8 +31,8 @@ export function CartPage() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">Shopping cart</p>
-        <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">Your cart</h1>
+        <p className="text-sm text-muted-foreground">{t('cart.eyebrow')}</p>
+        <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">{t('cart.title')}</h1>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
@@ -46,10 +49,10 @@ export function CartPage() {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>Your cart is empty</CardTitle>
+                <CardTitle>{t('cart.emptyTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                Add products or service bookings to start building your order.
+                {t('cart.emptyDescription')}
               </CardContent>
             </Card>
           )}
@@ -57,7 +60,7 @@ export function CartPage() {
           {checkoutMutation.isError ? (
             <Card>
               <CardContent className="py-4 text-sm text-destructive">
-                {getApiErrorMessage(checkoutMutation.error, 'Unable to start checkout right now.')}
+                {getApiErrorMessage(checkoutMutation.error, t('cart.unableCheckout'))}
               </CardContent>
             </Card>
           ) : null}
@@ -68,7 +71,7 @@ export function CartPage() {
             onCheckout={handleCheckout}
             onClear={clearCart}
             summary={summary}
-            checkoutLabel="Checkout"
+            checkoutLabel={t('cart.checkout')}
             isCheckoutPending={checkoutMutation.isPending}
           />
         </aside>

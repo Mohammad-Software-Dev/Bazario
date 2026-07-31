@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { getApiErrorMessage, getApiFieldErrors } from '@/lib/api/api-error'
 import { useAuth } from '@/lib/auth/use-auth'
 
 export function RegisterForm() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { setSession } = useAuth()
   const registerMutation = useRegisterMutation()
@@ -64,20 +66,20 @@ export function RegisterForm() {
         setError('password_confirmation', { type: 'server', message: passwordConfirmationError })
       }
 
-      setServerError(getApiErrorMessage(error, 'Unable to create your account right now.'))
+      setServerError(getApiErrorMessage(error, t('auth.unableRegister')))
     }
   })
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="register-name">Name</Label>
+        <Label htmlFor="register-name">{t('common.name')}</Label>
         <Input id="register-name" autoComplete="name" {...register('name')} />
         {errors.name ? <p className="text-sm text-destructive">{errors.name.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-age">Age</Label>
+        <Label htmlFor="register-age">{t('auth.age')}</Label>
         <Input
           id="register-age"
           type="number"
@@ -90,7 +92,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-email">Email</Label>
+        <Label htmlFor="register-email">{t('common.email')}</Label>
         <Input
           id="register-email"
           type="email"
@@ -103,7 +105,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-phone">Phone</Label>
+        <Label htmlFor="register-phone">{t('auth.phone')}</Label>
         <Input
           id="register-phone"
           type="tel"
@@ -116,13 +118,13 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-password">Password</Label>
+        <Label htmlFor="register-password">{t('auth.password')}</Label>
         <Input id="register-password" type="password" autoComplete="new-password" {...register('password')} />
         {errors.password ? <p className="text-sm text-destructive">{errors.password.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-password-confirmation">Confirm password</Label>
+        <Label htmlFor="register-password-confirmation">{t('auth.confirmPassword')}</Label>
         <Input
           id="register-password-confirmation"
           type="password"
@@ -137,7 +139,7 @@ export function RegisterForm() {
       {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}
 
       <Button className="w-full" type="submit" disabled={registerMutation.isPending}>
-        {registerMutation.isPending ? 'Creating account...' : 'Register'}
+        {registerMutation.isPending ? t('auth.creatingAccount') : t('auth.createAccount')}
       </Button>
     </form>
   )

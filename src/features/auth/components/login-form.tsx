@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { setSession } = useAuth()
   const loginMutation = useLoginMutation()
@@ -60,42 +62,32 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         setError('password', { type: 'server', message: passwordError })
       }
 
-      setServerError(getApiErrorMessage(error, 'Unable to log in right now.'))
+      setServerError(getApiErrorMessage(error, t('auth.unableLogin')))
     }
   })
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="login-email">Email</Label>
+        <Label htmlFor="login-email">{t('common.email')}</Label>
         <Input id="login-email" type="email" autoComplete="email" {...register('email')} />
-        {errors.email ? (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
-        ) : null}
+        {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="login-password">Password</Label>
+        <Label htmlFor="login-password">{t('auth.password')}</Label>
         <Input id="login-password" type="password" autoComplete="current-password" {...register('password')} />
-        {errors.password ? (
-          <p className="text-sm text-destructive">{errors.password.message}</p>
-        ) : null}
+        {errors.password ? <p className="text-sm text-destructive">{errors.password.message}</p> : null}
       </div>
 
-      {serverError ? (
-        <p className="text-sm text-destructive">{serverError}</p>
-      ) : null}
+      {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}
 
-      <Button
-        className="w-full"
-        type="submit"
-        disabled={loginMutation.isPending}
-      >
-        {loginMutation.isPending ? 'Signing in...' : 'Login'}
+      <Button className="w-full" type="submit" disabled={loginMutation.isPending}>
+        {loginMutation.isPending ? t('auth.signingIn') : t('auth.signIn')}
       </Button>
 
       <p className="text-sm text-muted-foreground">
-        Don&apos;t have an account yet?{' '}
+        {t('auth.dontHaveAccount')}{' '}
         <button
           className="font-medium text-foreground underline underline-offset-4"
           type="button"
@@ -104,7 +96,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             navigate('/register')
           }}
         >
-          Register
+          {t('auth.registerLink')}
         </button>
       </p>
     </form>

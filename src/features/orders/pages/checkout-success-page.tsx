@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -20,6 +21,7 @@ function parseOrderId(value: string | null) {
 }
 
 export function CheckoutSuccessPage() {
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const { clearCart } = useCartActions()
@@ -49,12 +51,12 @@ export function CheckoutSuccessPage() {
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-12">
         <Card>
           <CardHeader>
-            <CardTitle>Invalid checkout success return</CardTitle>
+            <CardTitle>{t('checkout.invalidSuccessTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <p>We could not verify this checkout success return.</p>
+            <p>{t('checkout.invalidSuccessDescription')}</p>
             <Button asChild variant="outline">
-              <Link to="/cart">Back to cart</Link>
+              <Link to="/cart">{t('common.backToCart')}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -67,15 +69,15 @@ export function CheckoutSuccessPage() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-12">
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">Checkout</p>
-        <h1 className="font-heading text-3xl font-semibold text-foreground">Checkout success</h1>
+        <p className="text-sm text-muted-foreground">{t('checkout.eyebrow')}</p>
+        <h1 className="font-heading text-3xl font-semibold text-foreground">{t('checkout.successTitle')}</h1>
       </div>
 
-      {checkoutResultQuery.isLoading ? <p className="text-sm text-muted-foreground">Confirming your payment...</p> : null}
+      {checkoutResultQuery.isLoading ? <p className="text-sm text-muted-foreground">{t('checkout.confirmingPayment')}</p> : null}
       {checkoutResultQuery.isError ? (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(checkoutResultQuery.error, 'Unable to confirm this checkout success result.')}
+            {getApiErrorMessage(checkoutResultQuery.error, t('checkout.successError'))}
           </CardContent>
         </Card>
       ) : null}
@@ -83,24 +85,24 @@ export function CheckoutSuccessPage() {
       {checkoutResultQuery.data ? (
         <Card>
           <CardHeader>
-            <CardTitle>{checkoutResultQuery.data.is_paid ? 'Payment confirmed' : 'Payment pending'}</CardTitle>
+            <CardTitle>{checkoutResultQuery.data.is_paid ? t('checkout.paymentConfirmed') : t('checkout.paymentPending')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             <p className="text-muted-foreground">
               {checkoutResultQuery.data.is_paid
-                ? 'Your order has been paid successfully.'
-                : 'Your payment is not confirmed yet. You can return to the cart and try again later.'}
+                ? t('checkout.paymentConfirmedDescription')
+                : t('checkout.paymentPendingDescription')}
             </p>
             {order ? (
               <div className="rounded-lg border p-4 text-muted-foreground">
                 <p>
-                  <span className="font-medium text-foreground">Order:</span> #{order.id}
+                  <span className="font-medium text-foreground">{t('orders.orderLabel', { id: order.id })}</span>
                 </p>
                 <p>
-                  <span className="font-medium text-foreground">Status:</span> {order.status}
+                  <span className="font-medium text-foreground">{t('orders.payment')}:</span> {t(`statuses.${order.status}`, { defaultValue: order.status })}
                 </p>
                 <p>
-                  <span className="font-medium text-foreground">Total:</span> {formatOrderMoney(order.total_amount, order.currency_iso)}
+                  <span className="font-medium text-foreground">{t('orders.total')}:</span> {formatOrderMoney(order.total_amount, order.currency_iso)}
                 </p>
               </div>
             ) : null}
@@ -109,15 +111,15 @@ export function CheckoutSuccessPage() {
               {checkoutResultQuery.data.is_paid ? (
                 <>
                   <Button asChild>
-                    <Link to="/account/orders">View my orders</Link>
+                    <Link to="/account/orders">{t('checkout.viewMyOrders')}</Link>
                   </Button>
                   <Button asChild variant="outline">
-                    <Link to="/account/bookings">View my bookings</Link>
+                    <Link to="/account/bookings">{t('checkout.viewMyBookings')}</Link>
                   </Button>
                 </>
               ) : (
                 <Button asChild variant="outline">
-                  <Link to="/cart">Back to cart</Link>
+                  <Link to="/cart">{t('common.backToCart')}</Link>
                 </Button>
               )}
             </div>

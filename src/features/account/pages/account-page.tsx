@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -48,7 +49,11 @@ function ActionLinkRow({ title, description, to, badge }: ActionLinkRowProps) {
   )
 }
 
-function getStripeStatusBadge(status: ReturnType<typeof useConnectStatusQuery>['data']) {
+function StripeStatusBadge() {
+  const { t } = useTranslation()
+  const connectStatusQuery = useConnectStatusQuery(true)
+  const status = connectStatusQuery.data
+
   if (!status) {
     return null
   }
@@ -56,7 +61,7 @@ function getStripeStatusBadge(status: ReturnType<typeof useConnectStatusQuery>['
   if (!status.connected) {
     return (
       <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
-        Not connected
+        {t('account.stripeNotConnected')}
       </span>
     )
   }
@@ -64,19 +69,21 @@ function getStripeStatusBadge(status: ReturnType<typeof useConnectStatusQuery>['
   if (status.account?.payouts_enabled && status.account?.details_submitted) {
     return (
       <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
-        Ready
+        {t('account.stripeReady')}
       </span>
     )
   }
 
   return (
     <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
-      Onboarding
+      {t('account.stripeOnboarding')}
     </span>
   )
 }
 
 function RecentOrderCard({ order }: { order: RecentOrder }) {
+  const { t } = useTranslation()
+
   return (
     <Link
       to={`/account/orders/${order.id}`}
@@ -85,21 +92,19 @@ function RecentOrderCard({ order }: { order: RecentOrder }) {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3">
-            <p className="font-medium text-foreground">Order #{order.id}</p>
+            <p className="font-medium text-foreground">{t('orders.orderLabel', { id: order.id })}</p>
             <span className="text-sm text-muted-foreground">
               {formatOrderDate(order.paid_at || order.placed_at)}
             </span>
           </div>
           <div className="flex flex-wrap gap-x-8 gap-y-1 text-sm text-muted-foreground">
-            <p>Total: {formatOrderMoney(order.total_amount, order.currency_iso)}</p>
-            <p>
-              {order.items.length} item{order.items.length === 1 ? '' : 's'}
-            </p>
+            <p>{t('orders.total')}: {formatOrderMoney(order.total_amount, order.currency_iso)}</p>
+            <p>{t('orders.itemCount', { count: order.items.length })}</p>
           </div>
         </div>
         <div className="flex items-center gap-4 self-start md:self-center">
           <OrderStatusBadge status={order.status} />
-          <span className="text-sm font-medium text-foreground">View details</span>
+          <span className="text-sm font-medium text-foreground">{t('common.viewDetails')}</span>
         </div>
       </div>
     </Link>
@@ -107,20 +112,21 @@ function RecentOrderCard({ order }: { order: RecentOrder }) {
 }
 
 function RecentSaleCard({ sale }: { sale: RecentSaleItem }) {
+  const { t } = useTranslation()
   const orderDate = sale.order?.paid_at ?? sale.order?.placed_at ?? sale.created_at ?? null
 
   return (
     <div className="rounded-2xl border border-border/70 bg-background p-4 text-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 space-y-2">
-          <p className="line-clamp-2 font-medium text-foreground">{sale.title_snapshot || `Product order #${sale.id}`}</p>
+          <p className="line-clamp-2 font-medium text-foreground">{sale.title_snapshot || t('common.untitledProduct')}</p>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
-            {sale.order?.id ? <span>Order #{sale.order.id}</span> : null}
+            {sale.order?.id ? <span>{t('account.orderReference', { id: sale.order.id })}</span> : null}
             {orderDate ? <span>{formatOrderDate(orderDate)}</span> : null}
-            <span>Qty: {sale.quantity}</span>
+            <span>{t('account.quantityShort', { count: sale.quantity })}</span>
           </div>
           {sale.order?.buyer?.name ? (
-            <p className="text-muted-foreground">Customer: {sale.order.buyer.name}</p>
+            <p className="text-muted-foreground">{t('account.customer', { name: sale.order.buyer.name })}</p>
           ) : null}
         </div>
         <p className="shrink-0 font-medium text-foreground">{formatOrderMoney(sale.net_amount)}</p>
@@ -130,10 +136,11 @@ function RecentSaleCard({ sale }: { sale: RecentSaleItem }) {
 }
 
 function OrderHistoryCard({ orders, totalOrders, compact = false }: OrderHistoryCardProps) {
-  const title = compact ? 'Your order history' : 'Order history'
+  const { t } = useTranslation()
+  const title = compact ? t('account.yourOrderHistory') : t('orders.orderHistory')
   const description = compact
-    ? 'Your own purchases and service orders.'
-    : 'Your product purchases and service orders.'
+    ? t('account.yourOrderHistoryDescription')
+    : t('orders.orderHistoryDescription')
 
   return (
     <Card className="border-border/70 shadow-sm">
@@ -145,7 +152,7 @@ function OrderHistoryCard({ orders, totalOrders, compact = false }: OrderHistory
           </div>
           <div className="rounded-full bg-slate-50 px-4 py-2 ring-1 ring-slate-200">
             <p className="text-sm font-medium text-slate-700">
-              Total orders: <span className="font-semibold text-foreground">{totalOrders}</span>
+              {t('orders.totalOrders', { count: totalOrders })}
             </p>
           </div>
         </div>
@@ -154,13 +161,13 @@ function OrderHistoryCard({ orders, totalOrders, compact = false }: OrderHistory
       <CardContent className="space-y-4 p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="space-y-1">
-            <p className="font-medium text-foreground">Recent orders</p>
+            <p className="font-medium text-foreground">{t('orders.recentOrders')}</p>
             <p className="text-sm text-muted-foreground">
-              Open an order to review payment state, totals, and included items.
+              {t('orders.recentOrdersDescription')}
             </p>
           </div>
           <Button asChild variant="outline" size="sm">
-            <Link to="/account/orders">View all</Link>
+            <Link to="/account/orders">{t('common.viewAll')}</Link>
           </Button>
         </div>
 
@@ -172,7 +179,7 @@ function OrderHistoryCard({ orders, totalOrders, compact = false }: OrderHistory
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-border/80 p-6 text-sm text-muted-foreground">
-            No recent orders yet.
+            {t('orders.noRecentOrders')}
           </div>
         )}
       </CardContent>
@@ -186,12 +193,14 @@ function BusinessActivityCard({
   recentSales,
   recentProviderBookings,
 }: BusinessActivityCardProps) {
+  const { t } = useTranslation()
+
   return (
     <Card className="border-border/70 shadow-sm">
       <CardHeader className="gap-2 border-b border-border/70 pb-5">
-        <CardTitle>Business activity</CardTitle>
+        <CardTitle>{t('account.businessActivity')}</CardTitle>
         <CardDescription>
-          Prioritize customer bookings and incoming product orders from your workspace.
+          {t('account.businessActivityDescription')}
         </CardDescription>
       </CardHeader>
 
@@ -200,13 +209,13 @@ function BusinessActivityCard({
           <section className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div className="space-y-1">
-                <p className="font-medium text-foreground">Recent customer bookings</p>
+                <p className="font-medium text-foreground">{t('account.recentCustomerBookings')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Review the latest service bookings and follow up on requests quickly.
+                  {t('account.recentCustomerBookingsDescription')}
                 </p>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link to="/account/provider/bookings">View all bookings</Link>
+                <Link to="/account/provider/bookings">{t('account.viewAllBookings')}</Link>
               </Button>
             </div>
 
@@ -218,7 +227,7 @@ function BusinessActivityCard({
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-border/80 p-6 text-sm text-muted-foreground">
-                No recent customer bookings yet.
+                {t('account.noRecentCustomerBookings')}
               </div>
             )}
           </section>
@@ -228,13 +237,13 @@ function BusinessActivityCard({
           <section className={isServiceProvider ? 'border-t border-border/70 pt-6' : 'space-y-4'}>
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div className="space-y-1">
-                <p className="font-medium text-foreground">Recent product orders</p>
+                <p className="font-medium text-foreground">{t('account.recentProductOrders')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Track the latest product-side orders and sales activity.
+                  {t('account.recentProductOrdersDescription')}
                 </p>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link to="/account/earnings">View earnings</Link>
+                <Link to="/account/earnings">{t('account.viewEarnings')}</Link>
               </Button>
             </div>
 
@@ -246,7 +255,7 @@ function BusinessActivityCard({
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-border/80 p-6 text-sm text-muted-foreground">
-                No recent product orders yet.
+                {t('account.noRecentProductOrders')}
               </div>
             )}
           </section>
@@ -257,6 +266,7 @@ function BusinessActivityCard({
 }
 
 export function AccountPage() {
+  const { t } = useTranslation()
   const { session } = useAuth()
   const meQuery = useMeQuery(true, 5)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -267,13 +277,11 @@ export function AccountPage() {
   const isServiceProvider =
     roles.includes('service_provider') || Boolean(user?.service_provider_profile)
   const hasBusinessWorkspace = isSeller || isServiceProvider
-  const hasConnectWorkspace = hasBusinessWorkspace
-  const connectStatusQuery = useConnectStatusQuery(hasConnectWorkspace)
-  const stripeStatusBadge = getStripeStatusBadge(connectStatusQuery.data)
   const counts = meQuery.data?.result.counts
   const recentOrders = meQuery.data?.result.recent_orders ?? []
   const recentSales = meQuery.data?.result.recent_sales ?? []
   const recentProviderBookings = meQuery.data?.result.recent_provider_bookings ?? []
+  const stripeStatusBadge = hasBusinessWorkspace ? <StripeStatusBadge /> : null
 
   return (
     <>
@@ -282,15 +290,15 @@ export function AccountPage() {
           <CardContent className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                Account profile
+                {t('account.profile')}
               </p>
               <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-                {user?.name ?? 'Account'}
+                {user?.name ?? t('common.account')}
               </h1>
               <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
             <Button asChild variant="outline">
-              <Link to="/account/edit-profile">Edit profile</Link>
+              <Link to="/account/edit-profile">{t('account.editProfile')}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -322,30 +330,30 @@ export function AccountPage() {
 
           <Card className="border-border/70 shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle>Account actions</CardTitle>
+              <CardTitle>{t('account.accountActions')}</CardTitle>
               <CardDescription>
-                Quick access to the tools and settings that match your account roles.
+                {t('account.accountActionsDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
               {isSeller ? (
                 <div className="space-y-2">
-                  <p className="font-medium text-foreground">Seller workspace</p>
+                  <p className="font-medium text-foreground">{t('account.sellerWorkspace')}</p>
                   <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                     <ActionLinkRow
-                      title="Manage products"
-                      description="Create, update, and remove products from your seller catalog."
+                      title={t('account.manageProducts')}
+                      description={t('account.manageProductsDescription')}
                       to="/account/seller/products"
                     />
                     <ActionLinkRow
-                      title="Stripe account"
-                      description="Connect or resume your Stripe onboarding setup."
+                      title={t('account.stripeAccount')}
+                      description={t('account.stripeAccountDescription')}
                       to="/account/stripe"
                       badge={stripeStatusBadge}
                     />
                     <ActionLinkRow
-                      title="Earnings"
-                      description="Review balances, platform-held amounts, and recent transfers."
+                      title={t('account.earnings')}
+                      description={t('account.earningsDescription')}
                       to="/account/earnings"
                     />
                   </div>
@@ -354,32 +362,32 @@ export function AccountPage() {
 
               {isServiceProvider ? (
                 <div className={isSeller ? 'space-y-2 border-t border-border/70 pt-6' : 'space-y-2'}>
-                  <p className="font-medium text-foreground">Provider workspace</p>
+                  <p className="font-medium text-foreground">{t('account.providerWorkspace')}</p>
                   <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                     <ActionLinkRow
-                      title="Manage services"
-                      description="Create, update, and organize the services you offer."
+                      title={t('account.manageServices')}
+                      description={t('account.manageServicesDescription')}
                       to="/account/provider/services"
                     />
                     <ActionLinkRow
-                      title="Manage availability"
-                      description="Set working hours and time off for your booking schedule."
+                      title={t('account.manageAvailability')}
+                      description={t('account.manageAvailabilityDescription')}
                       to="/account/provider/availability"
                     />
                     <ActionLinkRow
-                      title="Customer bookings"
-                      description="Review booking requests and manage upcoming appointments."
+                      title={t('account.customerBookings')}
+                      description={t('account.customerBookingsDescription')}
                       to="/account/provider/bookings"
                     />
                     <ActionLinkRow
-                      title="Stripe account"
-                      description="Connect or resume your Stripe onboarding setup."
+                      title={t('account.stripeAccount')}
+                      description={t('account.stripeAccountDescription')}
                       to="/account/stripe"
                       badge={stripeStatusBadge}
                     />
                     <ActionLinkRow
-                      title="Earnings"
-                      description="Review balances, platform-held amounts, and recent transfers."
+                      title={t('account.earnings')}
+                      description={t('account.earningsDescription')}
                       to="/account/earnings"
                     />
                   </div>
@@ -387,45 +395,45 @@ export function AccountPage() {
               ) : null}
 
               <div className={hasBusinessWorkspace ? 'space-y-2 border-t border-border/70 pt-6' : 'space-y-2'}>
-                <p className="font-medium text-foreground">Customer workspace</p>
+                <p className="font-medium text-foreground">{t('account.customerWorkspace')}</p>
                 <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                   <ActionLinkRow
-                    title="Review order history"
-                    description="See all orders, payment states, and purchase details."
+                    title={t('account.reviewOrderHistory')}
+                    description={t('account.reviewOrderHistoryDescription')}
                     to="/account/orders"
                   />
                   <ActionLinkRow
-                    title="Track service bookings"
-                    description="Manage service bookings, cancellations, and reschedules."
+                    title={t('account.trackServiceBookings')}
+                    description={t('account.trackServiceBookingsDescription')}
                     to="/account/bookings"
                   />
                 </div>
               </div>
 
               <div className="space-y-3 border-t border-border/70 pt-6">
-                <p className="font-medium text-foreground">Security</p>
+                <p className="font-medium text-foreground">{t('account.security')}</p>
                 <div className="flex flex-wrap gap-3">
                   <Button asChild variant="outline">
-                    <Link to="/account/change-password">Change password</Link>
+                    <Link to="/account/change-password">{t('account.changePassword')}</Link>
                   </Button>
                 </div>
               </div>
 
               {user?.available_upgrades?.seller || user?.available_upgrades?.service_provider ? (
                 <div className="space-y-3 border-t border-border/70 pt-6">
-                  <p className="font-medium text-foreground">Upgrade options</p>
+                  <p className="font-medium text-foreground">{t('account.upgradeOptions')}</p>
                   <div className="space-y-2 rounded-2xl border border-border/70 p-2">
                     {user?.available_upgrades?.seller ? (
                       <ActionLinkRow
-                        title="Upgrade to seller"
-                        description="Start managing products and seller-side tools."
+                        title={t('account.upgradeSeller')}
+                        description={t('account.upgradeSellerDescription')}
                         to="/account/upgrade/seller"
                       />
                     ) : null}
                     {user?.available_upgrades?.service_provider ? (
                       <ActionLinkRow
-                        title="Upgrade to service provider"
-                        description="Offer services, availability, and bookings."
+                        title={t('account.upgradeProvider')}
+                        description={t('account.upgradeProviderDescription')}
                         to="/account/upgrade/service-provider"
                       />
                     ) : null}
@@ -434,13 +442,12 @@ export function AccountPage() {
               ) : null}
 
               <div className="space-y-3 border-t border-border/70 pt-6">
-                <p className="font-medium text-destructive">Danger zone</p>
+                <p className="font-medium text-destructive">{t('account.dangerZone')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Permanently disable this account. Historical orders and related records remain
-                  preserved.
+                  {t('account.deleteAccountDescription')}
                 </p>
                 <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
-                  Delete account
+                  {t('account.deleteAccount')}
                 </Button>
               </div>
             </CardContent>
