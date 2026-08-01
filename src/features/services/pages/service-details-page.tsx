@@ -3,10 +3,12 @@ import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ContactUserButton } from '@/features/chat/components/contact-user-button'
 import { ServiceBookingCard } from '@/features/services/components/service-booking-card'
 import { useServiceQuery } from '@/features/services/hooks/use-service-query'
 import { buildAssetUrl } from '@/lib/api/asset-url'
 import { getApiErrorMessage } from '@/lib/api/api-error'
+import { useAuth } from '@/lib/auth/use-auth'
 import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
@@ -22,6 +24,7 @@ function parseServiceId(value: string | undefined) {
 
 export function ServiceDetailsPage() {
   const { t } = useTranslation()
+  const { session } = useAuth()
   const { serviceId: serviceIdParam } = useParams()
   const serviceId = parseServiceId(serviceIdParam)
   const serviceQuery = useServiceQuery(serviceId ?? 0, Boolean(serviceId))
@@ -85,6 +88,8 @@ export function ServiceDetailsPage() {
   const provider = service.service_provider ?? service.serviceProvider ?? null
   const providerName = provider?.name ?? t('catalog.independentProvider')
   const providerUserName = provider?.user?.name ?? t('catalog.providerProfilePending')
+  const contactUserId = provider?.user?.id ?? null
+  const isOwner = session?.user.id === contactUserId
   const images = service.images.map((image) => buildAssetUrl(image.image)).filter(Boolean) as string[]
   const primaryImage = images[0] ?? null
 
@@ -145,6 +150,19 @@ export function ServiceDetailsPage() {
                 <span className="text-muted-foreground">{t('details.contact')}</span>
                 <span className="text-foreground">{providerUserName}</span>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('chat.contactProviderTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ContactUserButton
+                userId={contactUserId}
+                isOwner={Boolean(isOwner)}
+                label={t('chat.contactProvider')}
+              />
             </CardContent>
           </Card>
 

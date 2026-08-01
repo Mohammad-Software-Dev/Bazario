@@ -8,6 +8,7 @@ import { SellerUpgradePage } from '@/features/account/pages/seller-upgrade-page'
 import { ServiceProviderUpgradePage } from '@/features/account/pages/service-provider-upgrade-page'
 import { RegisterPage } from '@/features/auth/pages/register-page'
 import { CartPage } from '@/features/cart/pages/cart-page'
+import { ChatPage } from '@/features/chat/pages/chat-page'
 import { ConnectAccountPage } from '@/features/connect/pages/connect-account-page'
 import { EarningsPage } from '@/features/earnings/pages/earnings-page'
 import { HomePage } from '@/features/home/pages/home-page'
@@ -40,6 +41,22 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'cart', element: <CartPage /> },
+      {
+        path: 'chat',
+        element: (
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'chat/:conversationId',
+        element: (
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: 'checkout/success',
         element: (

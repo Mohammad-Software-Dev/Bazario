@@ -1,9 +1,12 @@
-import { Link, NavLink } from 'react-router-dom'
+import { MessageCircle, ShoppingCart } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { useLogoutMutation } from '@/features/auth/hooks/use-logout-mutation'
 import { useCartCount } from '@/features/cart/hooks/use-cart'
+import { useChatUnreadCountQuery } from '@/features/chat/hooks/use-chat-unread-count-query'
+import { useChatUnreadSubscription } from '@/features/chat/hooks/use-chat-unread-subscription'
 import { useAuth } from '@/lib/auth/use-auth'
 import { useAppLanguage } from '@/lib/i18n/use-app-language'
 import { useUiStore } from '@/stores/ui-store'
@@ -17,11 +20,25 @@ const navigationItems = [
 
 export function AppHeader() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { session, isAuthenticated } = useAuth()
   const logoutMutation = useLogoutMutation()
   const openLoginDialog = useUiStore((state) => state.openLoginDialog)
   const cartCount = useCartCount()
   const { language, changeLanguage } = useAppLanguage()
+  const unreadCountQuery = useChatUnreadCountQuery(isAuthenticated)
+  const unreadConversationCount = unreadCountQuery.data?.result.total ?? 0
+
+  useChatUnreadSubscription(session?.user.id, isAuthenticated)
+
+  function handleOpenChat() {
+    if (!isAuthenticated) {
+      openLoginDialog()
+      return
+    }
+
+    navigate('/chat')
+  }
 
   return (
     <header className="border-b bg-background">
@@ -71,8 +88,19 @@ export function AppHeader() {
             </Button>
           </div>
 
+          <Button type="button" variant="ghost" className="px-3" onClick={handleOpenChat}>
+            <MessageCircle className="mr-2 size-4" />
+            {t('header.chat')}
+            {isAuthenticated && unreadConversationCount > 0 ? (
+              <span className="ml-2 rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">
+                {unreadConversationCount}
+              </span>
+            ) : null}
+          </Button>
+
           <Button asChild variant="ghost" className="px-3">
             <Link to="/cart">
+              <ShoppingCart className="mr-2 size-4" />
               {t('header.cart')}
               {cartCount ? (
                 <span className="ml-2 rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">

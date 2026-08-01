@@ -3,10 +3,12 @@ import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ContactUserButton } from '@/features/chat/components/contact-user-button'
 import { ProductPurchaseCard } from '@/features/products/components/product-purchase-card'
 import { useProductQuery } from '@/features/products/hooks/use-product-query'
 import { buildAssetUrl } from '@/lib/api/asset-url'
 import { getApiErrorMessage } from '@/lib/api/api-error'
+import { useAuth } from '@/lib/auth/use-auth'
 import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
@@ -22,6 +24,7 @@ function parseProductId(value: string | undefined) {
 
 export function ProductDetailsPage() {
   const { t } = useTranslation()
+  const { session } = useAuth()
   const { productId: productIdParam } = useParams()
   const productId = parseProductId(productIdParam)
   const productQuery = useProductQuery(productId ?? 0, Boolean(productId))
@@ -84,6 +87,8 @@ export function ProductDetailsPage() {
   const categoryName = getLocalizedValue(product.category?.name) || t('common.uncategorized')
   const storeName = product.seller?.store_name ?? t('catalog.independentSeller')
   const sellerName = product.seller?.user?.name ?? t('catalog.sellerProfilePending')
+  const contactUserId = product.seller?.user?.id ?? null
+  const isOwner = session?.user.id === contactUserId
   const images = product.images.map((image) => buildAssetUrl(image.image)).filter(Boolean) as string[]
   const primaryImage = images[0] ?? null
 
@@ -144,6 +149,19 @@ export function ProductDetailsPage() {
                 <span className="text-muted-foreground">{t('details.contact')}</span>
                 <span className="text-foreground">{sellerName}</span>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('chat.contactSellerTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ContactUserButton
+                userId={contactUserId}
+                isOwner={Boolean(isOwner)}
+                label={t('chat.contactSeller')}
+              />
             </CardContent>
           </Card>
 
