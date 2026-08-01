@@ -34,7 +34,7 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
 
   return (
     <Card
-      className="cursor-pointer overflow-hidden border-border/70 bg-card/90 pt-0 shadow-sm transition-colors hover:border-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="flex h-full cursor-pointer flex-col overflow-hidden border-border/70 bg-card/90 pt-0 shadow-sm transition-colors hover:border-foreground/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       role="link"
       tabIndex={0}
       onClick={handleOpenProduct}
@@ -50,12 +50,11 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
         )}
       </div>
 
-      <CardContent className="space-y-4 p-4">
-        <div className="space-y-3">
+      <CardContent className="flex flex-1 flex-col gap-4 p-4">
+        <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1">
-              <h3 className="line-clamp-2 text-lg font-semibold text-foreground">{productName}</h3>
-              <p className="line-clamp-2 text-sm text-muted-foreground">{productDescription}</p>
+            <div className="min-w-0 flex-1">
+              <h3 className="min-h-[3.5rem] line-clamp-2 text-lg font-semibold text-foreground">{productName}</h3>
             </div>
             {product.isNew ? (
               <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
@@ -63,6 +62,8 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
               </span>
             ) : null}
           </div>
+
+          <p className="min-h-[3.5rem] line-clamp-2 text-sm text-muted-foreground">{productDescription}</p>
 
           <div className="flex items-center justify-between gap-3">
             <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
