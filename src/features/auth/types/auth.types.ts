@@ -5,6 +5,11 @@ export interface AvailableUpgrades {
   service_provider: boolean
 }
 
+export interface UpgradeRequests {
+  seller: 'pending' | null
+  service_provider: 'pending' | null
+}
+
 export interface SellerProfile {
   id: number
   user_id: number
@@ -40,6 +45,7 @@ export interface User {
   seller_profile?: SellerProfile | null
   service_provider_profile?: ServiceProviderProfile | null
   available_upgrades?: AvailableUpgrades
+  upgrade_requests?: UpgradeRequests
   created_at?: string
   updated_at?: string
 }

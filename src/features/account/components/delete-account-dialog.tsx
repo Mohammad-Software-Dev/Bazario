@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,7 @@ interface DeleteAccountDialogProps {
 }
 
 export function DeleteAccountDialog({ open, onOpenChange }: DeleteAccountDialogProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { clearSession } = useAuth()
   const deleteAccountMutation = useDeleteAccountMutation()
@@ -51,14 +53,12 @@ export function DeleteAccountDialog({ open, onOpenChange }: DeleteAccountDialogP
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete account</DialogTitle>
-          <DialogDescription>
-            This will disable your account and sign you out. Your historical orders and related records stay preserved in the system.
-          </DialogDescription>
+          <DialogTitle>{t('account.deleteAccountDialogTitle')}</DialogTitle>
+          <DialogDescription>{t('account.deleteAccountDialogDescription')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2">
-          <Label htmlFor="delete-account-password">Current password</Label>
+          <Label htmlFor="delete-account-password">{t('account.currentPassword')}</Label>
           <Input
             id="delete-account-password"
             type="password"
@@ -69,17 +69,17 @@ export function DeleteAccountDialog({ open, onOpenChange }: DeleteAccountDialogP
           {passwordError ? <p className="text-sm text-destructive">{passwordError}</p> : null}
           {deleteAccountMutation.isError && !passwordError ? (
             <p className="text-sm text-destructive">
-              {getApiErrorMessage(deleteAccountMutation.error, 'Unable to delete your account right now.')}
+              {getApiErrorMessage(deleteAccountMutation.error, t('account.deleteAccountError'))}
             </p>
           ) : null}
         </div>
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => handleClose(false)} disabled={deleteAccountMutation.isPending}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleteAccountMutation.isPending || !password.trim()}>
-            {deleteAccountMutation.isPending ? 'Deleting...' : 'Delete account'}
+            {deleteAccountMutation.isPending ? t('account.deletingAccount') : t('account.deleteAccount')}
           </Button>
         </div>
       </DialogContent>

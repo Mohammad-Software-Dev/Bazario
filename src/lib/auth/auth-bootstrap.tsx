@@ -43,8 +43,13 @@ export function AuthBootstrap({ children }: PropsWithChildren) {
       return
     }
 
+    if (verifiedUser.roles?.includes('admin')) {
+      clearSession()
+      return
+    }
+
     syncVerifiedUser(verifiedUser)
-  }, [hasToken, meQuery.data, syncVerifiedUser])
+  }, [clearSession, hasToken, meQuery.data, syncVerifiedUser])
 
   return children
 }

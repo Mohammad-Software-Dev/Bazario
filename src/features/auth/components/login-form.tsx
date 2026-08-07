@@ -41,6 +41,11 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     try {
       const response = await loginMutation.mutateAsync(values)
 
+      if (response.result.roles.includes('admin')) {
+        setServerError(t('auth.adminMarketplaceBlocked'))
+        return
+      }
+
       setSession({
         token: response.result.token,
         user: response.result.user,

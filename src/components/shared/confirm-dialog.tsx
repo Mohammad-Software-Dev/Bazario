@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,12 +26,14 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   isPending = false,
   variant = 'default',
 }: ConfirmDialogProps) {
+  const { t } = useTranslation()
+
   function handleOpenChange(nextOpen: boolean) {
     if (!isPending) {
       onOpenChange(nextOpen)
@@ -46,10 +50,14 @@ export function ConfirmDialog({
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={isPending}>
-            {cancelLabel}
+            {cancelLabel ?? t('common.cancel')}
           </Button>
-          <Button variant={variant === 'destructive' ? 'destructive' : 'default'} onClick={onConfirm} disabled={isPending}>
-            {confirmLabel}
+          <Button
+            variant={variant === 'destructive' ? 'destructive' : 'default'}
+            onClick={onConfirm}
+            disabled={isPending}
+          >
+            {confirmLabel ?? t('common.confirm')}
           </Button>
         </div>
       </DialogContent>

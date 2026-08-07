@@ -164,8 +164,9 @@ export function BookingDatePicker({ disabled = false, minDate, onChange, value }
               type="button"
               onClick={() => onChange(dateValue)}
               disabled={disabled || isPast}
+              aria-pressed={isSelected}
               className={cn(
-                'flex h-10 items-center justify-center rounded-lg text-sm transition-colors',
+                'flex h-10 items-center justify-center rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 isSelected ? 'bg-foreground text-background' : 'hover:bg-muted/60',
                 !inCurrentMonth && !isSelected ? 'text-muted-foreground/50' : '',
                 isPast ? 'cursor-not-allowed opacity-40 hover:bg-transparent' : '',
