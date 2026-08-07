@@ -93,8 +93,8 @@ export function ProductDetailsPage() {
   const primaryImage = images[0] ?? null
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 md:py-12">
-      <div className="flex items-center justify-between gap-4">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">{t('details.productDetails')}</p>
           <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">{productName}</h1>
@@ -104,8 +104,8 @@ export function ProductDetailsPage() {
         </Button>
       </div>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="self-start overflow-hidden pt-0">
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+        <Card className="overflow-hidden pt-0">
           <div className="aspect-[16/10] bg-muted">
             {primaryImage ? (
               <img src={primaryImage} alt={productName} className="h-full w-full object-cover" />

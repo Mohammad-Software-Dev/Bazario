@@ -39,11 +39,11 @@ export function ChatThread({
   }, [messages])
 
   return (
-    <Card className="h-full">
+    <Card className="h-full border-border/70 shadow-sm">
       <CardHeader>
         <CardTitle>{conversation?.peer?.name ?? t('chat.selectConversation')}</CardTitle>
       </CardHeader>
-      <CardContent className="flex h-[70vh] flex-col gap-4">
+      <CardContent className="flex min-h-[26rem] flex-1 flex-col gap-4 p-4 md:h-[70vh]">
         <div className="flex-1 space-y-3 overflow-y-auto rounded-xl border bg-muted/20 p-4">
           {!conversation ? (
             <p className="text-sm text-muted-foreground">{t('chat.selectConversationPrompt')}</p>

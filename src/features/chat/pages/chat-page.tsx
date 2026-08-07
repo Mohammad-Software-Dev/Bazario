@@ -336,7 +336,7 @@ export function ChatPage() {
         <p className="text-sm text-muted-foreground">{t('chat.pageDescription')}</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
         <ChatConversationList
           conversations={conversations}
           activeConversationId={activeConversationId}

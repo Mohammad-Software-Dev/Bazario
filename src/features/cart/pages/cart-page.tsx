@@ -35,7 +35,7 @@ export function CartPage() {
         <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">{t('cart.title')}</h1>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
+      <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-start">
         <section className="space-y-4">
           {items.length ? (
             items.map((item) => (

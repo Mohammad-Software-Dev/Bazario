@@ -19,11 +19,11 @@ export function ChatConversationList({
   const { t } = useTranslation()
 
   return (
-    <Card className="h-full">
+    <Card className="h-full border-border/70 shadow-sm">
       <CardHeader>
         <CardTitle>{t('chat.conversations')}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 p-4">
         {conversations.length ? (
           conversations.map((conversation) => {
             const isActive = conversation.id === activeConversationId
@@ -35,7 +35,7 @@ export function ChatConversationList({
                 key={conversation.id}
                 to={`/chat/${conversation.id}`}
                 className={cn(
-                  'block rounded-xl border px-4 py-3 transition-colors',
+                  'block rounded-xl border px-4 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                   isActive
                     ? 'border-foreground bg-foreground text-background'
                     : 'border-border bg-background hover:bg-muted/40',

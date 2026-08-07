@@ -49,6 +49,22 @@ function ActionLinkRow({ title, description, to, badge }: ActionLinkRowProps) {
   )
 }
 
+function PendingUpgradeRow({ title, description }: { title: string; description: string }) {
+  const { t } = useTranslation()
+
+  return (
+    <div className="rounded-xl px-3 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-medium text-foreground">{title}</p>
+        <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
+          {t('account.applicationPending')}
+        </span>
+      </div>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+    </div>
+  )
+}
+
 function StripeStatusBadge() {
   const { t } = useTranslation()
   const connectStatusQuery = useConnectStatusQuery(true)
@@ -273,9 +289,10 @@ export function AccountPage() {
 
   const user = meQuery.data?.result.user ?? session?.user
   const roles = session?.roles ?? user?.roles ?? []
-  const isSeller = roles.includes('seller') || Boolean(user?.seller_profile)
-  const isServiceProvider =
-    roles.includes('service_provider') || Boolean(user?.service_provider_profile)
+  const isSeller = roles.includes('seller')
+  const isServiceProvider = roles.includes('service_provider')
+  const sellerUpgradePending = user?.upgrade_requests?.seller === 'pending'
+  const serviceProviderUpgradePending = user?.upgrade_requests?.service_provider === 'pending'
   const hasBusinessWorkspace = isSeller || isServiceProvider
   const counts = meQuery.data?.result.counts
   const recentOrders = meQuery.data?.result.recent_orders ?? []
@@ -419,15 +436,27 @@ export function AccountPage() {
                 </div>
               </div>
 
-              {user?.available_upgrades?.seller || user?.available_upgrades?.service_provider ? (
+              {user?.available_upgrades?.seller || user?.available_upgrades?.service_provider || sellerUpgradePending || serviceProviderUpgradePending ? (
                 <div className="space-y-3 border-t border-border/70 pt-6">
                   <p className="font-medium text-foreground">{t('account.upgradeOptions')}</p>
                   <div className="space-y-2 rounded-2xl border border-border/70 p-2">
+                    {sellerUpgradePending ? (
+                      <PendingUpgradeRow
+                        title={t('account.upgradeSeller')}
+                        description={t('account.upgradeSellerPendingDescription')}
+                      />
+                    ) : null}
                     {user?.available_upgrades?.seller ? (
                       <ActionLinkRow
                         title={t('account.upgradeSeller')}
                         description={t('account.upgradeSellerDescription')}
                         to="/account/upgrade/seller"
+                      />
+                    ) : null}
+                    {serviceProviderUpgradePending ? (
+                      <PendingUpgradeRow
+                        title={t('account.upgradeProvider')}
+                        description={t('account.upgradeProviderPendingDescription')}
                       />
                     ) : null}
                     {user?.available_upgrades?.service_provider ? (

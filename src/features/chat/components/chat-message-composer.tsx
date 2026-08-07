@@ -38,6 +38,7 @@ export function ChatMessageComposer({
   return (
     <div className="space-y-3 border-t pt-4">
       <Textarea
+        aria-label={t('chat.messageInputLabel')}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={handleKeyDown}
@@ -45,7 +46,8 @@ export function ChatMessageComposer({
         disabled={disabled || isSending}
         className="min-h-28 resize-none"
       />
-      <div className="flex justify-end">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-muted-foreground">{t('chat.sendShortcutHint')}</p>
         <Button onClick={onSubmit} disabled={disabled || isSending || !value.trim()}>
           {isSending ? t('chat.sending') : t('chat.send')}
         </Button>

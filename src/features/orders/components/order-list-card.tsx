@@ -73,7 +73,7 @@ export function OrderListCard({ order }: OrderListCardProps) {
     <>
       <Card className="border-border/70 shadow-sm">
         <CardContent className="p-4 md:p-5">
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_180px_120px_220px] xl:items-center">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.8fr)_minmax(0,0.65fr)] lg:items-center">
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-base font-semibold text-foreground">{t('orders.orderLabel', { id: order.id })}</h2>
@@ -88,34 +88,34 @@ export function OrderListCard({ order }: OrderListCardProps) {
               <p className="truncate text-sm text-muted-foreground">{getItemSummary(order, t)}</p>
             </div>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground xl:justify-self-start">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <span>{getOrderMixLabel(order, t)}</span>
             </div>
 
-            <div className="xl:text-right">
+            <div className="flex flex-col gap-3 lg:items-end">
               <p className="text-lg font-semibold text-foreground">{formatOrderMoney(order.total_amount, order.currency_iso)}</p>
-            </div>
 
-            <div className="flex flex-wrap gap-2 xl:justify-end">
-              {order.status === 'requires_payment' ? (
-                <Button
-                  onClick={() => startCheckoutSessionMutation.mutate(order.id)}
-                  disabled={isStartingCheckout || isDeleting}
-                  size="sm"
-                >
-                  {isStartingCheckout ? t('orders.starting') : t('orders.completePayment')}
+              <div className="flex flex-wrap gap-2 lg:justify-end">
+                {order.status === 'requires_payment' ? (
+                  <Button
+                    onClick={() => startCheckoutSessionMutation.mutate(order.id)}
+                    disabled={isStartingCheckout || isDeleting}
+                    size="sm"
+                  >
+                    {isStartingCheckout ? t('orders.starting') : t('orders.completePayment')}
+                  </Button>
+                ) : null}
+
+                {canDelete ? (
+                  <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting || isStartingCheckout} size="sm">
+                    {isDeleting ? t('orders.deleting') : t('orders.deleteOrder')}
+                  </Button>
+                ) : null}
+
+                <Button asChild variant="outline" size="sm">
+                  <Link to={`/account/orders/${order.id}`}>{t('common.viewDetails')}</Link>
                 </Button>
-              ) : null}
-
-              {canDelete ? (
-                <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting || isStartingCheckout} size="sm">
-                  {isDeleting ? t('orders.deleting') : t('orders.deleteOrder')}
-                </Button>
-              ) : null}
-
-              <Button asChild variant="outline" size="sm">
-                <Link to={`/account/orders/${order.id}`}>{t('common.viewDetails')}</Link>
-              </Button>
+              </div>
             </div>
           </div>
 

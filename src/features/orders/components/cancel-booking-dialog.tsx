@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -20,6 +21,7 @@ interface CancelBookingDialogProps {
 }
 
 export function CancelBookingDialog({ bookingId, open, onOpenChange }: CancelBookingDialogProps) {
+  const { t } = useTranslation()
   const cancelBookingMutation = useCancelBookingMutation()
   const [reason, setReason] = useState('')
 
@@ -50,36 +52,34 @@ export function CancelBookingDialog({ bookingId, open, onOpenChange }: CancelBoo
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Cancel booking</DialogTitle>
-          <DialogDescription>
-            Cancel this booking now. If the service policy allows it and the booking is paid, the refund result will be shown after cancellation.
-          </DialogDescription>
+          <DialogTitle>{t('orders.cancelBookingDialogTitle')}</DialogTitle>
+          <DialogDescription>{t('orders.cancelBookingDialogDescription')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2">
-          <Label htmlFor="cancel-booking-reason">Reason (optional)</Label>
+          <Label htmlFor="cancel-booking-reason">{t('orders.reasonOptional')}</Label>
           <Textarea
             id="cancel-booking-reason"
             rows={3}
             value={reason}
             onChange={(event) => setReason(event.target.value)}
-            placeholder="Add a short note for the provider."
+            placeholder={t('orders.cancelBookingReasonPlaceholder')}
             disabled={cancelBookingMutation.isPending}
           />
         </div>
 
         {cancelBookingMutation.isError ? (
           <p className="text-sm text-destructive">
-            {getApiErrorMessage(cancelBookingMutation.error, 'Unable to cancel this booking right now.')}
+            {getApiErrorMessage(cancelBookingMutation.error, t('orders.cancelBookingError'))}
           </p>
         ) : null}
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={cancelBookingMutation.isPending}>
-            Keep booking
+            {t('orders.keepBooking')}
           </Button>
           <Button onClick={handleSubmit} disabled={cancelBookingMutation.isPending}>
-            {cancelBookingMutation.isPending ? 'Cancelling...' : 'Confirm cancellation'}
+            {cancelBookingMutation.isPending ? t('orders.cancelling') : t('orders.confirmCancellation')}
           </Button>
         </div>
       </DialogContent>

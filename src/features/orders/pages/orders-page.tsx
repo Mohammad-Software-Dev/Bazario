@@ -19,7 +19,7 @@ export function OrdersPage() {
   const ordersQuery = useMyOrdersQuery(page)
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 md:px-6 md:py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 md:px-6 md:py-10">
       <div className="space-y-2">
         <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
           {t('orders.pageEyebrow')}
@@ -52,8 +52,8 @@ export function OrdersPage() {
                     {t('orders.orderHistoryDescription')}
                   </CardDescription>
                 </div>
-                <div className="rounded-full bg-slate-50 px-4 py-2 ring-1 ring-slate-200">
-                  <p className="text-sm font-medium text-slate-700">
+                <div className="rounded-full border border-border/70 bg-muted/40 px-4 py-2">
+                  <p className="text-sm font-medium text-foreground">
                     {t('orders.totalOrders', { count: ordersQuery.data.total })}
                   </p>
                 </div>

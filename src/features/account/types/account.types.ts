@@ -1,4 +1,4 @@
-import type { Role, User } from '@/features/auth/types/auth.types'
+import type { Role, UpgradeRequests, User } from '@/features/auth/types/auth.types'
 import type { LocalizedValue } from '@/lib/localized-value'
 
 export interface AvailableUpgrades {
@@ -111,6 +111,7 @@ export interface MeResult {
     seller_profile?: SellerProfile | null
     service_provider_profile?: ServiceProviderProfile | null
     available_upgrades?: AvailableUpgrades
+    upgrade_requests?: UpgradeRequests
   }
   counts?: AccountSummaryCounts
   recent_orders?: RecentOrder[]

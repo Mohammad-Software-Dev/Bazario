@@ -39,6 +39,10 @@ export function BookingListCard({ booking }: BookingListCardProps) {
       ? t('bookings.availableUntil', { date: rescheduleDeadline })
       : t('bookings.availableUntilServiceStarts')
     : booking.actions.reschedule_block_reason ?? t('bookings.reschedulingUnavailable')
+  const unavailableSummaries = [
+    !booking.actions.can_reschedule ? rescheduleSummary : null,
+    !booking.actions.can_cancel ? cancelSummary : null,
+  ].filter(Boolean)
 
   return (
     <>
@@ -57,14 +61,16 @@ export function BookingListCard({ booking }: BookingListCardProps) {
             {booking.location_type ? <p>{t('bookings.location', { value: booking.location_type })}</p> : null}
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg bg-muted/30 p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('bookings.cancellation')}</p>
-              <p className="mt-1 text-sm text-foreground">{cancelSummary}</p>
-            </div>
-            <div className="rounded-lg bg-muted/30 p-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t('bookings.rescheduling')}</p>
-              <p className="mt-1 text-sm text-foreground">{rescheduleSummary}</p>
+          <div className="rounded-xl border border-dashed border-border/80 bg-muted/20 p-3">
+            <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-6">
+              <p>
+                <span className="font-medium text-foreground">{t('bookings.cancellation')}:</span>{' '}
+                {cancelSummary}
+              </p>
+              <p>
+                <span className="font-medium text-foreground">{t('bookings.rescheduling')}:</span>{' '}
+                {rescheduleSummary}
+              </p>
             </div>
           </div>
 
@@ -78,27 +84,33 @@ export function BookingListCard({ booking }: BookingListCardProps) {
             </div>
           ) : null}
 
-          <div className="flex flex-wrap gap-3">
-            {shouldShowRescheduleAction ? (
-              booking.actions.can_reschedule ? (
-                <Button asChild variant="outline">
-                  <Link to={`/account/bookings/${booking.id}/reschedule`}>{t('orders.reschedule')}</Link>
-                </Button>
-              ) : (
-                <Button variant="outline" disabled>
-                  {t('orders.reschedule')}
-                </Button>
-              )
-            ) : null}
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-3">
+              {shouldShowRescheduleAction ? (
+                booking.actions.can_reschedule ? (
+                  <Button asChild variant="outline">
+                    <Link to={`/account/bookings/${booking.id}/reschedule`}>{t('orders.reschedule')}</Link>
+                  </Button>
+                ) : (
+                  <Button variant="outline" disabled>
+                    {t('orders.reschedule')}
+                  </Button>
+                )
+              ) : null}
 
-            {shouldShowCancelAction ? (
-              <Button
-                variant="outline"
-                onClick={() => setIsCancelDialogOpen(true)}
-                disabled={!booking.actions.can_cancel}
-              >
-                {t('orders.cancelBooking')}
-              </Button>
+              {shouldShowCancelAction ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCancelDialogOpen(true)}
+                  disabled={!booking.actions.can_cancel}
+                >
+                  {t('orders.cancelBooking')}
+                </Button>
+              ) : null}
+            </div>
+
+            {unavailableSummaries.length ? (
+              <p className="text-sm text-muted-foreground">{unavailableSummaries.join(' ')}</p>
             ) : null}
           </div>
         </CardContent>

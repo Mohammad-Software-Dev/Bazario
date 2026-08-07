@@ -116,6 +116,10 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
       cancelReason,
     }
   }, [booking, canShowBookingActions, t])
+  const unavailableSummaries = [
+    !actionState.canReschedule ? actionState.rescheduleReason : null,
+    !actionState.canCancel ? actionState.cancelReason : null,
+  ].filter(Boolean)
 
   return (
     <Card className="border-border/70 shadow-sm">
@@ -144,7 +148,7 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
 
         {booking ? (
           <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-medium text-foreground">{t('orders.booking')}</p>
@@ -158,8 +162,8 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
               </div>
 
               {canShowBookingActions ? (
-                <div className="space-y-2 md:text-right">
-                  <div className="flex flex-wrap gap-2 md:justify-end">
+                <div className="space-y-2 lg:max-w-sm lg:text-right">
+                  <div className="flex flex-wrap gap-2 lg:justify-end">
                     {actionState.canReschedule ? (
                       <Button asChild variant="outline" size="sm">
                         <Link to={`/account/bookings/${booking.id}/reschedule`}>{t('orders.reschedule')}</Link>
@@ -179,10 +183,9 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
                     </Button>
                   </div>
 
-                  <div className="space-y-1 text-xs text-muted-foreground">
-                    {!actionState.canReschedule && actionState.rescheduleReason ? <p>{actionState.rescheduleReason}</p> : null}
-                    {!actionState.canCancel && actionState.cancelReason ? <p>{actionState.cancelReason}</p> : null}
-                  </div>
+                  {unavailableSummaries.length ? (
+                    <p className="text-sm text-muted-foreground">{unavailableSummaries.join(' ')}</p>
+                  ) : null}
                 </div>
               ) : null}
             </div>
