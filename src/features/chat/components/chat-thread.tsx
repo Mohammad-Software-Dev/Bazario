@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDateTime } from '@/lib/i18n/format'
@@ -18,6 +19,8 @@ interface ChatThreadProps {
   isLoading: boolean
   isSending: boolean
   errorMessage: string | null
+  backHref?: string
+  showBackButton?: boolean
 }
 
 export function ChatThread({
@@ -30,6 +33,8 @@ export function ChatThread({
   isLoading,
   isSending,
   errorMessage,
+  backHref,
+  showBackButton = false,
 }: ChatThreadProps) {
   const { t } = useTranslation()
   const bottomRef = useRef<HTMLDivElement | null>(null)
@@ -41,7 +46,17 @@ export function ChatThread({
   return (
     <Card className="h-full border-border/70 shadow-sm">
       <CardHeader>
-        <CardTitle>{conversation?.peer?.name ?? t('chat.selectConversation')}</CardTitle>
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle>{conversation?.peer?.name ?? t('chat.selectConversation')}</CardTitle>
+          {showBackButton && backHref ? (
+            <Link
+              to={backHref}
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t('chat.backToConversations')}
+            </Link>
+          ) : null}
+        </div>
       </CardHeader>
       <CardContent className="flex min-h-[26rem] flex-1 flex-col gap-4 p-4 md:h-[70vh]">
         <div className="flex-1 space-y-3 overflow-y-auto rounded-xl border bg-muted/20 p-4">

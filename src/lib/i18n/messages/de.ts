@@ -58,6 +58,7 @@ const de = {
     eyebrow: 'Nachrichten',
     pageTitle: 'Chat',
     pageDescription: 'Starte direkte Gespräche und führe sie an einem Ort weiter.',
+    backToConversations: 'Zurück zu den Unterhaltungen',
     conversations: 'Unterhaltungen',
     loadingConversations: 'Unterhaltungen werden geladen...',
     loadConversationsError: 'Deine Unterhaltungen konnten gerade nicht geladen werden.',

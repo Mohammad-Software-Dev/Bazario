@@ -98,11 +98,11 @@ export function ProductsPage() {
           {t('catalog.filterByCategory')}
         </h2>
         {categoriesQuery.isLoading ? (
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: 4 }).map((_, index) => (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="h-9 w-24 animate-pulse rounded-md bg-muted"
+                className="h-9 w-24 shrink-0 animate-pulse rounded-md bg-muted"
               />
             ))}
           </div>

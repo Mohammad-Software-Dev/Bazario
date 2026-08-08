@@ -58,6 +58,7 @@ const en = {
     eyebrow: 'Messages',
     pageTitle: 'Chat',
     pageDescription: 'Start direct conversations and continue them in one place.',
+    backToConversations: 'Back to conversations',
     conversations: 'Conversations',
     loadingConversations: 'Loading conversations...',
     loadConversationsError: 'Unable to load your conversations right now.',

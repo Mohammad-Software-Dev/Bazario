@@ -54,6 +54,13 @@ export function ChatPage() {
   const { conversationId: conversationIdParam } = useParams()
   const { session } = useAuth()
   const [messageBody, setMessageBody] = useState('')
+  const [isCompactLayout, setIsCompactLayout] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false
+    }
+
+    return window.innerWidth < 1024
+  })
   const activeConversationId = parseConversationId(conversationIdParam)
   const conversationsQuery = useConversationsQuery(20, true)
   const conversations = useMemo(() => conversationsQuery.data?.result.data ?? [], [conversationsQuery.data])
@@ -66,12 +73,42 @@ export function ChatPage() {
   const sendMessageMutation = useSendMessageMutation(activeConversationId ?? 0)
 
   useEffect(() => {
-    if (activeConversationId || !conversations.length) {
+    if (isCompactLayout || activeConversationId || !conversations.length) {
       return
     }
 
     navigate(`/chat/${conversations[0].id}`, { replace: true })
-  }, [activeConversationId, conversations, navigate])
+  }, [activeConversationId, conversations, isCompactLayout, navigate])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 1023px)')
+
+    function handleChange(event: MediaQueryListEvent | MediaQueryList) {
+      setIsCompactLayout(event.matches)
+    }
+
+    handleChange(mediaQuery)
+
+    const supportsModernListener = typeof mediaQuery.addEventListener === 'function'
+
+    if (supportsModernListener) {
+      mediaQuery.addEventListener('change', handleChange)
+
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange)
+      }
+    }
+
+    mediaQuery.addListener(handleChange)
+
+    return () => {
+      mediaQuery.removeListener(handleChange)
+    }
+  }, [])
 
   useEffect(() => {
     if (!activeConversationId || !messagesQuery.data?.result.data.length || !session?.user.id) {
@@ -336,27 +373,54 @@ export function ChatPage() {
         <p className="text-sm text-muted-foreground">{t('chat.pageDescription')}</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
-        <ChatConversationList
-          conversations={conversations}
-          activeConversationId={activeConversationId}
-        />
-        <ChatThread
-          conversation={activeConversation}
-          messages={messages}
-          currentUserId={session?.user.id ?? null}
-          messageBody={messageBody}
-          onMessageBodyChange={setMessageBody}
-          onSendMessage={handleSendMessage}
-          isLoading={messagesQuery.isLoading}
-          isSending={sendMessageMutation.isPending}
-          errorMessage={
-            messagesQuery.isError
-              ? getApiErrorMessage(messagesQuery.error, t('chat.loadMessagesError'))
-              : null
-          }
-        />
-      </div>
+      {isCompactLayout ? (
+        activeConversationId ? (
+          <ChatThread
+            conversation={activeConversation}
+            messages={messages}
+            currentUserId={session?.user.id ?? null}
+            messageBody={messageBody}
+            onMessageBodyChange={setMessageBody}
+            onSendMessage={handleSendMessage}
+            isLoading={messagesQuery.isLoading}
+            isSending={sendMessageMutation.isPending}
+            errorMessage={
+              messagesQuery.isError
+                ? getApiErrorMessage(messagesQuery.error, t('chat.loadMessagesError'))
+                : null
+            }
+            backHref="/chat"
+            showBackButton
+          />
+        ) : (
+          <ChatConversationList
+            conversations={conversations}
+            activeConversationId={activeConversationId}
+          />
+        )
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+          <ChatConversationList
+            conversations={conversations}
+            activeConversationId={activeConversationId}
+          />
+          <ChatThread
+            conversation={activeConversation}
+            messages={messages}
+            currentUserId={session?.user.id ?? null}
+            messageBody={messageBody}
+            onMessageBodyChange={setMessageBody}
+            onSendMessage={handleSendMessage}
+            isLoading={messagesQuery.isLoading}
+            isSending={sendMessageMutation.isPending}
+            errorMessage={
+              messagesQuery.isError
+                ? getApiErrorMessage(messagesQuery.error, t('chat.loadMessagesError'))
+                : null
+            }
+          />
+        </div>
+      )}
     </div>
   )
 }
