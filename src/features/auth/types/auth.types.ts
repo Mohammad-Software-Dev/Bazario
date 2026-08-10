@@ -91,3 +91,22 @@ export interface UpdatePasswordPayload {
 export interface DeleteAccountPayload {
   password: string
 }
+
+export interface ForgotPasswordPayload {
+  email: string
+}
+
+export interface VerifyResetOtpPayload {
+  email: string
+  otp: string
+}
+
+export interface VerifyResetOtpResult {
+  token: string
+}
+
+export interface ResetPasswordPayload {
+  email: string
+  token: string
+  password: string
+}

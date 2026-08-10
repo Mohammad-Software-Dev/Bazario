@@ -91,6 +91,17 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         {loginMutation.isPending ? t('auth.signingIn') : t('auth.signIn')}
       </Button>
 
+      <button
+        className="text-sm font-medium text-foreground underline underline-offset-4"
+        type="button"
+        onClick={() => {
+          onSuccess?.()
+          navigate('/forgot-password')
+        }}
+      >
+        {t('auth.forgotPasswordLink')}
+      </button>
+
       <p className="text-sm text-muted-foreground">
         {t('auth.dontHaveAccount')}{' '}
         <button
