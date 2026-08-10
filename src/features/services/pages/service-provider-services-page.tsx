@@ -12,7 +12,7 @@ import { ServicePreviewCard } from "@/features/services/components/service-previ
 import { useServiceProviderServicesQuery } from "@/features/services/hooks/use-service-provider-services-query";
 import type { ServiceProviderProfile } from "@/features/services/types/service.types";
 import { getApiErrorMessage } from "@/lib/api/api-error";
-import { buildAssetUrl } from "@/lib/api/asset-url";
+import { resolveMediaUrl } from "@/lib/api/asset-url";
 
 function ServicesGridSkeleton() {
   return (
@@ -85,7 +85,7 @@ export function ServiceProviderServicesPage() {
   const serviceProvider =
     serviceProviderServicesQuery.data?.result.service_provider ??
     locationState?.serviceProvider;
-  const serviceProviderImageUrl = buildAssetUrl(serviceProvider?.logo);
+  const serviceProviderImageUrl = resolveMediaUrl(serviceProvider?.logo_url, serviceProvider?.logo);
 
   function handlePageChange(nextPage: number) {
     const nextParams = new URLSearchParams();

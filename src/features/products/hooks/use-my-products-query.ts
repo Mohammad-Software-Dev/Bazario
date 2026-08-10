@@ -5,11 +5,15 @@ import { getMyProducts } from '@/features/products/api/products-api'
 interface UseMyProductsQueryOptions {
   page?: number
   perPage?: number
+  enabled?: boolean
 }
 
 export function useMyProductsQuery(options: UseMyProductsQueryOptions = {}) {
+  const { enabled = true, ...params } = options
+
   return useQuery({
-    queryKey: ['my-products', options],
-    queryFn: () => getMyProducts(options),
+    queryKey: ['my-products', params],
+    queryFn: () => getMyProducts(params),
+    enabled,
   })
 }

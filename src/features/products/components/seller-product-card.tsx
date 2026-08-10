@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ProductListItem } from '@/features/products/types/product.types'
-import { buildAssetUrl } from '@/lib/api/asset-url'
+import { resolveMediaUrl } from '@/lib/api/asset-url'
 import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
@@ -15,7 +15,7 @@ interface SellerProductCardProps {
 
 export function SellerProductCard({ product, onDelete }: SellerProductCardProps) {
   const { t } = useTranslation()
-  const imageUrl = buildAssetUrl(product.images[0]?.image)
+  const imageUrl = resolveMediaUrl(product.images[0]?.image_url, product.images[0]?.image)
   const productName = getLocalizedValue(product.name) || t('common.untitledProduct')
   const productDescription = getLocalizedValue(product.description) || t('common.noDescriptionYet')
   const categoryName = getLocalizedValue(product.category?.name) || t('common.uncategorized')

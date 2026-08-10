@@ -2,6 +2,7 @@ import type { ApiSuccessResponse } from '@/lib/api/api-error'
 import { httpClient } from '@/lib/api/http-client'
 
 import { homeEndpoints } from '@/features/home/api/home-endpoints'
+import { normalizeListingRecord } from '@/features/listings/lib/listing-mappers'
 import type { HomeResult } from '@/features/home/types/home.types'
 
 interface GetHomeParams {
@@ -15,5 +16,14 @@ export async function getHome(params: GetHomeParams = {}) {
     },
   })
 
-  return response.data
+  return {
+    ...response.data,
+    result: {
+      ...response.data.result,
+      ads: {
+        ...response.data.result.ads,
+        announcements: (response.data.result.ads.announcements ?? []).map(normalizeListingRecord),
+      },
+    },
+  }
 }

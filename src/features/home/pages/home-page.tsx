@@ -1,47 +1,96 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next";
 
-import { Card, CardContent } from '@/components/ui/card'
-import { getApiErrorMessage } from '@/lib/api/api-error'
+import { Card, CardContent } from "@/components/ui/card";
+import { getApiErrorMessage } from "@/lib/api/api-error";
 
-import { HomePreviewGridSkeleton } from '@/features/home/components/home-preview-grid-skeleton'
-import { HomePreviewSection } from '@/features/home/components/home-preview-section'
-import { useHomeQuery } from '@/features/home/hooks/use-home-query'
-import { ProductPreviewCard } from '@/features/products/components/product-preview-card'
-import { ServicePreviewCard } from '@/features/services/components/service-preview-card'
+import { AdsSection } from "@/features/ads/components/ads-section";
+import { SponsoredAdsCarousel } from "@/features/ads/components/sponsored-ads-carousel";
+import {
+  mapAdToViewModel,
+} from "@/features/ads/lib/ad-mappers";
+import { HomePreviewGridSkeleton } from "@/features/home/components/home-preview-grid-skeleton";
+import { HomePreviewSection } from "@/features/home/components/home-preview-section";
+import { useHomeQuery } from "@/features/home/hooks/use-home-query";
+import { MarketplaceUpdatesCarousel } from "@/features/listings/components/marketplace-updates-carousel";
+import { ProductPreviewCard } from "@/features/products/components/product-preview-card";
+import { ServicePreviewCard } from "@/features/services/components/service-preview-card";
 
 export function HomePage() {
-  const { t } = useTranslation()
-  const homeQuery = useHomeQuery({ latestLimit: 8 })
+  const { t } = useTranslation();
+  const homeQuery = useHomeQuery({ latestLimit: 8 });
 
-  const products = homeQuery.data?.result.products.latest ?? []
-  const services = homeQuery.data?.result.services.latest ?? []
+  const products = homeQuery.data?.result.products.latest ?? [];
+  const services = homeQuery.data?.result.services.latest ?? [];
+  const goldAds = homeQuery.data?.result.ads.gold ?? [];
+  const silverAds = homeQuery.data?.result.ads.silver ?? [];
+  const normalAds = homeQuery.data?.result.ads.normal ?? [];
+  const announcementListings = homeQuery.data?.result.ads.announcements ?? [];
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:py-12">
-      <section className="space-y-3">
-        <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-          {t('home.title')}
-        </h1>
-        <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-          {t('home.subtitle')}
-        </p>
-      </section>
-
       {homeQuery.isLoading ? <HomePreviewGridSkeleton /> : null}
 
       {!homeQuery.isLoading && homeQuery.isError ? (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(homeQuery.error, t('home.loadError'))}
+            {getApiErrorMessage(homeQuery.error, t("home.loadError"))}
           </CardContent>
         </Card>
       ) : null}
 
       {!homeQuery.isLoading && !homeQuery.isError ? (
         <>
+          <AdsSection
+            title={t("ads.marketplaceUpdates")}
+            emptyMessage={t("ads.noAnnouncements")}
+          >
+            {announcementListings.length ? (
+              <MarketplaceUpdatesCarousel listings={announcementListings} />
+            ) : null}
+          </AdsSection>
+
+          <AdsSection
+            title={t("ads.goldPlacement")}
+            emptyMessage={t("ads.noGoldAds")}
+          >
+            {goldAds.length ? (
+              <SponsoredAdsCarousel
+                ads={goldAds.map(mapAdToViewModel)}
+                variant="featured"
+                itemClassName="basis-[92%] lg:basis-[84%]"
+              />
+            ) : null}
+          </AdsSection>
+
+          <AdsSection
+            title={t("ads.silverPlacement")}
+            emptyMessage={t("ads.noSilverAds")}
+          >
+            {silverAds.length ? (
+              <SponsoredAdsCarousel
+                ads={silverAds.map(mapAdToViewModel)}
+                variant="default"
+                itemClassName="basis-[88%] md:basis-[46%]"
+              />
+            ) : null}
+          </AdsSection>
+
+          <AdsSection
+            title={t("ads.normalPlacement")}
+            emptyMessage={t("ads.noNormalAds")}
+          >
+            {normalAds.length ? (
+              <SponsoredAdsCarousel
+                ads={normalAds.map(mapAdToViewModel)}
+                variant="compact"
+                itemClassName="basis-[84%] md:basis-[42%] xl:basis-[31%]"
+              />
+            ) : null}
+          </AdsSection>
+
           <HomePreviewSection
-            title={t('home.latestProducts')}
-            emptyMessage={t('home.emptyProducts')}
+            title={t("home.latestProducts")}
+            emptyMessage={t("home.emptyProducts")}
           >
             {products.length ? (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -53,8 +102,8 @@ export function HomePage() {
           </HomePreviewSection>
 
           <HomePreviewSection
-            title={t('home.latestServices')}
-            emptyMessage={t('home.emptyServices')}
+            title={t("home.latestServices")}
+            emptyMessage={t("home.emptyServices")}
           >
             {services.length ? (
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -67,5 +116,5 @@ export function HomePage() {
         </>
       ) : null}
     </div>
-  )
+  );
 }

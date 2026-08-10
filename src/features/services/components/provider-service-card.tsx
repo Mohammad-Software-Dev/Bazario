@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { ServiceListItem } from '@/features/services/types/service.types'
-import { buildAssetUrl } from '@/lib/api/asset-url'
+import { resolveMediaUrl } from '@/lib/api/asset-url'
 import { formatMoney } from '@/lib/i18n/format'
 import { getLocalizedValue } from '@/lib/localized-value'
 
@@ -15,7 +15,7 @@ interface ProviderServiceCardProps {
 
 export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardProps) {
   const { t } = useTranslation()
-  const imageUrl = buildAssetUrl(service.images[0]?.image)
+  const imageUrl = resolveMediaUrl(service.images[0]?.image_url, service.images[0]?.image)
   const title = getLocalizedValue(service.title) || t('common.untitledService')
   const description = getLocalizedValue(service.description) || t('common.noDescriptionYet')
   const categoryName = getLocalizedValue(service.category?.name) || t('common.uncategorized')

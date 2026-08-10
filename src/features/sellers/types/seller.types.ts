@@ -14,6 +14,7 @@ export interface SellerListItem {
   store_name: string
   address: string
   logo: string | null
+  logo_url?: string | null
   description: string | null
   created_at: string
   user?: SellerUser | null

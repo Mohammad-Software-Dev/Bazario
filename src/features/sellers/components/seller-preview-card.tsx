@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { buildAssetUrl } from "@/lib/api/asset-url";
+import { resolveMediaUrl } from "@/lib/api/asset-url";
 
 import type { SellerListItem } from "@/features/sellers/types/seller.types";
 
@@ -16,7 +16,7 @@ interface SellerPreviewCardProps {
 }
 
 export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
-  const imageUrl = buildAssetUrl(seller.logo);
+  const imageUrl = resolveMediaUrl(seller.logo_url, seller.logo);
   const contactName = seller.user?.name ?? seller.store_owner_name;
 
   return (

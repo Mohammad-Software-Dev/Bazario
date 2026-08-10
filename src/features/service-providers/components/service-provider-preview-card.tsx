@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { buildAssetUrl } from "@/lib/api/asset-url";
+import { resolveMediaUrl } from "@/lib/api/asset-url";
 
 import type { ServiceProviderListItem } from "@/features/service-providers/types/service-provider.types";
 
@@ -18,7 +18,7 @@ interface ServiceProviderPreviewCardProps {
 export function ServiceProviderPreviewCard({
   serviceProvider,
 }: ServiceProviderPreviewCardProps) {
-  const imageUrl = buildAssetUrl(serviceProvider.logo);
+  const imageUrl = resolveMediaUrl(serviceProvider.logo_url, serviceProvider.logo);
   const contactName = serviceProvider.user?.name ?? serviceProvider.name;
 
   return (

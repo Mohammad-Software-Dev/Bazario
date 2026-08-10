@@ -10,11 +10,13 @@ export interface ProductImage {
   id: number
   product_id: number
   image: string
+  image_url?: string | null
 }
 
 export interface ProductCategory {
   id: number
   name: LocalizedValue
+  image_url?: string | null
 }
 
 export interface ProductSellerUser {
@@ -30,6 +32,7 @@ export interface ProductSeller {
   store_name: string
   store_owner_name: string
   logo: string | null
+  logo_url?: string | null
   address: string
   description: string | null
   user?: ProductSellerUser | null

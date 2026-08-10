@@ -12,5 +12,12 @@ export function buildAssetUrl(path: string | null | undefined) {
   const apiBaseUrl = resolveApiBaseUrl()
   const origin = new URL(apiBaseUrl).origin
 
-  return path.startsWith('/') ? `${origin}${path}` : `${origin}/${path}`
+  const normalized = path.startsWith('/') ? path.slice(1) : path
+  const assetPath = normalized.startsWith('storage/') ? normalized : `storage/${normalized}`
+
+  return `${origin}/${assetPath}`
+}
+
+export function resolveMediaUrl(url: string | null | undefined, path?: string | null | undefined) {
+  return buildAssetUrl(url) ?? buildAssetUrl(path)
 }

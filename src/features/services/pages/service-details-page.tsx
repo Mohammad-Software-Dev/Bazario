@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ContactUserButton } from '@/features/chat/components/contact-user-button'
 import { ServiceBookingCard } from '@/features/services/components/service-booking-card'
 import { useServiceQuery } from '@/features/services/hooks/use-service-query'
-import { buildAssetUrl } from '@/lib/api/asset-url'
+import { resolveMediaUrl } from '@/lib/api/asset-url'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 import { useAuth } from '@/lib/auth/use-auth'
 import { formatMoney } from '@/lib/i18n/format'
@@ -90,7 +90,9 @@ export function ServiceDetailsPage() {
   const providerUserName = provider?.user?.name ?? t('catalog.providerProfilePending')
   const contactUserId = provider?.user?.id ?? null
   const isOwner = session?.user.id === contactUserId
-  const images = service.images.map((image) => buildAssetUrl(image.image)).filter(Boolean) as string[]
+  const images = service.images
+    .map((image) => resolveMediaUrl(image.image_url, image.image))
+    .filter(Boolean) as string[]
   const primaryImage = images[0] ?? null
 
   return (

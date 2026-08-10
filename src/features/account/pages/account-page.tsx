@@ -363,6 +363,11 @@ export function AccountPage() {
                       to="/account/seller/products"
                     />
                     <ActionLinkRow
+                      title={t('ads.manageAds')}
+                      description={t('ads.manageAdsDescription')}
+                      to="/account/ads"
+                    />
+                    <ActionLinkRow
                       title={t('account.stripeAccount')}
                       description={t('account.stripeAccountDescription')}
                       to="/account/stripe"
@@ -397,6 +402,11 @@ export function AccountPage() {
                       to="/account/provider/bookings"
                     />
                     <ActionLinkRow
+                      title={t('ads.manageAds')}
+                      description={t('ads.manageAdsDescription')}
+                      to="/account/ads"
+                    />
+                    <ActionLinkRow
                       title={t('account.stripeAccount')}
                       description={t('account.stripeAccountDescription')}
                       to="/account/stripe"
@@ -423,6 +433,22 @@ export function AccountPage() {
                     title={t('account.trackServiceBookings')}
                     description={t('account.trackServiceBookingsDescription')}
                     to="/account/bookings"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 border-t border-border/70 pt-6">
+                <p className="font-medium text-foreground">{t('listings.workspaceTitle')}</p>
+                <div className="space-y-1 rounded-2xl border border-border/70 p-2">
+                  <ActionLinkRow
+                    title={t('listings.manageListings')}
+                    description={t('listings.manageListingsDescription')}
+                    to="/account/announcements"
+                  />
+                  <ActionLinkRow
+                    title={t('listings.create')}
+                    description={t('listings.createListingDescription')}
+                    to="/account/announcements/new"
                   />
                 </div>
               </div>

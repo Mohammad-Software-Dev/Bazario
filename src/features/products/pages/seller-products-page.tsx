@@ -12,7 +12,7 @@ import { ProductPreviewCard } from "@/features/products/components/product-previ
 import { useSellerProductsQuery } from "@/features/products/hooks/use-seller-products-query";
 import type { ProductSeller } from "@/features/products/types/product.types";
 import { getApiErrorMessage } from "@/lib/api/api-error";
-import { buildAssetUrl } from "@/lib/api/asset-url";
+import { resolveMediaUrl } from "@/lib/api/asset-url";
 
 function ProductsGridSkeleton() {
   return (
@@ -80,7 +80,7 @@ export function SellerProductsPage() {
   const products = result?.data ?? [];
   const seller =
     sellerProductsQuery.data?.result.seller ?? locationState?.seller;
-  const sellerImageUrl = buildAssetUrl(seller?.logo);
+  const sellerImageUrl = resolveMediaUrl(seller?.logo_url, seller?.logo);
 
   function handlePageChange(nextPage: number) {
     const nextParams = new URLSearchParams();

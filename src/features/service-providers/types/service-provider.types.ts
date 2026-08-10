@@ -13,6 +13,7 @@ export interface ServiceProviderListItem {
   name: string
   address: string
   logo: string | null
+  logo_url?: string | null
   description: string | null
   created_at: string
   user?: ServiceProviderUser | null

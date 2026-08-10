@@ -10,11 +10,13 @@ export interface ServiceImage {
   id: number
   service_id: number
   image: string
+  image_url?: string | null
 }
 
 export interface ServiceCategory {
   id: number
   name: LocalizedValue
+  image_url?: string | null
 }
 
 export interface ServiceProviderUser {
@@ -29,6 +31,7 @@ export interface ServiceProviderProfile {
   user_id: number
   name: string
   logo: string | null
+  logo_url?: string | null
   address: string
   description: string | null
   user?: ServiceProviderUser | null
