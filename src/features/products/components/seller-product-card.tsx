@@ -21,10 +21,10 @@ export function SellerProductCard({ product, onDelete }: SellerProductCardProps)
   const categoryName = getLocalizedValue(product.category?.name) || t('common.uncategorized')
 
   return (
-    <Card className="overflow-hidden pt-0">
-      <div className="aspect-[4/3] bg-muted">
+    <Card className="overflow-hidden rounded-2xl border-border/70 bg-card pt-0 shadow-sm">
+      <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
         {imageUrl ? (
-          <img src={imageUrl} alt={productName} className="h-full w-full object-cover" />
+          <img src={imageUrl} alt={productName} className="block h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
             {t('common.noImage')}
@@ -32,12 +32,12 @@ export function SellerProductCard({ product, onDelete }: SellerProductCardProps)
         )}
       </div>
 
-      <CardHeader className="space-y-2">
-        <CardTitle className="line-clamp-1">{productName}</CardTitle>
-        <CardDescription className="line-clamp-2 min-h-10">{productDescription}</CardDescription>
+      <CardHeader className="space-y-1 px-4 pt-3 pb-0">
+        <CardTitle className="line-clamp-2 text-lg leading-5.5">{productName}</CardTitle>
+        <CardDescription className="line-clamp-2 text-sm leading-5">{productDescription}</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4 text-sm">
+      <CardContent className="space-y-3 px-4 pt-3 pb-4 text-sm">
         <div className="grid gap-2 text-muted-foreground">
           <div className="flex items-center justify-between gap-3">
             <span>{t('details.category')}</span>
@@ -49,7 +49,7 @@ export function SellerProductCard({ product, onDelete }: SellerProductCardProps)
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-1">
           <Button asChild size="sm" variant="outline">
             <Link to={`/products/${product.id}`}>{t('common.viewDetails')}</Link>
           </Button>

@@ -25,15 +25,15 @@ export function ServiceProviderPreviewCard({
     <Link
       to={`/service-providers/${serviceProvider.id}/services`}
       state={{ serviceProvider }}
-      className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      <Card className="overflow-hidden border-border/70 bg-card/90 pt-0 transition-colors hover:border-foreground/20">
-        <div className="aspect-4/3 bg-muted">
+      <Card className="overflow-hidden rounded-2xl border-border/70 bg-card pt-0 shadow-sm transition-colors hover:border-foreground/20">
+        <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={serviceProvider.name}
-              className="h-full w-full object-cover"
+              className="block h-full w-full object-cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-stone-200 text-sm text-muted-foreground">
@@ -42,15 +42,15 @@ export function ServiceProviderPreviewCard({
           )}
         </div>
 
-        <CardHeader className="space-y-2">
-          <CardTitle className="line-clamp-1">{serviceProvider.name}</CardTitle>
-          <CardDescription className="line-clamp-2 min-h-10">
+        <CardHeader className="space-y-1 px-4 pt-3 pb-0">
+          <CardTitle className="line-clamp-2 text-lg leading-5.5">{serviceProvider.name}</CardTitle>
+          <CardDescription className="line-clamp-2 text-sm leading-5">
             {serviceProvider.description ?? "No description yet."}
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-3 text-sm">
-          <div className="rounded-lg bg-muted/60 px-3 py-2">
+        <CardContent className="space-y-3 px-4 pt-3 pb-4 text-sm">
+          <div className="rounded-xl border border-border/70 bg-card px-3 py-1.5">
             <p className="font-medium text-foreground">
               Contact: {contactName}
             </p>

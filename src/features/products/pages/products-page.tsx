@@ -14,8 +14,8 @@ function ProductsGridSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {Array.from({ length: 8 }).map((_, index) => (
-        <Card key={index} className="overflow-hidden rounded-3xl border-border/70 shadow-sm">
-          <div className="aspect-4/3 animate-pulse bg-muted" />
+        <Card key={index} className="overflow-hidden rounded-2xl border-border/70 shadow-sm">
+          <div className="aspect-[4/3] animate-pulse bg-muted" />
           <CardHeader className="space-y-3 p-4 pb-0">
             <div className="h-6 w-3/4 animate-pulse rounded-full bg-muted" />
             <div className="h-4 w-full animate-pulse rounded-full bg-muted" />
