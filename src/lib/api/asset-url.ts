@@ -13,7 +13,10 @@ export function buildAssetUrl(path: string | null | undefined) {
   const origin = new URL(apiBaseUrl).origin
 
   const normalized = path.startsWith('/') ? path.slice(1) : path
-  const assetPath = normalized.startsWith('storage/') ? normalized : `storage/${normalized}`
+  const assetPath =
+    normalized.startsWith('storage/') || normalized.startsWith('media/')
+      ? normalized
+      : `storage/${normalized}`
 
   return `${origin}/${assetPath}`
 }

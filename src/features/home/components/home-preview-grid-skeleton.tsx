@@ -23,7 +23,7 @@ function MarketplaceUpdateCardSkeleton() {
 
 function SponsoredAdCardSkeleton({ featured = false }: { featured?: boolean }) {
   return (
-    <Card className={`rounded-3xl border-border/70 bg-background shadow-sm ${featured ? 'p-5' : 'p-4'}`}>
+    <Card className={`rounded-2xl border-border/70 bg-background shadow-sm ${featured ? 'p-5' : 'p-4'}`}>
       <CardContent className="flex h-full flex-col gap-4 p-0">
         <div className={`animate-pulse rounded-2xl bg-muted ${featured ? 'aspect-[16/8]' : 'aspect-[16/9]'}`} />
 
@@ -54,7 +54,7 @@ function SponsoredAdCardSkeleton({ featured = false }: { featured?: boolean }) {
 
 function PreviewCardSkeleton({ warm = false }: { warm?: boolean }) {
   return (
-    <Card className="overflow-hidden rounded-3xl border-border/70 bg-background shadow-sm">
+    <Card className="overflow-hidden rounded-2xl border-border/70 bg-background shadow-sm">
       <div className={`aspect-4/3 animate-pulse ${warm ? 'bg-amber-50' : 'bg-muted'}`} />
       <CardContent className="space-y-4 p-4">
         <div className="flex items-start justify-between gap-3">

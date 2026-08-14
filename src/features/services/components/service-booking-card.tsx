@@ -7,6 +7,7 @@ import { ServiceSlotPicker } from '@/features/services/components/service-slot-p
 import { useServiceAvailabilityQuery } from '@/features/services/hooks/use-service-availability-query'
 import type { ServiceAvailabilitySlot, ServiceListItem } from '@/features/services/types/service.types'
 import { getApiErrorMessage } from '@/lib/api/api-error'
+import { resolveMediaUrl } from '@/lib/api/asset-url'
 import { getLocalizedValue } from '@/lib/localized-value'
 
 interface ServiceBookingCardProps {
@@ -82,7 +83,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
     addServiceItem({
       service_id: service.id,
       title: getLocalizedValue(service.title) || 'Untitled service',
-      image: service.images[0]?.image ?? null,
+      image: resolveMediaUrl(service.images[0]?.image_url, service.images[0]?.image),
       price: service.price,
       provider_name: (service.service_provider ?? service.serviceProvider)?.name ?? 'Independent provider',
       category_name: getLocalizedValue(service.category?.name) || undefined,

@@ -8,7 +8,6 @@ import { getApiErrorMessage } from '@/lib/api/api-error'
 import { formatDateTime } from '@/lib/i18n/format'
 
 import { createAdCheckoutSession } from '@/features/ads/api/ads-api'
-import { AdTierBadge } from '@/features/ads/components/ad-tier-badge'
 import type { AdViewModel } from '@/features/ads/types/ad.types'
 
 interface MyAdCardProps {
@@ -54,11 +53,11 @@ export function MyAdCard({ ad }: MyAdCardProps) {
   }
 
   return (
-    <Card className="rounded-3xl border-border/70 bg-background shadow-sm">
-      <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-start">
-        <div className="h-24 w-full shrink-0 overflow-hidden rounded-2xl bg-muted md:w-36">
+    <Card className="rounded-2xl border-border/70 bg-card shadow-sm">
+      <CardContent className="flex flex-col gap-3 p-4 md:flex-row md:items-start">
+        <div className="h-24 w-full shrink-0 overflow-hidden rounded-xl bg-muted md:w-36">
           {imageUrl ? (
-            <img src={imageUrl} alt={ad.title} className="h-full w-full object-cover" />
+            <img src={imageUrl} alt={ad.title} className="block h-full w-full object-cover" />
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               {t('common.noImage')}
@@ -66,10 +65,9 @@ export function MyAdCard({ ad }: MyAdCardProps) {
           )}
         </div>
 
-        <div className="min-w-0 flex-1 space-y-3">
+        <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-semibold text-foreground">{ad.title}</h3>
-            {ad.tier ? <AdTierBadge tier={ad.tier} /> : null}
             <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusTone(ad.status)}`}>
               {t(`ads.status.${ad.status}`, { defaultValue: ad.status })}
             </span>
@@ -78,7 +76,7 @@ export function MyAdCard({ ad }: MyAdCardProps) {
             </span>
           </div>
 
-          {ad.subtitle ? <p className="text-sm text-muted-foreground">{ad.subtitle}</p> : null}
+          {ad.subtitle ? <p className="text-sm leading-5 text-muted-foreground">{ad.subtitle}</p> : null}
 
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <span>{targetTypeLabel}</span>
@@ -93,7 +91,7 @@ export function MyAdCard({ ad }: MyAdCardProps) {
           </div>
 
           {ad.status === 'pending_payment' ? (
-            <div className="space-y-2">
+            <div className="space-y-2 pt-1">
               <Button onClick={handleCompletePayment} disabled={isStartingCheckout}>
                 {isStartingCheckout ? t('ads.startingPayment') : t('ads.completePayment')}
               </Button>

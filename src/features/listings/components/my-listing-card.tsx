@@ -38,7 +38,7 @@ export function MyListingCard({ listing }: MyListingCardProps) {
   }
 
   return (
-    <Card className="rounded-3xl border-border/70 bg-background shadow-sm">
+    <Card className="rounded-2xl border-border/70 bg-card shadow-sm">
       <CardContent className="flex flex-col gap-4 p-4 md:flex-row md:items-start">
         <div className="h-24 w-full shrink-0 overflow-hidden rounded-2xl bg-muted md:w-36">
           {imageUrl ? (

@@ -51,7 +51,7 @@ export function AccountListingsPage() {
       {myListingsQuery.isLoading ? (
         <div className="grid gap-4">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-32 animate-pulse rounded-3xl bg-muted" />
+            <div key={index} className="h-32 animate-pulse rounded-2xl bg-muted" />
           ))}
         </div>
       ) : null}
