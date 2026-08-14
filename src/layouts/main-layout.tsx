@@ -5,7 +5,7 @@ import { LoginDialog } from '@/features/auth/components/login-dialog'
 
 export function MainLayout() {
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       <AppHeader />
       <main>
         <Outlet />
