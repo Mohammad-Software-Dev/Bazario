@@ -40,53 +40,41 @@ export function HomePage() {
 
       {!homeQuery.isLoading && !homeQuery.isError ? (
         <>
-          <AdsSection
-            title={t("ads.marketplaceUpdates")}
-            emptyMessage={t("ads.noAnnouncements")}
-          >
-            {announcementListings.length ? (
+          {announcementListings.length ? (
+            <AdsSection title={t("ads.marketplaceUpdates")}>
               <MarketplaceUpdatesCarousel listings={announcementListings} />
-            ) : null}
-          </AdsSection>
+            </AdsSection>
+          ) : null}
 
-          <AdsSection
-            title={t("ads.goldPlacement")}
-            emptyMessage={t("ads.noGoldAds")}
-          >
-            {goldAds.length ? (
+          {goldAds.length ? (
+            <AdsSection title={t("ads.goldPlacement")}>
               <SponsoredAdsCarousel
                 ads={goldAds.map(mapAdToViewModel)}
                 variant="featured"
                 itemClassName="basis-[92%] lg:basis-[84%]"
               />
-            ) : null}
-          </AdsSection>
+            </AdsSection>
+          ) : null}
 
-          <AdsSection
-            title={t("ads.silverPlacement")}
-            emptyMessage={t("ads.noSilverAds")}
-          >
-            {silverAds.length ? (
+          {silverAds.length ? (
+            <AdsSection title={t("ads.silverPlacement")}>
               <SponsoredAdsCarousel
                 ads={silverAds.map(mapAdToViewModel)}
                 variant="default"
                 itemClassName="basis-[88%] md:basis-[46%]"
               />
-            ) : null}
-          </AdsSection>
+            </AdsSection>
+          ) : null}
 
-          <AdsSection
-            title={t("ads.normalPlacement")}
-            emptyMessage={t("ads.noNormalAds")}
-          >
-            {normalAds.length ? (
+          {normalAds.length ? (
+            <AdsSection title={t("ads.normalPlacement")}>
               <SponsoredAdsCarousel
                 ads={normalAds.map(mapAdToViewModel)}
                 variant="compact"
                 itemClassName="basis-[84%] md:basis-[42%] xl:basis-[31%]"
               />
-            ) : null}
-          </AdsSection>
+            </AdsSection>
+          ) : null}
 
           <HomePreviewSection
             title={t("home.latestProducts")}
