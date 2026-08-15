@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import {
@@ -18,6 +19,7 @@ interface ServiceProviderPreviewCardProps {
 export function ServiceProviderPreviewCard({
   serviceProvider,
 }: ServiceProviderPreviewCardProps) {
+  const { t } = useTranslation();
   const imageUrl = resolveMediaUrl(serviceProvider.logo_url, serviceProvider.logo);
   const contactName = serviceProvider.user?.name ?? serviceProvider.name;
 
@@ -45,7 +47,7 @@ export function ServiceProviderPreviewCard({
         <CardHeader className="space-y-1 px-4 pt-3 pb-0">
           <CardTitle className="line-clamp-2 text-lg leading-5.5">{serviceProvider.name}</CardTitle>
           <CardDescription className="line-clamp-2 text-sm leading-5">
-            {serviceProvider.description ?? "No description yet."}
+            {serviceProvider.description ?? t("common.noDescriptionYet")}
           </CardDescription>
         </CardHeader>
 

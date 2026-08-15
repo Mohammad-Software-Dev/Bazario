@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import {
@@ -16,6 +17,7 @@ interface SellerPreviewCardProps {
 }
 
 export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
+  const { t } = useTranslation();
   const imageUrl = resolveMediaUrl(seller.logo_url, seller.logo);
   const contactName = seller.user?.name ?? seller.store_owner_name;
 
@@ -43,7 +45,7 @@ export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
         <CardHeader className="space-y-1 px-4 pt-3 pb-0">
           <CardTitle className="line-clamp-2 text-lg leading-5.5">{seller.store_name}</CardTitle>
           <CardDescription className="line-clamp-2 text-sm leading-5">
-            {seller.description ?? "No description yet."}
+            {seller.description ?? t("common.noDescriptionYet")}
           </CardDescription>
         </CardHeader>
 

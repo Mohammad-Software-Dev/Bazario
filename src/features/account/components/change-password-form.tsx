@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,6 +14,7 @@ import {
 import { getApiErrorMessage, getApiFieldErrors } from '@/lib/api/api-error'
 
 export function ChangePasswordForm() {
+  const { t } = useTranslation()
   const updatePasswordMutation = useUpdatePasswordMutation()
 
   const {
@@ -60,25 +62,25 @@ export function ChangePasswordForm() {
   return (
     <Card className="border-border/70 shadow-sm">
       <CardHeader>
-        <CardTitle>Change password</CardTitle>
-        <CardDescription>Update your password for future sign-ins.</CardDescription>
+        <CardTitle>{t('password.title')}</CardTitle>
+        <CardDescription>{t('password.formDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-2">
-            <Label htmlFor="old-password">Current password</Label>
+            <Label htmlFor="old-password">{t('password.current')}</Label>
             <Input id="old-password" type="password" autoComplete="current-password" {...register('old_password')} />
             {errors.old_password ? <p className="text-sm text-destructive">{errors.old_password.message}</p> : null}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="new-password">New password</Label>
+            <Label htmlFor="new-password">{t('password.new')}</Label>
             <Input id="new-password" type="password" autoComplete="new-password" {...register('password')} />
             {errors.password ? <p className="text-sm text-destructive">{errors.password.message}</p> : null}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="new-password-confirmation">Confirm new password</Label>
+            <Label htmlFor="new-password-confirmation">{t('password.confirm')}</Label>
             <Input
               id="new-password-confirmation"
               type="password"
@@ -92,17 +94,17 @@ export function ChangePasswordForm() {
 
           {updatePasswordMutation.isError ? (
             <p className="text-sm text-destructive">
-              {getApiErrorMessage(updatePasswordMutation.error, 'Unable to update your password right now.')}
+              {getApiErrorMessage(updatePasswordMutation.error, t('password.updateError'))}
             </p>
           ) : null}
 
           {updatePasswordMutation.isSuccess ? (
-            <p className="text-sm text-emerald-700">Password updated successfully.</p>
+            <p className="text-sm text-emerald-700">{t('password.updated')}</p>
           ) : null}
 
           <div className="flex justify-end">
             <Button type="submit" disabled={updatePasswordMutation.isPending}>
-              {updatePasswordMutation.isPending ? 'Saving...' : 'Save new password'}
+              {updatePasswordMutation.isPending ? t('common.saving') : t('password.save')}
             </Button>
           </div>
         </form>
