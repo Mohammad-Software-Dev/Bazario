@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
@@ -22,6 +23,7 @@ function parsePage(value: string | null) {
 }
 
 export function SellerProductsManagementPage() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [productToDelete, setProductToDelete] = useState<ProductListItem | null>(null)
   const page = useMemo(() => parsePage(searchParams.get('page')), [searchParams])
@@ -62,20 +64,22 @@ export function SellerProductsManagementPage() {
   const productDeleteName = productToDelete
     ? typeof productToDelete.name === 'string'
       ? productToDelete.name
-      : 'this product'
-    : 'this product'
+      : t('seller.thisProduct')
+    : t('seller.thisProduct')
 
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
         <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Seller workspace</p>
-            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">My products</h1>
+            <p className="text-sm text-muted-foreground">{t('seller.workspace')}</p>
+            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
+              {t('seller.myProducts')}
+            </h1>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link to="/account/seller/products/new">Add new product</Link>
+              <Link to="/account/seller/products/new">{t('seller.addProduct')}</Link>
             </Button>
           </div>
         </section>
@@ -84,7 +88,7 @@ export function SellerProductsManagementPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Card key={index} className="overflow-hidden pt-0">
-                <div className="aspect-[4/3] animate-pulse bg-muted" />
+                <div className="aspect-4/3 animate-pulse bg-muted" />
                 <CardHeader className="space-y-2">
                   <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
                   <div className="h-4 w-full animate-pulse rounded bg-muted" />
@@ -101,7 +105,7 @@ export function SellerProductsManagementPage() {
         {!myProductsQuery.isLoading && myProductsQuery.isError ? (
           <Card>
             <CardContent className="py-6 text-sm text-destructive">
-              {getApiErrorMessage(myProductsQuery.error, 'Unable to load your products right now.')}
+              {getApiErrorMessage(myProductsQuery.error, t('seller.loadMyProductsError'))}
             </CardContent>
           </Card>
         ) : null}
@@ -117,7 +121,7 @@ export function SellerProductsManagementPage() {
             ) : (
               <Card>
                 <CardContent className="py-8 text-sm text-muted-foreground">
-                  You do not have any products yet.
+                  {t('seller.noProductsYet')}
                 </CardContent>
               </Card>
             )}
@@ -138,10 +142,10 @@ export function SellerProductsManagementPage() {
             setProductToDelete(null)
           }
         }}
-        title="Delete product"
-        description={`Delete "${productDeleteName}"? This will remove it from your seller workspace.`}
-        confirmLabel={isDeleting ? 'Deleting...' : 'Delete product'}
-        cancelLabel="Keep product"
+        title={t('seller.deleteProductTitle')}
+        description={t('seller.deleteProductDescription', { name: productDeleteName })}
+        confirmLabel={isDeleting ? t('common.deleting') : t('seller.deleteProductTitle')}
+        cancelLabel={t('seller.keepProduct')}
         onConfirm={confirmDelete}
         isPending={isDeleting}
         variant="destructive"

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -11,7 +13,15 @@ interface WorkingHoursEditorProps {
   onRemoveInterval: (dayOfWeek: number, intervalIndex: number) => void
 }
 
-const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const dayKeys = [
+  'availability.sunday',
+  'availability.monday',
+  'availability.tuesday',
+  'availability.wednesday',
+  'availability.thursday',
+  'availability.friday',
+  'availability.saturday',
+] as const
 
 export function WorkingHoursEditor({
   days,
@@ -19,12 +29,14 @@ export function WorkingHoursEditor({
   onIntervalChange,
   onRemoveInterval,
 }: WorkingHoursEditorProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {days.map((day) => (
         <Card key={day.day_of_week}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-base">{dayLabels[day.day_of_week]}</CardTitle>
+            <CardTitle className="text-base">{t(dayKeys[day.day_of_week])}</CardTitle>
             <Button
               type="button"
               variant="outline"
@@ -32,7 +44,7 @@ export function WorkingHoursEditor({
               onClick={() => onAddInterval(day.day_of_week)}
               disabled={day.intervals.length >= 6}
             >
-              Add interval
+              {t('availability.addInterval')}
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -40,7 +52,7 @@ export function WorkingHoursEditor({
               day.intervals.map((interval, intervalIndex) => (
                 <div key={`${day.day_of_week}-${intervalIndex}`} className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
                   <div className="space-y-2">
-                    <Label>Start</Label>
+                    <Label>{t('availability.start')}</Label>
                     <Input
                       type="time"
                       value={interval.start_time}
@@ -48,7 +60,7 @@ export function WorkingHoursEditor({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>End</Label>
+                    <Label>{t('availability.end')}</Label>
                     <Input
                       type="time"
                       value={interval.end_time}
@@ -61,13 +73,13 @@ export function WorkingHoursEditor({
                       variant="outline"
                       onClick={() => onRemoveInterval(day.day_of_week, intervalIndex)}
                     >
-                      Remove
+                      {t('common.remove')}
                     </Button>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No intervals set for this day.</p>
+              <p className="text-sm text-muted-foreground">{t('availability.noIntervals')}</p>
             )}
           </CardContent>
         </Card>

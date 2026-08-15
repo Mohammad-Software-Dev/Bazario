@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ import { getApiErrorMessage, getApiFieldErrors } from '@/lib/api/api-error'
 import { useAuth } from '@/lib/auth/use-auth'
 
 export function SellerUpgradeForm() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { session } = useAuth()
   const mutation = useUpgradeSellerMutation()
@@ -60,7 +62,7 @@ export function SellerUpgradeForm() {
       if (fieldErrors?.logo?.[0]) setError('logo', { type: 'server', message: fieldErrors.logo[0] })
       if (fieldErrors?.attachments?.[0]) setError('attachments', { type: 'server', message: fieldErrors.attachments[0] })
 
-      setServerError(getApiErrorMessage(error, 'Unable to submit seller upgrade right now.'))
+      setServerError(getApiErrorMessage(error, t('upgradeForm.sellerError')))
     }
   })
 
@@ -68,33 +70,33 @@ export function SellerUpgradeForm() {
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="seller-store-owner-name">Store owner name</Label>
+          <Label htmlFor="seller-store-owner-name">{t('upgradeForm.storeOwnerName')}</Label>
           <Input id="seller-store-owner-name" {...register('store_owner_name')} />
           {errors.store_owner_name ? <p className="text-sm text-destructive">{errors.store_owner_name.message}</p> : null}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="seller-store-name">Store name</Label>
+          <Label htmlFor="seller-store-name">{t('upgradeForm.storeName')}</Label>
           <Input id="seller-store-name" {...register('store_name')} />
           {errors.store_name ? <p className="text-sm text-destructive">{errors.store_name.message}</p> : null}
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="seller-address">Address</Label>
+        <Label htmlFor="seller-address">{t('upgradeForm.address')}</Label>
         <Input id="seller-address" {...register('address')} />
         {errors.address ? <p className="text-sm text-destructive">{errors.address.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="seller-description">Description</Label>
+        <Label htmlFor="seller-description">{t('upgradeForm.description')}</Label>
         <Textarea id="seller-description" rows={4} {...register('description')} />
         {errors.description ? <p className="text-sm text-destructive">{errors.description.message}</p> : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="seller-email">Email</Label>
+          <Label htmlFor="seller-email">{t('common.email')}</Label>
           <Input
             id="seller-email"
             type="email"
@@ -106,7 +108,7 @@ export function SellerUpgradeForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="seller-phone">Phone</Label>
+          <Label htmlFor="seller-phone">{t('upgradeForm.phone')}</Label>
           <Input
             id="seller-phone"
             type="tel"
@@ -119,13 +121,13 @@ export function SellerUpgradeForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="seller-logo">Logo</Label>
+        <Label htmlFor="seller-logo">{t('upgradeForm.logo')}</Label>
         <Input id="seller-logo" type="file" accept="image/*" {...register('logo')} />
         {errors.logo ? <p className="text-sm text-destructive">{errors.logo.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="seller-attachments">Attachments</Label>
+        <Label htmlFor="seller-attachments">{t('upgradeForm.attachments')}</Label>
         <Input id="seller-attachments" type="file" multiple accept=".pdf,image/*" {...register('attachments')} />
         {errors.attachments ? <p className="text-sm text-destructive">{errors.attachments.message}</p> : null}
       </div>
@@ -134,10 +136,10 @@ export function SellerUpgradeForm() {
 
       <div className="flex gap-3">
         <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? 'Submitting...' : 'Submit seller application'}
+          {mutation.isPending ? t('upgradeForm.submitting') : t('upgradeForm.submitSeller')}
         </Button>
         <Button type="button" variant="outline" onClick={() => navigate('/account')}>
-          Cancel
+          {t('common.cancel')}
         </Button>
       </div>
     </form>

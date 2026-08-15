@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
@@ -21,6 +22,7 @@ import type { AddTimeOffPayload, ProviderTimeOff } from '@/features/provider-ava
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
 export function ProviderAvailabilityPage() {
+  const { t } = useTranslation()
   const providerAvailabilityQuery = useProviderAvailabilityQuery()
   const updateWorkingHoursMutation = useUpdateWorkingHoursMutation()
   const addTimeOffMutation = useAddTimeOffMutation()
@@ -39,7 +41,7 @@ export function ProviderAvailabilityPage() {
     const normalizedDays = normalizeWorkingHoursPayload(days)
 
     if (!normalizedDays.length) {
-      setServerError('Add at least one working-hours interval before saving.')
+      setServerError(t('provider.workingHoursRequired'))
       return
     }
 
@@ -47,7 +49,7 @@ export function ProviderAvailabilityPage() {
       await updateWorkingHoursMutation.mutateAsync({ timezone, days: normalizedDays })
       clearDraft()
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Unable to update working hours right now.'))
+      setServerError(getApiErrorMessage(error, t('provider.updateWorkingHoursError')))
     }
   }
 
@@ -65,7 +67,7 @@ export function ProviderAvailabilityPage() {
     try {
       await addTimeOffMutation.mutateAsync(payload)
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Unable to add time off right now.'))
+      setServerError(getApiErrorMessage(error, t('provider.addTimeOffError')))
     }
   }
 
@@ -80,7 +82,7 @@ export function ProviderAvailabilityPage() {
       await deleteTimeOffMutation.mutateAsync(timeOffToDelete.id)
       setTimeOffToDelete(null)
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Unable to delete this time-off entry right now.'))
+      setServerError(getApiErrorMessage(error, t('provider.deleteTimeOffError')))
     }
   }
 
@@ -88,7 +90,9 @@ export function ProviderAvailabilityPage() {
     return (
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-muted-foreground">Loading availability...</CardContent>
+          <CardContent className="py-6 text-sm text-muted-foreground">
+            {t('provider.loadingAvailability')}
+          </CardContent>
         </Card>
       </div>
     )
@@ -99,7 +103,7 @@ export function ProviderAvailabilityPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(providerAvailabilityQuery.error, 'Unable to load provider availability right now.')}
+            {getApiErrorMessage(providerAvailabilityQuery.error, t('provider.loadAvailabilityError'))}
           </CardContent>
         </Card>
       </div>
@@ -111,11 +115,13 @@ export function ProviderAvailabilityPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Provider workspace</p>
-            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">Availability</h1>
+            <p className="text-sm text-muted-foreground">{t('provider.workspace')}</p>
+            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
+              {t('provider.availability')}
+            </h1>
           </div>
           <Button asChild variant="outline">
-            <Link to="/account/provider/services">Back to services</Link>
+            <Link to="/account/provider/services">{t('common.backToServices')}</Link>
           </Button>
         </div>
 
@@ -127,15 +133,13 @@ export function ProviderAvailabilityPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Provider schedule</CardTitle>
-            <CardDescription>
-              Set your general working hours. Service slots are calculated from this schedule plus each service&apos;s booking rules.
-            </CardDescription>
+            <CardTitle>{t('provider.schedule')}</CardTitle>
+            <CardDescription>{t('provider.scheduleDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="max-w-sm space-y-2">
               <label className="text-sm font-medium text-foreground" htmlFor="provider-timezone">
-                Timezone
+                {t('provider.timezone')}
               </label>
               <select
                 id="provider-timezone"
@@ -159,7 +163,7 @@ export function ProviderAvailabilityPage() {
             />
 
             <Button onClick={handleSaveWorkingHours} disabled={updateWorkingHoursMutation.isPending}>
-              {updateWorkingHoursMutation.isPending ? 'Saving schedule...' : 'Save working hours'}
+              {updateWorkingHoursMutation.isPending ? t('common.saving') : t('provider.saveWorkingHours')}
             </Button>
           </CardContent>
         </Card>
@@ -167,8 +171,8 @@ export function ProviderAvailabilityPage() {
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Card>
             <CardHeader>
-              <CardTitle>Add time off</CardTitle>
-              <CardDescription>Use time off for holidays, days off, or temporary unavailability.</CardDescription>
+              <CardTitle>{t('provider.addTimeOff')}</CardTitle>
+              <CardDescription>{t('provider.addTimeOffDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <TimeOffForm isSubmitting={addTimeOffMutation.isPending} onSubmit={handleAddTimeOff} />
@@ -177,7 +181,7 @@ export function ProviderAvailabilityPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Existing time off</CardTitle>
+              <CardTitle>{t('provider.existingTimeOff')}</CardTitle>
             </CardHeader>
             <CardContent>
               <TimeOffList
@@ -200,10 +204,10 @@ export function ProviderAvailabilityPage() {
             setTimeOffToDelete(null)
           }
         }}
-        title="Delete time off"
-        description="Delete this time-off entry? This will make the blocked time available again."
-        confirmLabel={isDeleting ? 'Deleting...' : 'Delete time off'}
-        cancelLabel="Keep entry"
+        title={t('provider.deleteTimeOffTitle')}
+        description={t('provider.deleteTimeOffDescription')}
+        confirmLabel={isDeleting ? t('common.deleting') : t('provider.deleteTimeOffTitle')}
+        cancelLabel={t('provider.keepTimeOff')}
         onConfirm={confirmDeleteTimeOff}
         isPending={isDeleting}
         variant="destructive"

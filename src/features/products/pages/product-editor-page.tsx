@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ function parseProductId(value: string | undefined) {
 }
 
 export function ProductEditorPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { productId: productIdParam } = useParams()
   const productId = parseProductId(productIdParam)
@@ -44,7 +46,7 @@ export function ProductEditorPage() {
 
       navigate('/account/seller/products')
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Unable to save this product right now.'))
+      setServerError(getApiErrorMessage(error, t('seller.saveProductError')))
     }
   }
 
@@ -52,7 +54,7 @@ export function ProductEditorPage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-destructive">Invalid product id.</CardContent>
+          <CardContent className="py-6 text-sm text-destructive">{t('seller.invalidProductId')}</CardContent>
         </Card>
       </div>
     )
@@ -63,7 +65,7 @@ export function ProductEditorPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardHeader>
-            <CardTitle>Loading product...</CardTitle>
+            <CardTitle>{t('seller.loadingProduct')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="h-10 animate-pulse rounded bg-muted" />
@@ -80,7 +82,7 @@ export function ProductEditorPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(productQuery.error, 'Unable to load this product right now.')}
+            {getApiErrorMessage(productQuery.error, t('seller.loadProductError'))}
           </CardContent>
         </Card>
       </div>
@@ -94,22 +96,22 @@ export function ProductEditorPage() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 md:py-12">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Seller workspace</p>
+          <p className="text-sm text-muted-foreground">{t('seller.workspace')}</p>
           <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-            {isEditMode ? 'Edit product' : 'Create product'}
+            {isEditMode ? t('seller.editProduct') : t('seller.createProduct')}
           </h1>
         </div>
         <Button asChild variant="outline">
-          <Link to="/account/seller/products">Back to products</Link>
+          <Link to="/account/seller/products">{t('common.backToProducts')}</Link>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{isEditMode ? 'Update product details' : 'New product details'}</CardTitle>
-          <CardDescription>
-            Configure the product content that will be shown in the public marketplace.
-          </CardDescription>
+          <CardTitle>
+            {isEditMode ? t('seller.updateProductDetails') : t('seller.newProductDetails')}
+          </CardTitle>
+          <CardDescription>{t('seller.productFormDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}

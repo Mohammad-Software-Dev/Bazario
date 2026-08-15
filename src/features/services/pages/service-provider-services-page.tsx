@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Link,
   useLocation,
@@ -59,6 +60,7 @@ interface ServiceProviderServicesLocationState {
 }
 
 export function ServiceProviderServicesPage() {
+  const { t } = useTranslation();
   const { serviceProviderId: serviceProviderIdParam } = useParams();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -103,7 +105,7 @@ export function ServiceProviderServicesPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            Invalid service provider.
+            {t("providerProfile.invalidProvider")}
           </CardContent>
         </Card>
       </div>
@@ -117,21 +119,25 @@ export function ServiceProviderServicesPage() {
           to="/service-providers"
           className="text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          Back to providers
+          {t("providerProfile.backToProviders")}
         </Link>
 
         <div className="flex flex-col gap-4 rounded-2xl border bg-card p-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-              {serviceProvider?.name ?? "Service provider services"}
+              {serviceProvider?.name ?? t("providerProfile.fallbackTitle")}
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
               {serviceProvider?.description ??
-                "Browse this provider published marketplace services."}
+                t("providerProfile.fallbackDescription")}
             </p>
             <div className="space-y-1 text-sm text-muted-foreground">
               {serviceProvider?.user?.name ? (
-                <p>Contact: {serviceProvider.user.name}</p>
+                <p>
+                  {t("providerProfile.contact", {
+                    name: serviceProvider.user.name,
+                  })}
+                </p>
               ) : null}
               {serviceProvider?.address ? (
                 <p>{serviceProvider.address}</p>
@@ -143,12 +149,12 @@ export function ServiceProviderServicesPage() {
             {serviceProviderImageUrl ? (
               <img
                 src={serviceProviderImageUrl}
-                alt={serviceProvider?.name ?? "Service provider"}
+                alt={serviceProvider?.name ?? t("providerProfile.logoAlt")}
                 className="h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-                No logo
+                {t("providerProfile.noLogo")}
               </div>
             )}
           </div>
@@ -163,7 +169,7 @@ export function ServiceProviderServicesPage() {
           <CardContent className="py-6 text-sm text-destructive">
             {getApiErrorMessage(
               serviceProviderServicesQuery.error,
-              "Unable to load this provider services right now.",
+              t("providerProfile.loadError"),
             )}
           </CardContent>
         </Card>
@@ -181,7 +187,7 @@ export function ServiceProviderServicesPage() {
           ) : (
             <Card>
               <CardContent className="py-6 text-sm text-muted-foreground">
-                This service provider has no published services yet.
+                {t("providerProfile.empty")}
               </CardContent>
             </Card>
           )}
