@@ -19,7 +19,7 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
   const lineTotal = item.price * item.quantity
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border p-4 md:flex-row md:items-start">
+    <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 md:flex-row md:items-start">
       <div className="h-24 w-full overflow-hidden rounded-lg bg-muted md:w-32">
         {imageUrl ? (
           <img src={imageUrl} alt={item.type === 'product' ? item.name : item.title} className="h-full w-full object-cover" />

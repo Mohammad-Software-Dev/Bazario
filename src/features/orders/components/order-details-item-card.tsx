@@ -1,67 +1,80 @@
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { CancelBookingDialog } from '@/features/orders/components/cancel-booking-dialog'
-import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CancelBookingDialog } from "@/features/orders/components/cancel-booking-dialog";
+import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
 import {
   formatBookingCutoff,
   formatBookingWindow,
   formatOrderMoney,
   getLatestRefund,
   getOrderItemDisplayTitle,
-} from '@/features/orders/lib/order-format'
-import type { OrderItemRecord } from '@/features/orders/types/order.types'
+} from "@/features/orders/lib/order-format";
+import type { OrderItemRecord } from "@/features/orders/types/order.types";
 
 interface OrderDetailsItemCardProps {
-  item: OrderItemRecord
-  currencyIso: string
+  item: OrderItemRecord;
+  currencyIso: string;
 }
 
-function getItemKindLabel(item: OrderItemRecord, t: (key: string, options?: Record<string, unknown>) => string) {
-  return item.service_booking ? t('orders.service') : t('orders.product')
+function getItemKindLabel(
+  item: OrderItemRecord,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) {
+  return item.service_booking ? t("orders.service") : t("orders.product");
 }
 
 function canManageBooking(item: OrderItemRecord) {
-  const status = item.service_booking?.status
+  const status = item.service_booking?.status;
 
   if (!status) {
-    return false
+    return false;
   }
 
-  return !['completed', 'cancelled_by_customer', 'cancelled_by_provider'].includes(status)
+  return ![
+    "completed",
+    "cancelled_by_customer",
+    "cancelled_by_provider",
+  ].includes(status);
 }
 
-function getCutoffDeadline(startsAt: string, cutoffHours: number | null | undefined) {
+function getCutoffDeadline(
+  startsAt: string,
+  cutoffHours: number | null | undefined,
+) {
   if (!cutoffHours || cutoffHours <= 0) {
-    return null
+    return null;
   }
 
-  const startsAtMs = new Date(startsAt).getTime()
+  const startsAtMs = new Date(startsAt).getTime();
 
   if (Number.isNaN(startsAtMs)) {
-    return null
+    return null;
   }
 
-  return new Date(startsAtMs - cutoffHours * 60 * 60 * 1000).toISOString()
+  return new Date(startsAtMs - cutoffHours * 60 * 60 * 1000).toISOString();
 }
 
 function isDeadlinePassed(deadline: string | null | undefined) {
   if (!deadline) {
-    return false
+    return false;
   }
 
-  return new Date(deadline).getTime() <= Date.now()
+  return new Date(deadline).getTime() <= Date.now();
 }
 
-export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCardProps) {
-  const { t } = useTranslation()
-  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
-  const latestRefund = getLatestRefund(item)
-  const booking = item.service_booking
-  const canShowBookingActions = canManageBooking(item)
+export function OrderDetailsItemCard({
+  item,
+  currencyIso,
+}: OrderDetailsItemCardProps) {
+  const { t } = useTranslation();
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const latestRefund = getLatestRefund(item);
+  const booking = item.service_booking;
+  const canShowBookingActions = canManageBooking(item);
 
   const actionState = useMemo(() => {
     if (!booking || !canShowBookingActions) {
@@ -70,56 +83,70 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
         canCancel: false,
         rescheduleReason: null as string | null,
         cancelReason: null as string | null,
-      }
+      };
     }
 
-    const service = booking.service
+    const service = booking.service;
 
     const rescheduleDeadline =
-      booking.cutoffs?.reschedule_deadline ?? getCutoffDeadline(booking.starts_at, service?.edit_cutoff_hours ?? 24)
+      booking.cutoffs?.reschedule_deadline ??
+      getCutoffDeadline(booking.starts_at, service?.edit_cutoff_hours ?? 24);
     const cancelDeadline =
-      booking.cutoffs?.cancel_deadline ?? getCutoffDeadline(booking.starts_at, service?.cancel_cutoff_hours ?? 24)
+      booking.cutoffs?.cancel_deadline ??
+      getCutoffDeadline(booking.starts_at, service?.cancel_cutoff_hours ?? 24);
 
-    const rescheduleLatePolicy = service?.edit_late_policy ?? 'deny'
-    const cancelLatePolicy = service?.cancel_late_policy ?? 'deny'
+    const rescheduleLatePolicy = service?.edit_late_policy ?? "deny";
+    const cancelLatePolicy = service?.cancel_late_policy ?? "deny";
 
     const fallbackRescheduleBlocked =
-      rescheduleLatePolicy !== 'allow' && isDeadlinePassed(rescheduleDeadline)
-    const fallbackCancelBlocked = cancelLatePolicy !== 'allow' && isDeadlinePassed(cancelDeadline)
+      rescheduleLatePolicy !== "allow" && isDeadlinePassed(rescheduleDeadline);
+    const fallbackCancelBlocked =
+      cancelLatePolicy !== "allow" && isDeadlinePassed(cancelDeadline);
 
-    const formattedRescheduleDeadline = formatBookingCutoff(rescheduleDeadline, booking.timezone)
-    const formattedCancelDeadline = formatBookingCutoff(cancelDeadline, booking.timezone)
+    const formattedRescheduleDeadline = formatBookingCutoff(
+      rescheduleDeadline,
+      booking.timezone,
+    );
+    const formattedCancelDeadline = formatBookingCutoff(
+      cancelDeadline,
+      booking.timezone,
+    );
 
-    const canReschedule = booking.actions?.can_reschedule ?? !fallbackRescheduleBlocked
-    const canCancel = booking.actions?.can_cancel ?? !fallbackCancelBlocked
+    const canReschedule =
+      booking.actions?.can_reschedule ?? !fallbackRescheduleBlocked;
+    const canCancel = booking.actions?.can_cancel ?? !fallbackCancelBlocked;
 
     const rescheduleReason =
       booking.actions?.reschedule_block_reason ??
       (fallbackRescheduleBlocked
         ? formattedRescheduleDeadline
-          ? t('orders.rescheduleWindowPassedOn', { date: formattedRescheduleDeadline })
-          : t('orders.rescheduleWindowPassed')
-        : null)
+          ? t("orders.rescheduleWindowPassedOn", {
+              date: formattedRescheduleDeadline,
+            })
+          : t("orders.rescheduleWindowPassed")
+        : null);
 
     const cancelReason =
       booking.actions?.cancel_block_reason ??
       (fallbackCancelBlocked
         ? formattedCancelDeadline
-          ? t('orders.cancellationWindowPassedOn', { date: formattedCancelDeadline })
-          : t('orders.cancellationWindowPassed')
-        : null)
+          ? t("orders.cancellationWindowPassedOn", {
+              date: formattedCancelDeadline,
+            })
+          : t("orders.cancellationWindowPassed")
+        : null);
 
     return {
       canReschedule,
       canCancel,
       rescheduleReason,
       cancelReason,
-    }
-  }, [booking, canShowBookingActions, t])
+    };
+  }, [booking, canShowBookingActions, t]);
   const unavailableSummaries = [
     !actionState.canReschedule ? actionState.rescheduleReason : null,
     !actionState.canCancel ? actionState.cancelReason : null,
-  ].filter(Boolean)
+  ].filter(Boolean);
 
   return (
     <Card className="border-border/70 shadow-sm">
@@ -127,22 +154,29 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-base font-semibold text-foreground">{getOrderItemDisplayTitle(item)}</h3>
-              <OrderStatusBadge status={item.status} />
+              <h3 className="text-base font-semibold text-foreground">
+                {getOrderItemDisplayTitle(item)}
+              </h3>
             </div>
 
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <span>{getItemKindLabel(item, t)}</span>
-              {item.quantity > 1 ? <span>{t('orders.quantity', { count: item.quantity })}</span> : null}
+              {item.quantity > 1 ? (
+                <span>{t("orders.quantity", { count: item.quantity })}</span>
+              ) : null}
             </div>
 
             {item.description_snapshot ? (
-              <p className="text-sm text-muted-foreground">{item.description_snapshot}</p>
+              <p className="text-sm text-muted-foreground">
+                {item.description_snapshot}
+              </p>
             ) : null}
           </div>
 
           <div className="lg:text-right">
-            <p className="text-lg font-semibold text-foreground">{formatOrderMoney(item.gross_amount, currencyIso)}</p>
+            <p className="text-lg font-semibold text-foreground">
+              {formatOrderMoney(item.gross_amount, currencyIso)}
+            </p>
           </div>
         </div>
 
@@ -151,13 +185,23 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium text-foreground">{t('orders.booking')}</p>
+                  <p className="font-medium text-foreground">
+                    {t("orders.booking")}
+                  </p>
                   <OrderStatusBadge status={booking.status} />
                 </div>
-                <p>{formatBookingWindow(booking.starts_at, booking.ends_at, booking.timezone)}</p>
+                <p>
+                  {formatBookingWindow(
+                    booking.starts_at,
+                    booking.ends_at,
+                    booking.timezone,
+                  )}
+                </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1">
-                  <span>{booking.timezone ?? 'UTC'}</span>
-                  {booking.location_type ? <span>{booking.location_type}</span> : null}
+                  <span>{booking.timezone ?? "UTC"}</span>
+                  {booking.location_type ? (
+                    <span>{booking.location_type}</span>
+                  ) : null}
                 </div>
               </div>
 
@@ -166,11 +210,13 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
                   <div className="flex flex-wrap gap-2 lg:justify-end">
                     {actionState.canReschedule ? (
                       <Button asChild variant="outline" size="sm">
-                        <Link to={`/account/bookings/${booking.id}/reschedule`}>{t('orders.reschedule')}</Link>
+                        <Link to={`/account/bookings/${booking.id}/reschedule`}>
+                          {t("orders.reschedule")}
+                        </Link>
                       </Button>
                     ) : (
                       <Button variant="outline" size="sm" disabled>
-                        {t('orders.reschedule')}
+                        {t("orders.reschedule")}
                       </Button>
                     )}
                     <Button
@@ -179,12 +225,14 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
                       onClick={() => setIsCancelDialogOpen(true)}
                       disabled={!actionState.canCancel}
                     >
-                      {t('orders.cancelBooking')}
+                      {t("orders.cancelBooking")}
                     </Button>
                   </div>
 
                   {unavailableSummaries.length ? (
-                    <p className="text-sm text-muted-foreground">{unavailableSummaries.join(' ')}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {unavailableSummaries.join(" ")}
+                    </p>
                   ) : null}
                 </div>
               ) : null}
@@ -196,10 +244,21 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
           <div className="rounded-2xl border border-dashed border-border/80 px-4 py-3 text-sm text-muted-foreground">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-3">
-                <p className="font-medium text-foreground">{t('orders.refund')}</p>
-                <span>{t('orders.refundStatus', { status: latestRefund.status ?? t('orders.pending') })}</span>
+                <p className="font-medium text-foreground">
+                  {t("orders.refund")}
+                </p>
+                <span>
+                  {t("orders.refundStatus", {
+                    status: latestRefund.status ?? t("orders.pending"),
+                  })}
+                </span>
               </div>
-              <p className="font-medium text-foreground">{formatOrderMoney(latestRefund.amount, latestRefund.currency_iso)}</p>
+              <p className="font-medium text-foreground">
+                {formatOrderMoney(
+                  latestRefund.amount,
+                  latestRefund.currency_iso,
+                )}
+              </p>
             </div>
           </div>
         ) : null}
@@ -213,5 +272,5 @@ export function OrderDetailsItemCard({ item, currencyIso }: OrderDetailsItemCard
         />
       ) : null}
     </Card>
-  )
+  );
 }
