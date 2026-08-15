@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ function parseServiceId(value: string | undefined) {
 }
 
 export function ServiceEditorPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { serviceId: serviceIdParam } = useParams()
   const serviceId = parseServiceId(serviceIdParam)
@@ -44,7 +46,7 @@ export function ServiceEditorPage() {
 
       navigate('/account/provider/services')
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Unable to save this service right now.'))
+      setServerError(getApiErrorMessage(error, t('provider.saveServiceError')))
     }
   }
 
@@ -52,7 +54,7 @@ export function ServiceEditorPage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-destructive">Invalid service id.</CardContent>
+          <CardContent className="py-6 text-sm text-destructive">{t('provider.invalidServiceId')}</CardContent>
         </Card>
       </div>
     )
@@ -63,7 +65,7 @@ export function ServiceEditorPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardHeader>
-            <CardTitle>Loading service...</CardTitle>
+            <CardTitle>{t('provider.loadingService')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="h-10 animate-pulse rounded bg-muted" />
@@ -80,7 +82,7 @@ export function ServiceEditorPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-10 md:py-12">
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(serviceQuery.error, 'Unable to load this service right now.')}
+            {getApiErrorMessage(serviceQuery.error, t('provider.loadServiceError'))}
           </CardContent>
         </Card>
       </div>
@@ -94,22 +96,22 @@ export function ServiceEditorPage() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 md:py-12">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Provider workspace</p>
+          <p className="text-sm text-muted-foreground">{t('provider.workspace')}</p>
           <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
-            {isEditMode ? 'Edit service' : 'Create service'}
+            {isEditMode ? t('provider.editService') : t('provider.createService')}
           </h1>
         </div>
         <Button asChild variant="outline">
-          <Link to="/account/provider/services">Back to services</Link>
+          <Link to="/account/provider/services">{t('common.backToServices')}</Link>
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{isEditMode ? 'Update service details' : 'New service details'}</CardTitle>
-          <CardDescription>
-            Configure the service content and booking rules that the public availability flow will use.
-          </CardDescription>
+          <CardTitle>
+            {isEditMode ? t('provider.updateServiceDetails') : t('provider.newServiceDetails')}
+          </CardTitle>
+          <CardDescription>{t('provider.serviceFormDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {serverError ? <p className="text-sm text-destructive">{serverError}</p> : null}

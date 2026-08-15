@@ -1,11 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { locationTypeOptions } from "@/features/services/lib/location-type";
 import {
   serviceFormSchema,
   type ServiceFormValues,
@@ -15,13 +17,6 @@ import type {
   ServiceListItem,
 } from "@/features/services/types/service.types";
 import { getLocalizedValue } from "@/lib/localized-value";
-
-const locationTypeOptions = [
-  { value: "", label: "Select a location type" },
-  { value: "remote", label: "Remote" },
-  { value: "on_site", label: "On site" },
-  { value: "at_customer", label: "At customer" },
-] as const;
 
 interface ServiceFormProps {
   categories: ServiceCategory[];
@@ -49,6 +44,7 @@ export function ServiceForm({
   mode,
   onSubmit,
 }: ServiceFormProps) {
+  const { t } = useTranslation();
   const titleTranslations = initialService?.title_translations;
   const descriptionTranslations = initialService?.description_translations;
 
@@ -127,7 +123,7 @@ export function ServiceForm({
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="service-title-en">Title (English)</Label>
+          <Label htmlFor="service-title-en">{t("serviceForm.titleEn")}</Label>
           <Input id="service-title-en" {...register("title.en")} />
           {errors.title?.en ? (
             <p className="text-sm text-destructive">
@@ -136,7 +132,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-title-ar">Title (Arabic)</Label>
+          <Label htmlFor="service-title-ar">{t("serviceForm.titleAr")}</Label>
           <Input id="service-title-ar" {...register("title.ar")} />
           {errors.title?.ar ? (
             <p className="text-sm text-destructive">
@@ -148,7 +144,7 @@ export function ServiceForm({
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="service-description-en">Description (English)</Label>
+          <Label htmlFor="service-description-en">{t("serviceForm.descriptionEn")}</Label>
           <Textarea
             id="service-description-en"
             rows={4}
@@ -161,7 +157,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-description-ar">Description (Arabic)</Label>
+          <Label htmlFor="service-description-ar">{t("serviceForm.descriptionAr")}</Label>
           <Textarea
             id="service-description-ar"
             rows={4}
@@ -177,7 +173,7 @@ export function ServiceForm({
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="service-category">Category</Label>
+          <Label htmlFor="service-category">{t("serviceForm.category")}</Label>
           <select
             id="service-category"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -186,10 +182,11 @@ export function ServiceForm({
             })}
             disabled={isCategoriesLoading}
           >
-            <option value={0}>Select a category</option>
+            <option value={0}>{t("serviceForm.selectCategory")}</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {getLocalizedValue(category.name) || `Category #${category.id}`}
+                {getLocalizedValue(category.name) ||
+                  t("serviceForm.categoryFallback", { id: category.id })}
               </option>
             ))}
           </select>
@@ -200,7 +197,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-price">Price</Label>
+          <Label htmlFor="service-price">{t("serviceForm.price")}</Label>
           <Input
             id="service-price"
             type="number"
@@ -215,7 +212,7 @@ export function ServiceForm({
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="space-y-2">
-          <Label htmlFor="service-duration">Duration (minutes)</Label>
+          <Label htmlFor="service-duration">{t("serviceForm.duration")}</Label>
           <Input
             id="service-duration"
             type="number"
@@ -228,7 +225,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-slot-interval">Slot interval (minutes)</Label>
+          <Label htmlFor="service-slot-interval">{t("serviceForm.slotInterval")}</Label>
           <Input
             id="service-slot-interval"
             type="number"
@@ -243,7 +240,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-capacity">Max concurrent bookings</Label>
+          <Label htmlFor="service-capacity">{t("serviceForm.maxConcurrent")}</Label>
           <Input
             id="service-capacity"
             type="number"
@@ -258,7 +255,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-location-type">Location type</Label>
+          <Label htmlFor="service-location-type">{t("serviceForm.locationType")}</Label>
           <select
             id="service-location-type"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -266,7 +263,7 @@ export function ServiceForm({
           >
             {locationTypeOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </select>
@@ -280,7 +277,7 @@ export function ServiceForm({
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="space-y-2">
-          <Label htmlFor="service-cancel-cutoff">Cancel cutoff (hours)</Label>
+          <Label htmlFor="service-cancel-cutoff">{t("serviceForm.cancelCutoff")}</Label>
           <Input
             id="service-cancel-cutoff"
             type="number"
@@ -293,7 +290,7 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-edit-cutoff">Edit cutoff (hours)</Label>
+          <Label htmlFor="service-edit-cutoff">{t("serviceForm.editCutoff")}</Label>
           <Input
             id="service-edit-cutoff"
             type="number"
@@ -306,27 +303,27 @@ export function ServiceForm({
           ) : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-cancel-policy">Late cancel policy</Label>
+          <Label htmlFor="service-cancel-policy">{t("serviceForm.cancelPolicy")}</Label>
           <select
             id="service-cancel-policy"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             {...register("cancel_late_policy")}
           >
-            <option value="">Not set</option>
-            <option value="deny">Deny</option>
-            <option value="allow">Allow</option>
+            <option value="">{t("serviceForm.policyNotSet")}</option>
+            <option value="deny">{t("serviceForm.policyDeny")}</option>
+            <option value="allow">{t("serviceForm.policyAllow")}</option>
           </select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-edit-policy">Late edit policy</Label>
+          <Label htmlFor="service-edit-policy">{t("serviceForm.editPolicy")}</Label>
           <select
             id="service-edit-policy"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             {...register("edit_late_policy")}
           >
-            <option value="">Not set</option>
-            <option value="deny">Deny</option>
-            <option value="allow">Allow</option>
+            <option value="">{t("serviceForm.policyNotSet")}</option>
+            <option value="deny">{t("serviceForm.policyDeny")}</option>
+            <option value="allow">{t("serviceForm.policyAllow")}</option>
           </select>
         </div>
       </div>
@@ -339,10 +336,10 @@ export function ServiceForm({
             className="h-4 w-4"
             {...register("is_active")}
           />
-          <Label htmlFor="service-active">Service is active and bookable</Label>
+          <Label htmlFor="service-active">{t("serviceForm.isActive")}</Label>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="service-images">Images</Label>
+          <Label htmlFor="service-images">{t("serviceForm.images")}</Label>
           <Input
             id="service-images"
             type="file"
@@ -352,8 +349,8 @@ export function ServiceForm({
           />
           <p className="text-xs text-muted-foreground">
             {mode === "edit"
-              ? "Uploading new images will replace the current service images."
-              : "You can upload up to 5 service images."}
+              ? t("serviceForm.imagesReplaceHint")
+              : t("serviceForm.imagesCreateHint")}
           </p>
         </div>
       </div>
@@ -361,10 +358,10 @@ export function ServiceForm({
       <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={isSubmitting || isCategoriesLoading}>
           {isSubmitting
-            ? "Saving..."
+            ? t("common.saving")
             : mode === "create"
-              ? "Create service"
-              : "Save changes"}
+              ? t("serviceForm.create")
+              : t("serviceForm.saveChanges")}
         </Button>
       </div>
     </form>

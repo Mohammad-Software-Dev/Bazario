@@ -14,6 +14,7 @@ import {
   getBookingServiceTitle,
 } from '@/features/orders/lib/order-format'
 import type { CustomerBookingRecord } from '@/features/orders/types/order.types'
+import { getLocationTypeLabel } from '@/features/services/lib/location-type'
 
 interface BookingListCardProps {
   booking: CustomerBookingRecord
@@ -58,7 +59,9 @@ export function BookingListCard({ booking }: BookingListCardProps) {
           <div className="space-y-1 text-muted-foreground">
             <p>{formatBookingWindow(booking.starts_at, booking.ends_at, booking.timezone)}</p>
             <p>{t('bookings.timezone', { value: booking.timezone ?? 'UTC' })}</p>
-            {booking.location_type ? <p>{t('bookings.location', { value: booking.location_type })}</p> : null}
+            {getLocationTypeLabel(booking.location_type, t) ? (
+              <p>{t('bookings.location', { value: getLocationTypeLabel(booking.location_type, t) })}</p>
+            ) : null}
           </div>
 
           <div className="rounded-xl border border-dashed border-border/80 bg-muted/20 p-3">

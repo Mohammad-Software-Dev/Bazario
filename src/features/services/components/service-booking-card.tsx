@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCartActions, useCartItems } from '@/features/cart/hooks/use-cart'
 import { ServiceSlotPicker } from '@/features/services/components/service-slot-picker'
 import { useServiceAvailabilityQuery } from '@/features/services/hooks/use-service-availability-query'
+import { getLocationTypeLabel } from '@/features/services/lib/location-type'
 import type { ServiceAvailabilitySlot, ServiceListItem } from '@/features/services/types/service.types'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 import { resolveMediaUrl } from '@/lib/api/asset-url'
@@ -34,6 +36,7 @@ function isSlotOverlapping(
 }
 
 export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
+  const { t } = useTranslation()
   const { addServiceItem } = useCartActions()
   const cartItems = useCartItems()
   const [date, setDate] = useState('')
@@ -82,10 +85,10 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
 
     addServiceItem({
       service_id: service.id,
-      title: getLocalizedValue(service.title) || 'Untitled service',
+      title: getLocalizedValue(service.title) || t('common.untitledService'),
       image: resolveMediaUrl(service.images[0]?.image_url, service.images[0]?.image),
       price: service.price,
-      provider_name: (service.service_provider ?? service.serviceProvider)?.name ?? 'Independent provider',
+      provider_name: (service.service_provider ?? service.serviceProvider)?.name ?? t('serviceBooking.independentProvider'),
       category_name: getLocalizedValue(service.category?.name) || undefined,
       duration_minutes: service.duration_minutes ?? null,
       starts_at: activeSelectedSlot.starts_at,
@@ -101,10 +104,12 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Book and add to cart</CardTitle>
+        <CardTitle>{t('serviceBooking.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
-        {!isBookable ? <p className="text-sm text-destructive">This service is not currently bookable.</p> : null}
+        {!isBookable ? (
+          <p className="text-sm text-destructive">{t('serviceBooking.notBookable')}</p>
+        ) : null}
 
         <ServiceSlotPicker
           date={date}
@@ -116,11 +121,11 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
           isLoading={availabilityQuery.isLoading}
           errorMessage={
             availabilityQuery.isError
-              ? getApiErrorMessage(availabilityQuery.error, 'Unable to load available slots right now.')
+              ? getApiErrorMessage(availabilityQuery.error, t('serviceBooking.loadSlotsError'))
               : null
           }
           getSlotDisabledReason={(slot) =>
-            isSlotBlockedByCart(slot) ? 'Conflicts with a booking already in your cart.' : null
+            isSlotBlockedByCart(slot) ? t('serviceBooking.conflictsWithCart') : null
           }
           onDateChange={handleSelectDate}
           onTimezoneChange={handleSelectTimezone}
@@ -132,17 +137,20 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
           disabled={!activeSelectedSlot || !isBookable}
           className="w-full"
         >
-          Add booking to cart
+          {t('serviceBooking.addToCart')}
         </Button>
 
         {conflictingCartBookings.length ? (
-          <p className="text-sm text-muted-foreground">
-            Slots that overlap with this service already in your cart are disabled until you remove or change that
-            booking.
-          </p>
+          <p className="text-sm text-muted-foreground">{t('serviceBooking.conflictHint')}</p>
         ) : null}
 
-        {service.location_type ? <p className="text-sm text-muted-foreground">Location type: {service.location_type}</p> : null}
+        {getLocationTypeLabel(service.location_type, t) ? (
+          <p className="text-sm text-muted-foreground">
+            {t('serviceBooking.locationTypeValue', {
+              value: getLocationTypeLabel(service.location_type, t),
+            })}
+          </p>
+        ) : null}
       </CardContent>
     </Card>
   )

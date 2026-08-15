@@ -13,6 +13,7 @@ import {
   getLatestRefund,
   getOrderItemDisplayTitle,
 } from "@/features/orders/lib/order-format";
+import { getLocationTypeLabel } from "@/features/services/lib/location-type";
 import type { OrderItemRecord } from "@/features/orders/types/order.types";
 
 interface OrderDetailsItemCardProps {
@@ -199,8 +200,10 @@ export function OrderDetailsItemCard({
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1">
                   <span>{booking.timezone ?? "UTC"}</span>
-                  {booking.location_type ? (
-                    <span>{booking.location_type}</span>
+                  {getLocationTypeLabel(booking.location_type, t) ? (
+                    <span>
+                      {getLocationTypeLabel(booking.location_type, t)}
+                    </span>
                   ) : null}
                 </div>
               </div>

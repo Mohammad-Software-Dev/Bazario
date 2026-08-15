@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ import {
   getBookingServiceTitle,
   isSameBookingWindow,
 } from '@/features/orders/lib/order-format'
+import { getLocationTypeLabel } from '@/features/services/lib/location-type'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
 function parseBookingId(value: string | undefined) {
@@ -41,6 +43,7 @@ function getMinimumDate() {
 }
 
 export function BookingReschedulePage() {
+  const { t } = useTranslation()
   const { bookingId: bookingIdParam } = useParams()
   const bookingId = parseBookingId(bookingIdParam)
   const navigate = useNavigate()
@@ -66,7 +69,7 @@ export function BookingReschedulePage() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-12">
         <Card>
-          <CardContent className="py-6 text-sm text-destructive">Invalid booking id.</CardContent>
+          <CardContent className="py-6 text-sm text-destructive">{t('bookings.invalidBookingId')}</CardContent>
         </Card>
       </div>
     )
@@ -110,19 +113,23 @@ export function BookingReschedulePage() {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-12">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Account</p>
-          <h1 className="font-heading text-3xl font-semibold text-foreground">Reschedule booking</h1>
+          <p className="text-sm text-muted-foreground">{t('common.account')}</p>
+          <h1 className="font-heading text-3xl font-semibold text-foreground">
+            {t('bookings.rescheduleBookingTitle')}
+          </h1>
         </div>
         <Button asChild variant="outline">
-          <Link to="/account/bookings">Back to bookings</Link>
+          <Link to="/account/bookings">{t('common.backToBookings')}</Link>
         </Button>
       </div>
 
-      {bookingQuery.isLoading ? <p className="text-sm text-muted-foreground">Loading booking...</p> : null}
+      {bookingQuery.isLoading ? (
+        <p className="text-sm text-muted-foreground">{t('bookings.loadingBooking')}</p>
+      ) : null}
       {bookingQuery.isError ? (
         <Card>
           <CardContent className="py-6 text-sm text-destructive">
-            {getApiErrorMessage(bookingQuery.error, 'Unable to load this booking right now.')}
+            {getApiErrorMessage(bookingQuery.error, t('bookings.loadBookingError'))}
           </CardContent>
         </Card>
       ) : null}
@@ -132,25 +139,27 @@ export function BookingReschedulePage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Current booking</CardTitle>
+                <CardTitle>{t('bookings.currentBooking')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
                 <p>
-                  <span className="font-medium text-foreground">Service:</span> {getBookingServiceTitle(booking.service)}
+                  <span className="font-medium text-foreground">{t('bookings.service')}:</span>{' '}
+                  {getBookingServiceTitle(booking.service)}
                 </p>
                 <p>
-                  <span className="font-medium text-foreground">Provider:</span> {getBookingPrimaryProviderName(booking)}
+                  <span className="font-medium text-foreground">{t('bookings.provider')}:</span>{' '}
+                  {getBookingPrimaryProviderName(booking)}
                 </p>
                 <p>
-                  <span className="font-medium text-foreground">Current slot:</span>{' '}
+                  <span className="font-medium text-foreground">{t('bookings.currentSlot')}:</span>{' '}
                   {formatBookingWindow(booking.starts_at, booking.ends_at, booking.timezone)}
                 </p>
-                <p>
-                  <span className="font-medium text-foreground">Timezone:</span> {booking.timezone ?? 'UTC'}
-                </p>
-                {booking.location_type ? (
+                <p>{t('bookings.timezone', { value: booking.timezone ?? 'UTC' })}</p>
+                {getLocationTypeLabel(booking.location_type, t) ? (
                   <p>
-                    <span className="font-medium text-foreground">Location:</span> {booking.location_type}
+                    {t('bookings.location', {
+                      value: getLocationTypeLabel(booking.location_type, t),
+                    })}
                   </p>
                 ) : null}
               </CardContent>
@@ -158,13 +167,17 @@ export function BookingReschedulePage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Reschedule policy</CardTitle>
+                <CardTitle>{t('bookings.reschedulePolicy')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
                 {booking.cutoffs.reschedule_deadline ? (
-                  <p>Reschedule until: {formatBookingCutoff(booking.cutoffs.reschedule_deadline, booking.timezone)}</p>
+                  <p>
+                    {t('bookings.rescheduleUntil', {
+                      date: formatBookingCutoff(booking.cutoffs.reschedule_deadline, booking.timezone),
+                    })}
+                  </p>
                 ) : (
-                  <p>Rescheduling is allowed until the service starts.</p>
+                  <p>{t('bookings.reschedulingAllowedUntilStart')}</p>
                 )}
                 {booking.actions.reschedule_block_reason ? <p>{booking.actions.reschedule_block_reason}</p> : null}
               </CardContent>
@@ -173,7 +186,7 @@ export function BookingReschedulePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Choose a new slot</CardTitle>
+              <CardTitle>{t('bookings.chooseNewSlot')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <ServiceSlotPicker
@@ -186,7 +199,7 @@ export function BookingReschedulePage() {
                 isLoading={availabilityQuery.isLoading}
                 errorMessage={
                   availabilityQuery.isError
-                    ? getApiErrorMessage(availabilityQuery.error, 'Unable to load available slots right now.')
+                    ? getApiErrorMessage(availabilityQuery.error, t('bookings.loadAvailableSlotsError'))
                     : null
                 }
                 onDateChange={handleDateChange}
@@ -196,7 +209,7 @@ export function BookingReschedulePage() {
 
               {rescheduleBookingMutation.isError ? (
                 <p className="text-sm text-destructive">
-                  {getApiErrorMessage(rescheduleBookingMutation.error, 'Unable to reschedule this booking right now.')}
+                  {getApiErrorMessage(rescheduleBookingMutation.error, t('bookings.unableReschedule'))}
                 </p>
               ) : null}
 
@@ -205,7 +218,9 @@ export function BookingReschedulePage() {
                 disabled={!selectedSlot || isSameSlot || rescheduleBookingMutation.isPending || !booking.actions.can_reschedule}
                 className="w-full"
               >
-                {rescheduleBookingMutation.isPending ? 'Saving...' : 'Save new booking time'}
+                {rescheduleBookingMutation.isPending
+                  ? t('common.saving')
+                  : t('bookings.saveNewBookingTime')}
               </Button>
             </CardContent>
           </Card>

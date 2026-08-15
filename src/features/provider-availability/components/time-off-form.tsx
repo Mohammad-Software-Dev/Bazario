@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +14,7 @@ interface TimeOffFormProps {
 }
 
 export function TimeOffForm({ isSubmitting, onSubmit }: TimeOffFormProps) {
+  const { t } = useTranslation()
   const {
     register,
     handleSubmit,
@@ -38,30 +40,30 @@ export function TimeOffForm({ isSubmitting, onSubmit }: TimeOffFormProps) {
     >
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="time-off-starts-at">Starts at</Label>
+          <Label htmlFor="time-off-starts-at">{t('availability.start')}</Label>
           <Input id="time-off-starts-at" type="datetime-local" {...register('starts_at')} />
           {errors.starts_at ? <p className="text-sm text-destructive">{errors.starts_at.message}</p> : null}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="time-off-ends-at">Ends at</Label>
+          <Label htmlFor="time-off-ends-at">{t('availability.end')}</Label>
           <Input id="time-off-ends-at" type="datetime-local" {...register('ends_at')} />
           {errors.ends_at ? <p className="text-sm text-destructive">{errors.ends_at.message}</p> : null}
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="time-off-reason">Reason</Label>
+        <Label htmlFor="time-off-reason">{t('availability.reason')}</Label>
         <Textarea id="time-off-reason" rows={3} {...register('reason')} />
         {errors.reason ? <p className="text-sm text-destructive">{errors.reason.message}</p> : null}
       </div>
 
       <div className="flex items-center gap-3">
         <input id="time-off-holiday" type="checkbox" className="h-4 w-4" {...register('is_holiday')} />
-        <Label htmlFor="time-off-holiday">Mark as holiday</Label>
+        <Label htmlFor="time-off-holiday">{t('availability.markAsHoliday')}</Label>
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Saving...' : 'Add time off'}
+        {isSubmitting ? t('common.saving') : t('availability.submit')}
       </Button>
     </form>
   )

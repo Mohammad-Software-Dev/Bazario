@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ import { getApiErrorMessage, getApiFieldErrors } from '@/lib/api/api-error'
 import { useAuth } from '@/lib/auth/use-auth'
 
 export function ServiceProviderUpgradeForm() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { session } = useAuth()
   const mutation = useUpgradeServiceProviderMutation()
@@ -58,33 +60,33 @@ export function ServiceProviderUpgradeForm() {
       if (fieldErrors?.logo?.[0]) setError('logo', { type: 'server', message: fieldErrors.logo[0] })
       if (fieldErrors?.attachments?.[0]) setError('attachments', { type: 'server', message: fieldErrors.attachments[0] })
 
-      setServerError(getApiErrorMessage(error, 'Unable to submit service provider upgrade right now.'))
+      setServerError(getApiErrorMessage(error, t('upgradeForm.providerError')))
     }
   })
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="provider-name">Name</Label>
+        <Label htmlFor="provider-name">{t('upgradeForm.name')}</Label>
         <Input id="provider-name" {...register('name')} />
         {errors.name ? <p className="text-sm text-destructive">{errors.name.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="provider-address">Address</Label>
+        <Label htmlFor="provider-address">{t('upgradeForm.address')}</Label>
         <Input id="provider-address" {...register('address')} />
         {errors.address ? <p className="text-sm text-destructive">{errors.address.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="provider-description">Description</Label>
+        <Label htmlFor="provider-description">{t('upgradeForm.description')}</Label>
         <Textarea id="provider-description" rows={4} {...register('description')} />
         {errors.description ? <p className="text-sm text-destructive">{errors.description.message}</p> : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="provider-email">Email</Label>
+          <Label htmlFor="provider-email">{t('common.email')}</Label>
           <Input
             id="provider-email"
             type="email"
@@ -96,7 +98,7 @@ export function ServiceProviderUpgradeForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="provider-phone">Phone</Label>
+          <Label htmlFor="provider-phone">{t('upgradeForm.phone')}</Label>
           <Input
             id="provider-phone"
             type="tel"
@@ -109,13 +111,13 @@ export function ServiceProviderUpgradeForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="provider-logo">Logo</Label>
+        <Label htmlFor="provider-logo">{t('upgradeForm.logo')}</Label>
         <Input id="provider-logo" type="file" accept="image/*" {...register('logo')} />
         {errors.logo ? <p className="text-sm text-destructive">{errors.logo.message}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="provider-attachments">Attachments</Label>
+        <Label htmlFor="provider-attachments">{t('upgradeForm.attachments')}</Label>
         <Input id="provider-attachments" type="file" multiple accept=".pdf,image/*" {...register('attachments')} />
         {errors.attachments ? <p className="text-sm text-destructive">{errors.attachments.message}</p> : null}
       </div>
@@ -124,10 +126,10 @@ export function ServiceProviderUpgradeForm() {
 
       <div className="flex gap-3">
         <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? 'Submitting...' : 'Submit provider application'}
+          {mutation.isPending ? t('upgradeForm.submitting') : t('upgradeForm.submitProvider')}
         </Button>
         <Button type="button" variant="outline" onClick={() => navigate('/account')}>
-          Cancel
+          {t('common.cancel')}
         </Button>
       </div>
     </form>

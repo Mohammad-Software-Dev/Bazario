@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
@@ -22,6 +23,7 @@ function parsePage(value: string | null) {
 }
 
 export function ProviderServicesPage() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [serviceToDelete, setServiceToDelete] = useState<ServiceListItem | null>(null)
   const page = useMemo(() => parsePage(searchParams.get('page')), [searchParams])
@@ -62,23 +64,25 @@ export function ProviderServicesPage() {
   const serviceDeleteName = serviceToDelete
     ? typeof serviceToDelete.title === 'string'
       ? serviceToDelete.title
-      : 'this service'
-    : 'this service'
+      : t('provider.thisService')
+    : t('provider.thisService')
 
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 md:py-12">
         <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Provider workspace</p>
-            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">My services</h1>
+            <p className="text-sm text-muted-foreground">{t('provider.workspace')}</p>
+            <h1 className="font-heading text-3xl font-semibold text-foreground md:text-4xl">
+              {t('provider.myServices')}
+            </h1>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild variant="outline">
-              <Link to="/account/provider/availability">Manage availability</Link>
+              <Link to="/account/provider/availability">{t('provider.manageAvailability')}</Link>
             </Button>
             <Button asChild>
-              <Link to="/account/provider/services/new">Add new service</Link>
+              <Link to="/account/provider/services/new">{t('provider.addService')}</Link>
             </Button>
           </div>
         </section>
@@ -87,7 +91,7 @@ export function ProviderServicesPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <Card key={index} className="overflow-hidden pt-0">
-                <div className="aspect-[4/3] animate-pulse bg-muted" />
+                <div className="aspect-4/3 animate-pulse bg-muted" />
                 <CardHeader className="space-y-2">
                   <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
                   <div className="h-4 w-full animate-pulse rounded bg-muted" />
@@ -104,7 +108,7 @@ export function ProviderServicesPage() {
         {!myServicesQuery.isLoading && myServicesQuery.isError ? (
           <Card>
             <CardContent className="py-6 text-sm text-destructive">
-              {getApiErrorMessage(myServicesQuery.error, 'Unable to load your services right now.')}
+              {getApiErrorMessage(myServicesQuery.error, t('provider.loadMyServicesError'))}
             </CardContent>
           </Card>
         ) : null}
@@ -120,7 +124,7 @@ export function ProviderServicesPage() {
             ) : (
               <Card>
                 <CardContent className="py-8 text-sm text-muted-foreground">
-                  You do not have any services yet.
+                  {t('provider.noServicesYet')}
                 </CardContent>
               </Card>
             )}
@@ -141,10 +145,10 @@ export function ProviderServicesPage() {
             setServiceToDelete(null)
           }
         }}
-        title="Delete service"
-        description={`Delete "${serviceDeleteName}"? This will remove it from your provider workspace.`}
-        confirmLabel={isDeleting ? 'Deleting...' : 'Delete service'}
-        cancelLabel="Keep service"
+        title={t('provider.deleteServiceTitle')}
+        description={t('provider.deleteServiceDescription', { name: serviceDeleteName })}
+        confirmLabel={isDeleting ? t('common.deleting') : t('provider.deleteServiceTitle')}
+        cancelLabel={t('provider.keepService')}
         onConfirm={confirmDelete}
         isPending={isDeleting}
         variant="destructive"

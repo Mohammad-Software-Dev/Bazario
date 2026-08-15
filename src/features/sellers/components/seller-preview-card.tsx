@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import {
@@ -16,6 +17,7 @@ interface SellerPreviewCardProps {
 }
 
 export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
+  const { t } = useTranslation();
   const imageUrl = resolveMediaUrl(seller.logo_url, seller.logo);
   const contactName = seller.user?.name ?? seller.store_owner_name;
 
@@ -26,7 +28,7 @@ export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
       className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <Card className="overflow-hidden rounded-2xl border-border/70 bg-card pt-0 shadow-sm transition-colors hover:border-foreground/20">
-        <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+        <div className="aspect-4/3 w-full overflow-hidden bg-muted">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -34,7 +36,7 @@ export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
               className="block h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
               No logo
             </div>
           )}
@@ -43,7 +45,7 @@ export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
         <CardHeader className="space-y-1 px-4 pt-3 pb-0">
           <CardTitle className="line-clamp-2 text-lg leading-5.5">{seller.store_name}</CardTitle>
           <CardDescription className="line-clamp-2 text-sm leading-5">
-            {seller.description ?? "No description yet."}
+            {seller.description ?? t("common.noDescriptionYet")}
           </CardDescription>
         </CardHeader>
 

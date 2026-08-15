@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -5,17 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { SellerUpgradeForm } from '@/features/account/components/seller-upgrade-form'
 
 export function SellerUpgradePage() {
+  const { t } = useTranslation()
+
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-12">
       <Card>
         <CardHeader>
-          <CardTitle>Upgrade to seller</CardTitle>
-          <CardDescription>Submit your seller application with store details and optional uploads.</CardDescription>
+          <CardTitle>{t('seller.upgradeTitle')}</CardTitle>
+          <CardDescription>{t('seller.upgradeDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <SellerUpgradeForm />
           <Button asChild variant="ghost" className="px-0">
-            <Link to="/account">Back to account</Link>
+            <Link to="/account">{t('common.backToAccount')}</Link>
           </Button>
         </CardContent>
       </Card>

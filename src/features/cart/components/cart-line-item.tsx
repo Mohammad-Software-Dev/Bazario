@@ -6,6 +6,7 @@ import { buildAssetUrl } from '@/lib/api/asset-url'
 
 import { formatCartBookingWindow, formatCartMoney } from '@/features/cart/lib/cart-calculations'
 import type { CartItem } from '@/features/cart/types/cart.types'
+import { getLocationTypeLabel } from '@/features/services/lib/location-type'
 
 interface CartLineItemProps {
   item: CartItem
@@ -54,7 +55,9 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
           <div className="space-y-1 text-sm text-muted-foreground">
             <p>{formatCartBookingWindow(item)}</p>
             <p>{t('bookings.timezone', { value: item.timezone })}</p>
-            {item.location_type ? <p>{t('bookings.location', { value: item.location_type })}</p> : null}
+            {getLocationTypeLabel(item.location_type, t) ? (
+              <p>{t('bookings.location', { value: getLocationTypeLabel(item.location_type, t) })}</p>
+            ) : null}
           </div>
         ) : null}
 
