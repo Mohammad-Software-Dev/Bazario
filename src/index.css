@@ -63,7 +63,7 @@
     --muted-foreground: #077787;
     --accent: #ebf4f6;
     --accent-foreground: #071952;
-    --destructive: oklch(0.577 0.245 27.325);
+    --destructive: oklch(0.543 0.245 27.325);
     --border: rgb(7 25 82 / 0.10);
     --input: rgb(7 25 82 / 0.12);
     --ring: #2d949e;

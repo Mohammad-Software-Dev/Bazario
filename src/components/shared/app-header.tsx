@@ -15,6 +15,7 @@ import { useChatUnreadCountQuery } from "@/features/chat/hooks/use-chat-unread-c
 import { useChatUnreadSubscription } from "@/features/chat/hooks/use-chat-unread-subscription";
 import { useAuth } from "@/lib/auth/use-auth";
 import { useAppLanguage } from "@/lib/i18n/use-app-language";
+import { cn } from "@/lib/utils";
 import { useUiStore } from "@/stores/ui-store";
 
 const navigationItems = [
@@ -106,7 +107,11 @@ export function AppHeader() {
               type="button"
               variant={language === "en" ? "secondary" : "ghost"}
               size="sm"
-              className="h-8 px-2 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+              className={cn(
+                "h-8 px-2",
+                language !== "en" &&
+                  "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground",
+              )}
               onClick={() => changeLanguage("en")}
               aria-label={t("common.english")}
             >
@@ -116,7 +121,11 @@ export function AppHeader() {
               type="button"
               variant={language === "de" ? "secondary" : "ghost"}
               size="sm"
-              className="h-8 px-2 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+              className={cn(
+                "h-8 px-2",
+                language !== "de" &&
+                  "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground",
+              )}
               onClick={() => changeLanguage("de")}
               aria-label={t("common.german")}
             >
