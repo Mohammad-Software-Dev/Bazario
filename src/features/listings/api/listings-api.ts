@@ -91,6 +91,14 @@ export async function createListingCheckoutSession(listingId: number) {
   return response.data
 }
 
+export async function deleteListing(listingId: number) {
+  const response = await httpClient.delete<{ success: number; message?: string }>(
+    listingEndpoints.delete(listingId),
+  )
+
+  return response.data
+}
+
 export async function reconcileListingCheckoutSession(
   listingId: number,
   payload: ReconcileListingCheckoutSessionPayload,

@@ -76,6 +76,12 @@ export async function createAdCheckoutSession(adId: number) {
   return response.data
 }
 
+export async function deleteAd(adId: number) {
+  const response = await httpClient.delete<ApiSuccessResponse<null>>(adEndpoints.delete(adId))
+
+  return response.data
+}
+
 export async function reconcileAdCheckoutSession(
   adId: number,
   payload: ReconcileAdCheckoutSessionPayload,

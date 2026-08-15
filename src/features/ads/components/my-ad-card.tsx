@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { buildAssetUrl } from '@/lib/api/asset-url'
@@ -8,6 +9,7 @@ import { getApiErrorMessage } from '@/lib/api/api-error'
 import { formatDateTime } from '@/lib/i18n/format'
 
 import { createAdCheckoutSession } from '@/features/ads/api/ads-api'
+import { useDeleteAdMutation } from '@/features/ads/hooks/use-delete-ad-mutation'
 import type { AdViewModel } from '@/features/ads/types/ad.types'
 
 interface MyAdCardProps {
@@ -34,7 +36,10 @@ function statusTone(status: string) {
 export function MyAdCard({ ad }: MyAdCardProps) {
   const { t } = useTranslation()
   const [isStartingCheckout, setIsStartingCheckout] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const deleteAdMutation = useDeleteAdMutation()
   const imageUrl = buildAssetUrl(ad.image)
   const targetTypeLabel = ad.targetType ? t(`ads.targetType.${ad.targetType}`) : t('ads.targetUnavailable')
   const paymentLabel = ad.paymentState === 'paid' ? t('ads.paymentPaid') : t('ads.paymentRequired')
@@ -49,6 +54,17 @@ export function MyAdCard({ ad }: MyAdCardProps) {
     } catch (error) {
       setCheckoutError(getApiErrorMessage(error, t('ads.checkoutSessionError')))
       setIsStartingCheckout(false)
+    }
+  }
+
+  async function handleDeleteAd() {
+    setDeleteError(null)
+
+    try {
+      await deleteAdMutation.mutateAsync(ad.id)
+      setIsDeleteDialogOpen(false)
+    } catch (error) {
+      setDeleteError(getApiErrorMessage(error, t('ads.deleteError')))
     }
   }
 
@@ -92,10 +108,21 @@ export function MyAdCard({ ad }: MyAdCardProps) {
 
           {ad.status === 'pending_payment' ? (
             <div className="space-y-2 pt-1">
-              <Button onClick={handleCompletePayment} disabled={isStartingCheckout}>
-                {isStartingCheckout ? t('ads.startingPayment') : t('ads.completePayment')}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={handleCompletePayment} disabled={isStartingCheckout || deleteAdMutation.isPending}>
+                  {isStartingCheckout ? t('ads.startingPayment') : t('ads.completePayment')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  disabled={isStartingCheckout || deleteAdMutation.isPending}
+                >
+                  {t('ads.deleteAd')}
+                </Button>
+              </div>
               {checkoutError ? <p className="text-sm text-destructive">{checkoutError}</p> : null}
+              {deleteError ? <p className="text-sm text-destructive">{deleteError}</p> : null}
             </div>
           ) : null}
 
@@ -108,6 +135,18 @@ export function MyAdCard({ ad }: MyAdCardProps) {
           ) : null}
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title={t('ads.deleteTitle')}
+        description={t('ads.deleteDescription')}
+        confirmLabel={t('ads.deleteAd')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleDeleteAd}
+        isPending={deleteAdMutation.isPending}
+        variant="destructive"
+      />
     </Card>
   )
 }

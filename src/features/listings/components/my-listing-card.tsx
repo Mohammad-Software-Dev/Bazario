@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatDateTime, formatMoney } from '@/lib/i18n/format'
@@ -9,6 +10,7 @@ import { getApiErrorMessage } from '@/lib/api/api-error'
 import { createListingCheckoutSession } from '@/features/listings/api/listings-api'
 import { getListingImageUrl } from '@/features/listings/lib/listing-mappers'
 import { ListingStatusBadge } from '@/features/listings/components/listing-status-badge'
+import { useDeleteListingMutation } from '@/features/listings/hooks/use-delete-listing-mutation'
 import type { ListingRecord } from '@/features/listings/types/listing.types'
 
 interface MyListingCardProps {
@@ -18,7 +20,10 @@ interface MyListingCardProps {
 export function MyListingCard({ listing }: MyListingCardProps) {
   const { t, i18n } = useTranslation()
   const [isStartingCheckout, setIsStartingCheckout] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const deleteListingMutation = useDeleteListingMutation()
   const imageUrl = getListingImageUrl(listing)
   const price = typeof listing.price === 'number' ? listing.price : typeof listing.price === 'string' ? Number(listing.price) : null
   const currency = listing.currency_iso ?? 'EUR'
@@ -34,6 +39,17 @@ export function MyListingCard({ listing }: MyListingCardProps) {
     } catch (error) {
       setCheckoutError(getApiErrorMessage(error, t('listings.checkoutSessionError')))
       setIsStartingCheckout(false)
+    }
+  }
+
+  async function handleDeleteListing() {
+    setDeleteError(null)
+
+    try {
+      await deleteListingMutation.mutateAsync(listing.id)
+      setIsDeleteDialogOpen(false)
+    } catch (error) {
+      setDeleteError(getApiErrorMessage(error, t('listings.deleteError')))
     }
   }
 
@@ -71,10 +87,24 @@ export function MyListingCard({ listing }: MyListingCardProps) {
 
           {listing.status === 'pending_payment' ? (
             <div className="space-y-2">
-              <Button onClick={handleCompletePayment} disabled={isStartingCheckout}>
-                {isStartingCheckout ? t('listings.startingCheckout') : t('listings.completePayment')}
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={handleCompletePayment}
+                  disabled={isStartingCheckout || deleteListingMutation.isPending}
+                >
+                  {isStartingCheckout ? t('listings.startingCheckout') : t('listings.completePayment')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  disabled={isStartingCheckout || deleteListingMutation.isPending}
+                >
+                  {t('listings.deleteListing')}
+                </Button>
+              </div>
               {checkoutError ? <p className="text-sm text-destructive">{checkoutError}</p> : null}
+              {deleteError ? <p className="text-sm text-destructive">{deleteError}</p> : null}
             </div>
           ) : null}
 
@@ -93,6 +123,18 @@ export function MyListingCard({ listing }: MyListingCardProps) {
           ) : null}
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title={t('listings.deleteTitle')}
+        description={t('listings.deleteDescription')}
+        confirmLabel={t('listings.deleteListing')}
+        cancelLabel={t('common.cancel')}
+        onConfirm={handleDeleteListing}
+        isPending={deleteListingMutation.isPending}
+        variant="destructive"
+      />
     </Card>
   )
 }
