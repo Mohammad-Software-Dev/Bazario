@@ -27,16 +27,15 @@ export function ResetPasswordForm() {
   const resetPasswordMutation = useResetPasswordMutation()
   const [serverError, setServerError] = useState<string | null>(null)
   const [missingToken, setMissingToken] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
   const {
     register,
     handleSubmit,
     setError,
-    setValue,
     formState: { errors },
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: '',
       password: '',
       password_confirmation: '',
     },
@@ -46,11 +45,14 @@ export function ResetPasswordForm() {
     const email = getPasswordResetEmail()
 
     if (email) {
-      setValue('email', email)
+      setResetEmail(email)
+    } else {
+      navigate('/forgot-password', { replace: true })
+      return
     }
 
     setMissingToken(!getPasswordResetToken())
-  }, [setValue])
+  }, [navigate])
 
   function handleBackToLogin() {
     openLoginDialog()
@@ -62,7 +64,7 @@ export function ResetPasswordForm() {
 
     const token = getPasswordResetToken()
 
-    if (!token) {
+    if (!token || !resetEmail) {
       setMissingToken(true)
       setServerError(t('auth.missingResetToken'))
       return
@@ -70,7 +72,7 @@ export function ResetPasswordForm() {
 
     try {
       await resetPasswordMutation.mutateAsync({
-        email: values.email,
+        email: resetEmail,
         token,
         password: values.password,
       })
@@ -79,13 +81,8 @@ export function ResetPasswordForm() {
       handleBackToLogin()
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
-      const emailError = fieldErrors?.email?.[0]
       const passwordError = fieldErrors?.password?.[0]
       const tokenError = fieldErrors?.token?.[0]
-
-      if (emailError) {
-        setError('email', { type: 'server', message: emailError })
-      }
 
       if (passwordError) {
         setError('password', { type: 'server', message: passwordError })
@@ -97,12 +94,6 @@ export function ResetPasswordForm() {
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
-      <div className="space-y-2">
-        <Label htmlFor="reset-password-email">{t('common.email')}</Label>
-        <Input id="reset-password-email" type="email" autoComplete="email" {...register('email')} />
-        {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
-      </div>
-
       <div className="space-y-2">
         <Label htmlFor="reset-password-new-password">{t('auth.newPassword')}</Label>
         <Input

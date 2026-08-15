@@ -1,18 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { OtpCodeInput } from '@/features/auth/components/otp-code-input'
 import { useVerifyResetOtpMutation } from '@/features/auth/hooks/use-verify-reset-otp-mutation'
-import {
-  getPasswordResetEmail,
-  setPasswordResetEmail,
-  setPasswordResetToken,
-} from '@/features/auth/lib/password-reset-storage'
+import { getPasswordResetEmail, setPasswordResetToken } from '@/features/auth/lib/password-reset-storage'
 import {
   verifyResetOtpSchema,
   type VerifyResetOtpFormValues,
@@ -24,16 +20,15 @@ export function VerifyResetOtpForm() {
   const navigate = useNavigate()
   const verifyResetOtpMutation = useVerifyResetOtpMutation()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [resetEmail, setResetEmail] = useState('')
   const {
-    register,
+    control,
     handleSubmit,
     setError,
-    setValue,
     formState: { errors },
   } = useForm<VerifyResetOtpFormValues>({
     resolver: zodResolver(verifyResetOtpSchema),
     defaultValues: {
-      email: '',
       otp: '',
     },
   })
@@ -42,28 +37,32 @@ export function VerifyResetOtpForm() {
     const email = getPasswordResetEmail()
 
     if (email) {
-      setValue('email', email)
+      setResetEmail(email)
+      return
     }
-  }, [setValue])
+
+    navigate('/forgot-password', { replace: true })
+  }, [navigate])
 
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null)
 
+    if (!resetEmail) {
+      navigate('/forgot-password', { replace: true })
+      return
+    }
+
     try {
-      const response = await verifyResetOtpMutation.mutateAsync(values)
+      const response = await verifyResetOtpMutation.mutateAsync({
+        email: resetEmail,
+        otp: values.otp,
+      })
 
-      setPasswordResetEmail(values.email)
       setPasswordResetToken(response.result.token)
-
       navigate('/reset-password')
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
-      const emailError = fieldErrors?.email?.[0]
       const otpError = fieldErrors?.otp?.[0]
-
-      if (emailError) {
-        setError('email', { type: 'server', message: emailError })
-      }
 
       if (otpError) {
         setError('otp', { type: 'server', message: otpError })
@@ -76,14 +75,18 @@ export function VerifyResetOtpForm() {
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <Label htmlFor="verify-reset-email">{t('common.email')}</Label>
-        <Input id="verify-reset-email" type="email" autoComplete="email" {...register('email')} />
-        {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="verify-reset-otp">{t('auth.otpCode')}</Label>
-        <Input id="verify-reset-otp" inputMode="numeric" autoComplete="one-time-code" {...register('otp')} />
+        <Label>{t('auth.otpCode')}</Label>
+        <Controller
+          control={control}
+          name="otp"
+          render={({ field }) => (
+            <OtpCodeInput
+              value={field.value}
+              disabled={verifyResetOtpMutation.isPending}
+              onChange={(nextValue) => field.onChange(nextValue)}
+            />
+          )}
+        />
         {errors.otp ? <p className="text-sm text-destructive">{errors.otp.message}</p> : null}
       </div>
 
