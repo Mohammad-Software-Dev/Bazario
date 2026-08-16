@@ -24,7 +24,13 @@ export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardPr
     <Card className="overflow-hidden rounded-2xl border-border/70 bg-card pt-0 shadow-sm">
       <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
         {imageUrl ? (
-          <img src={imageUrl} alt={title} className="block h-full w-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            className="block h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
             {t('common.noImage')}

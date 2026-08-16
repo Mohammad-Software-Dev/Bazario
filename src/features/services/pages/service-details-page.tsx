@@ -129,6 +129,9 @@ export function ServiceDetailsPage() {
               <img
                 src={primaryImage}
                 alt={serviceTitle}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="block h-full w-full object-cover"
               />
             ) : (
@@ -148,6 +151,8 @@ export function ServiceDetailsPage() {
                   <img
                     src={image}
                     alt={`${serviceTitle} ${index + 2}`}
+                    loading="lazy"
+                    decoding="async"
                     className="block aspect-4/3 h-full w-full object-cover"
                   />
                 </div>

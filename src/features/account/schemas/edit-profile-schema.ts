@@ -5,6 +5,8 @@ export const editProfileSchema = z.object({
   email: z.string().email('Enter a valid email address.'),
   phone: z.string().optional(),
   age: z.string(),
+  seller_logo: z.any().optional(),
+  service_provider_logo: z.any().optional(),
 })
 
 export type EditProfileFormValues = z.infer<typeof editProfileSchema>

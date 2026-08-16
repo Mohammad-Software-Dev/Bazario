@@ -33,6 +33,8 @@ export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
             <img
               src={imageUrl}
               alt={seller.store_name}
+              loading="lazy"
+              decoding="async"
               className="block h-full w-full object-cover"
             />
           ) : (

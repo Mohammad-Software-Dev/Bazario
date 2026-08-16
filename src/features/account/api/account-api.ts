@@ -77,6 +77,29 @@ function buildServiceProviderFormData(payload: UpgradeToServiceProviderPayload) 
   return formData
 }
 
+function buildUpdateProfileFormData(payload: UpdateProfilePayload) {
+  const formData = new FormData()
+
+  formData.append('_method', 'PUT')
+  formData.append('name', payload.name)
+  formData.append('email', payload.email)
+  formData.append('phone', payload.phone ?? '')
+
+  if (typeof payload.age === 'number') {
+    formData.append('age', String(payload.age))
+  }
+
+  if (payload.seller_logo?.item(0)) {
+    formData.append('seller_logo', payload.seller_logo.item(0) as File)
+  }
+
+  if (payload.service_provider_logo?.item(0)) {
+    formData.append('service_provider_logo', payload.service_provider_logo.item(0) as File)
+  }
+
+  return formData
+}
+
 export async function getMe(includeSummary = false, limit?: number) {
   const params = new URLSearchParams()
 
@@ -117,7 +140,11 @@ export async function upgradeToServiceProvider(payload: UpgradeToServiceProvider
 }
 
 export async function updateProfile(payload: UpdateProfilePayload) {
-  const response = await httpClient.put<ApiSuccessResponse<UpdateProfileResult>>(accountEndpoints.updateProfile, payload)
+  const response = await httpClient.post<ApiSuccessResponse<UpdateProfileResult>>(
+    accountEndpoints.updateProfile,
+    buildUpdateProfileFormData(payload),
+    { headers: { 'Content-Type': 'multipart/form-data' } },
+  )
 
   return response.data.result
 }

@@ -528,6 +528,9 @@ const en = {
     updateProfileError: 'Unable to update your profile right now.',
     saveChanges: 'Save changes',
     ageValidation: 'Age must be a whole number between 12 and 100.',
+    sellerLogoTitle: 'Seller logo',
+    providerLogoTitle: 'Provider logo',
+    logoDescription: 'Upload a new logo image to replace the current one.',
   },
   seller: {
     loadMyProductsError: 'Unable to load your products right now.',

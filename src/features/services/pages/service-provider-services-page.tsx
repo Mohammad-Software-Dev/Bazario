@@ -150,6 +150,8 @@ export function ServiceProviderServicesPage() {
               <img
                 src={serviceProviderImageUrl}
                 alt={serviceProvider?.name ?? t("providerProfile.logoAlt")}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             ) : (

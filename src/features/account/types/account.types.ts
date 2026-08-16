@@ -13,6 +13,7 @@ export interface SellerProfile {
   store_name: string
   address: string
   logo: string | null
+  logo_url?: string | null
   description: string | null
   status: string
   created_at?: string
@@ -25,6 +26,7 @@ export interface ServiceProviderProfile {
   name: string
   address: string
   logo: string | null
+  logo_url?: string | null
   description: string | null
   status: string
   created_at?: string
@@ -156,6 +158,8 @@ export interface UpdateProfilePayload {
   email: string
   phone?: string | null
   age?: number | null
+  seller_logo?: FileList | null
+  service_provider_logo?: FileList | null
 }
 
 export interface UpdateProfileResult {

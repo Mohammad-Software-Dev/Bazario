@@ -40,6 +40,8 @@ export function ServicePreviewCard({ service }: ServicePreviewCardProps) {
             <img
               src={imageUrl}
               alt={serviceTitle}
+              loading="lazy"
+              decoding="async"
               className="block h-full w-full object-cover"
             />
           ) : (

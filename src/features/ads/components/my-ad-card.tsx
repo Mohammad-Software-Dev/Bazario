@@ -96,6 +96,8 @@ export function MyAdCard({ ad }: MyAdCardProps) {
             <img
               src={imageUrl}
               alt={ad.title}
+              loading="lazy"
+              decoding="async"
               className="block h-full w-full object-cover"
             />
           ) : (

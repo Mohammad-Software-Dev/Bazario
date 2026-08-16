@@ -17,6 +17,7 @@ export interface SellerProfile {
   store_name: string
   address: string
   logo: string | null
+  logo_url?: string | null
   description: string | null
   status: string
   created_at?: string
@@ -29,6 +30,7 @@ export interface ServiceProviderProfile {
   name: string
   address: string
   logo: string | null
+  logo_url?: string | null
   description: string | null
   status: string
   created_at?: string

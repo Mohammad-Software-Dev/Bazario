@@ -528,6 +528,9 @@ const de = {
     updateProfileError: 'Dein Profil konnte gerade nicht aktualisiert werden.',
     saveChanges: 'Änderungen speichern',
     ageValidation: 'Das Alter muss eine ganze Zahl zwischen 12 und 100 sein.',
+    sellerLogoTitle: 'Verkäuferlogo',
+    providerLogoTitle: 'Anbieterlogo',
+    logoDescription: 'Lade ein neues Logo hoch, um das aktuelle zu ersetzen.',
   },
   seller: {
     loadMyProductsError: 'Deine Produkte konnten gerade nicht geladen werden.',

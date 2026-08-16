@@ -42,6 +42,10 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const updateProfileMutation = useUpdateProfileMutation()
+  const sellerProfile = user.seller_profile ?? null
+  const serviceProviderProfile = user.service_provider_profile ?? null
+  const sellerLogo = sellerProfile?.logo_url ?? sellerProfile?.logo ?? null
+  const serviceProviderLogo = serviceProviderProfile?.logo_url ?? serviceProviderProfile?.logo ?? null
 
   const {
     register,
@@ -74,6 +78,8 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
         email: values.email,
         phone: values.phone?.trim() ? values.phone.trim() : null,
         age: normalizedAge,
+        seller_logo: (values.seller_logo as FileList | null | undefined) ?? null,
+        service_provider_logo: (values.service_provider_logo as FileList | null | undefined) ?? null,
       },
       {
         onSuccess: () => {
@@ -86,11 +92,17 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
           const emailError = fieldErrors?.email?.[0]
           const phoneError = fieldErrors?.phone?.[0]
           const ageError = fieldErrors?.age?.[0]
+          const sellerLogoError = fieldErrors?.seller_logo?.[0]
+          const serviceProviderLogoError = fieldErrors?.service_provider_logo?.[0]
 
           if (nameError) setError('name', { type: 'server', message: nameError })
           if (emailError) setError('email', { type: 'server', message: emailError })
           if (phoneError) setError('phone', { type: 'server', message: phoneError })
           if (ageError) setError('age', { type: 'server', message: ageError })
+          if (sellerLogoError) setError('seller_logo', { type: 'server', message: sellerLogoError })
+          if (serviceProviderLogoError) {
+            setError('service_provider_logo', { type: 'server', message: serviceProviderLogoError })
+          }
         },
       },
     )
@@ -129,6 +141,61 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
             <Input id="profile-age" inputMode="numeric" {...register('age')} />
             {errors.age ? <p className="text-sm text-destructive">{errors.age.message}</p> : null}
           </div>
+
+          {sellerProfile ? (
+            <div className="space-y-3 rounded-xl border border-border/70 p-4">
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">{t('profile.sellerLogoTitle')}</p>
+                <p className="text-sm text-muted-foreground">{t('profile.logoDescription')}</p>
+              </div>
+              {sellerLogo ? (
+                <img
+                  src={sellerLogo}
+                  alt={t('sellerProfile.logoAlt')}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-20 w-20 rounded-xl border border-border/70 object-cover"
+                />
+              ) : null}
+              <div className="space-y-2">
+                <Label htmlFor="profile-seller-logo">{t('upgradeForm.logo')}</Label>
+                <Input id="profile-seller-logo" type="file" accept="image/*" {...register('seller_logo')} />
+                {errors.seller_logo ? (
+                  <p className="text-sm text-destructive">{String(errors.seller_logo.message)}</p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          {serviceProviderProfile ? (
+            <div className="space-y-3 rounded-xl border border-border/70 p-4">
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">{t('profile.providerLogoTitle')}</p>
+                <p className="text-sm text-muted-foreground">{t('profile.logoDescription')}</p>
+              </div>
+              {serviceProviderLogo ? (
+                <img
+                  src={serviceProviderLogo}
+                  alt={t('providerProfile.logoAlt')}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-20 w-20 rounded-xl border border-border/70 object-cover"
+                />
+              ) : null}
+              <div className="space-y-2">
+                <Label htmlFor="profile-provider-logo">{t('upgradeForm.logo')}</Label>
+                <Input
+                  id="profile-provider-logo"
+                  type="file"
+                  accept="image/*"
+                  {...register('service_provider_logo')}
+                />
+                {errors.service_provider_logo ? (
+                  <p className="text-sm text-destructive">{String(errors.service_provider_logo.message)}</p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
 
           {updateProfileMutation.isError ? (
             <p className="text-sm text-destructive">

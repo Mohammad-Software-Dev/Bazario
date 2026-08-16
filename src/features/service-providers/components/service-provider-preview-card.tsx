@@ -35,6 +35,8 @@ export function ServiceProviderPreviewCard({
             <img
               src={imageUrl}
               alt={serviceProvider.name}
+              loading="lazy"
+              decoding="async"
               className="block h-full w-full object-cover"
             />
           ) : (

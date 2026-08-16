@@ -14,7 +14,13 @@ export function MarketplaceUpdateCard({ listing }: MarketplaceUpdateCardProps) {
   return (
     <article className="group relative aspect-[16/9] overflow-hidden rounded-[28px] border border-border/70 bg-card shadow-sm">
       {imageUrl ? (
-        <img src={imageUrl} alt={listing.title} className="h-full w-full object-cover" />
+        <img
+          src={imageUrl}
+          alt={listing.title}
+          loading="lazy"
+          decoding="async"
+          className="h-full w-full object-cover"
+        />
       ) : (
         <div className="flex h-full w-full items-center justify-center bg-muted text-sm text-muted-foreground">
           {t('common.noImage')}

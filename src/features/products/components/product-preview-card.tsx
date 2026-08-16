@@ -40,6 +40,8 @@ export function ProductPreviewCard({ product }: ProductPreviewCardProps) {
             <img
               src={imageUrl}
               alt={productName}
+              loading="lazy"
+              decoding="async"
               className="block h-full w-full object-cover"
             />
           ) : (

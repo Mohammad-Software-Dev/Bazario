@@ -140,6 +140,8 @@ export function SellerProductsPage() {
               <img
                 src={sellerImageUrl}
                 alt={seller?.store_name ?? t("sellerProfile.logoAlt")}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             ) : (

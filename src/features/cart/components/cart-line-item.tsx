@@ -23,7 +23,13 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
     <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 md:flex-row md:items-start">
       <div className="h-24 w-full overflow-hidden rounded-lg bg-muted md:w-32">
         {imageUrl ? (
-          <img src={imageUrl} alt={item.type === 'product' ? item.name : item.title} className="h-full w-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={item.type === 'product' ? item.name : item.title}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
             {t('common.noImage')}
