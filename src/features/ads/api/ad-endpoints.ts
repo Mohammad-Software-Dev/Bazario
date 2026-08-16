@@ -6,5 +6,4 @@ export const adEndpoints = {
   checkoutSession: (adId: number) => `/api/ads/${adId}/checkout-session`,
   reconcileCheckoutSession: (adId: number) =>
     `/api/ads/${adId}/checkout-session/reconcile`,
-  addImages: (adId: number) => `/api/ads/${adId}/images`,
 } as const;

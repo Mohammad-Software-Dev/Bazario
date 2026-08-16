@@ -3,7 +3,6 @@ import { httpClient } from '@/lib/api/http-client'
 
 import { adEndpoints } from '@/features/ads/api/ad-endpoints'
 import type {
-  AdImage,
   AdPosition,
   AdsResult,
   CreateAdPayload,
@@ -87,22 +86,6 @@ export async function reconcileAdCheckoutSession(
   const response = await httpClient.post<ReconcileAdCheckoutSessionResult>(
     adEndpoints.reconcileCheckoutSession(adId),
     payload,
-  )
-
-  return response.data
-}
-
-export async function addAdImages(adId: number, images: FileList) {
-  const formData = new FormData()
-
-  Array.from(images).forEach((file) => {
-    formData.append('images[]', file)
-  })
-
-  const response = await httpClient.post<ApiSuccessResponse<AdImage[]>>(
-    adEndpoints.addImages(adId),
-    formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } },
   )
 
   return response.data

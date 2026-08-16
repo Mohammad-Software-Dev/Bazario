@@ -42,17 +42,6 @@ function buildCreateListingFormData(payload: CreateListingPayload) {
   return formData
 }
 
-export async function getPublicListings(page = 1) {
-  const response = await httpClient.get<ListingsResponse>(listingEndpoints.list, {
-    params: { page },
-  })
-
-  return {
-    ...response.data,
-    result: normalizeListingsPagination(response.data.result),
-  }
-}
-
 export async function getMyListings(page = 1) {
   const response = await httpClient.get<ListingsResponse>(listingEndpoints.myListings, {
     params: { page },

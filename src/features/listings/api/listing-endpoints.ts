@@ -1,5 +1,4 @@
 export const listingEndpoints = {
-  list: '/api/listings',
   myListings: '/api/my-listings',
   create: '/api/listings',
   delete: (listingId: number) => `/api/listings/${listingId}`,
