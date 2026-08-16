@@ -28,4 +28,18 @@ i18n
     },
   })
 
+function syncDocumentLanguage(language: string) {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  const normalizedLanguage = language.startsWith('de') ? 'de' : 'en'
+
+  document.documentElement.lang = normalizedLanguage
+  document.documentElement.dir = 'ltr'
+}
+
+syncDocumentLanguage(i18n.resolvedLanguage ?? i18n.language ?? 'en')
+i18n.on('languageChanged', syncDocumentLanguage)
+
 export default i18n

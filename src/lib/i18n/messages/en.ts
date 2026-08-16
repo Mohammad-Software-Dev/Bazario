@@ -136,7 +136,6 @@ const en = {
     paymentPaid: 'Paid',
     paymentRefunded: 'Refunded',
     paymentRequired: 'Payment required',
-    paymentRefunded: 'Refunded',
     paymentRefundPending: 'Refund pending',
     completePayment: 'Complete payment',
     deleteAd: 'Delete ad',

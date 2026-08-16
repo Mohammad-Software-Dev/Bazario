@@ -3,11 +3,20 @@ import type { AppLanguage } from '@/lib/i18n/types'
 
 export function getAppLanguage(language?: string | null): AppLanguage {
   const value = language ?? i18n.resolvedLanguage ?? i18n.language ?? 'en'
-  return value.startsWith('de') ? 'de' : 'en'
+
+  if (value.startsWith('de')) {
+    return 'de'
+  }
+
+  return 'en'
 }
 
 export function getIntlLocale(language?: string | null) {
-  return getAppLanguage(language) === 'de' ? 'de-DE' : 'en-GB'
+  if (getAppLanguage(language) === 'de') {
+    return 'de-DE'
+  }
+
+  return 'en-GB'
 }
 
 export function formatMoney(amount: number, currency = 'EUR', language?: string | null) {

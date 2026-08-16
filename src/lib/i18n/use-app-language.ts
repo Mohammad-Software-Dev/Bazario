@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next'
 import type { AppLanguage } from '@/lib/i18n/types'
 
 function normalizeLanguage(language: string): AppLanguage {
-  return language.startsWith('de') ? 'de' : 'en'
+  if (language.startsWith('de')) {
+    return 'de'
+  }
+
+  return 'en'
 }
 
 export function useAppLanguage() {

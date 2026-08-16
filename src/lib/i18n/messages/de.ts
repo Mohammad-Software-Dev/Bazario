@@ -136,7 +136,6 @@ const de = {
     paymentPaid: 'Bezahlt',
     paymentRefunded: 'Erstattet',
     paymentRequired: 'Zahlung erforderlich',
-    paymentRefunded: 'Erstattet',
     paymentRefundPending: 'Rückerstattung ausstehend',
     completePayment: 'Zahlung abschließen',
     deleteAd: 'Anzeige löschen',
