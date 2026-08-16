@@ -79,9 +79,9 @@ function CardBody({ ad, variant = "default" }: SponsoredAdCardProps) {
               <p className="text-muted-foreground">{ad.ownerName}</p>
             ) : null}
           </div>
-          {ad.price !== null ? (
+          {ad.targetPrice !== null ? (
             <p className="shrink-0 self-end font-semibold text-foreground">
-              {formatMoney(ad.price, ad.currency, i18n.language)}
+              {formatMoney(ad.targetPrice, ad.currency, i18n.language)}
             </p>
           ) : null}
         </div>

@@ -163,6 +163,34 @@ function getOwnerName(ad: Ad): string | null {
   return null;
 }
 
+function getTargetPrice(ad: Ad): number | null {
+  const targetType = normalizeAdTargetType(ad.adable_type);
+  const target = ad.adable;
+
+  if (!targetType || !target) {
+    return null;
+  }
+
+  if (
+    (targetType === "product" || targetType === "service") &&
+    "price" in target
+  ) {
+    const rawPrice = target.price;
+    const priceValue =
+      typeof rawPrice === "number"
+        ? rawPrice
+        : typeof rawPrice === "string"
+          ? Number.parseFloat(rawPrice)
+          : null;
+
+    return priceValue !== null && Number.isFinite(priceValue)
+      ? priceValue
+      : null;
+  }
+
+  return null;
+}
+
 export function mapAdToViewModel(ad: Ad): AdViewModel {
   const priceValue =
     typeof ad.price === "number"
@@ -193,6 +221,7 @@ export function mapAdToViewModel(ad: Ad): AdViewModel {
     href: getAdTargetHref(ad),
     price:
       priceValue !== null && Number.isFinite(priceValue) ? priceValue : null,
+    targetPrice: getTargetPrice(ad),
     currency: ad.currency_iso ?? "EUR",
     status: ad.status,
     paymentState,

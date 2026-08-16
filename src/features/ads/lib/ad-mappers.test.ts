@@ -45,6 +45,7 @@ describe('ad mappers', () => {
       adable: {
         name: { en: 'Desk Lamp', ar: 'مصباح' },
         description: { en: 'Lamp', ar: 'مصباح' },
+        price: 149.99,
         seller: { store_name: 'Seller One', user: { name: 'Ali' } },
       },
       refund: { applied: true, status: 'succeeded', amount: 20, stripe_refund_id: 're_1' },
@@ -55,8 +56,36 @@ describe('ad mappers', () => {
         tier: 'gold',
         targetType: 'product',
         targetTitle: 'Desk Lamp',
+        targetPrice: 149.99,
+        price: 20,
         paymentState: 'refunded',
       }),
     )
+  })
+
+  it('does not expose seller ad purchase price as public target price', () => {
+    const viewModel = mapAdToViewModel({
+      id: 2,
+      title: 'Seller ad',
+      subtitle: 'Seller subtitle',
+      adable_type: 'App\\Models\\Seller',
+      adable_id: 7,
+      images: [],
+      price: 35,
+      status: 'approved',
+      paid_at: '2026-08-10T10:00:00Z',
+      created_at: '2026-08-10T10:00:00Z',
+      expires_at: null,
+      currency_iso: 'EUR',
+      position: { name: 'silver_ad' },
+      adable: {
+        store_name: 'Store One',
+        description: 'Desc',
+        user: { name: 'Sara' },
+      },
+    } as never)
+
+    expect(viewModel.price).toBe(35)
+    expect(viewModel.targetPrice).toBeNull()
   })
 })

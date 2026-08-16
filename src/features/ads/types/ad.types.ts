@@ -87,6 +87,7 @@ export interface AdViewModel {
   href: string | null;
   /** Betrag in ganzen Waehrungseinheiten, z. B. 19 fuer 19,00 Euro */
   price: number | null;
+  targetPrice: number | null;
   currency: string;
   status: Ad["status"];
   paymentState: "paid" | "payment_required" | "refunded";
