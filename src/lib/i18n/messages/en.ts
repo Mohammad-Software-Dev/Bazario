@@ -134,6 +134,7 @@ const en = {
     expiresOn: 'Expires {{date}}',
     createdOn: 'Created {{date}}',
     paymentPaid: 'Paid',
+    paymentRefunded: 'Refunded',
     paymentRequired: 'Payment required',
     completePayment: 'Complete payment',
     deleteAd: 'Delete ad',

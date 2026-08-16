@@ -42,7 +42,16 @@ export function MyAdCard({ ad }: MyAdCardProps) {
   const deleteAdMutation = useDeleteAdMutation()
   const imageUrl = buildAssetUrl(ad.image)
   const targetTypeLabel = ad.targetType ? t(`ads.targetType.${ad.targetType}`) : t('ads.targetUnavailable')
-  const paymentLabel = ad.paymentState === 'paid' ? t('ads.paymentPaid') : t('ads.paymentRequired')
+  // Eine abgelehnte Platzierung wird erstattet. Solange das Backend die
+  // Erstattung nicht meldet, leitet die Ablehnung sie ab -- andernfalls
+  // bliebe die Markierung auf "Bezahlt" stehen, obwohl das Geld zurueck ist.
+  const isRefunded =
+    ad.paymentState === 'paid' && (Boolean(ad.refundStatus) || ad.status === 'rejected')
+  const paymentLabel = isRefunded
+    ? t('ads.paymentRefunded')
+    : ad.paymentState === 'paid'
+      ? t('ads.paymentPaid')
+      : t('ads.paymentRequired')
 
   async function handleCompletePayment() {
     setCheckoutError(null)
@@ -87,7 +96,11 @@ export function MyAdCard({ ad }: MyAdCardProps) {
             <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusTone(ad.status)}`}>
               {t(`ads.status.${ad.status}`, { defaultValue: ad.status })}
             </span>
-            <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+            <span
+              className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                isRefunded ? 'bg-rose-100 text-rose-700' : 'bg-muted text-muted-foreground'
+              }`}
+            >
               {paymentLabel}
             </span>
           </div>

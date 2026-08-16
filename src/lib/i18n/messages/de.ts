@@ -134,6 +134,7 @@ const de = {
     expiresOn: 'Läuft ab am {{date}}',
     createdOn: 'Erstellt am {{date}}',
     paymentPaid: 'Bezahlt',
+    paymentRefunded: 'Erstattet',
     paymentRequired: 'Zahlung erforderlich',
     completePayment: 'Zahlung abschließen',
     deleteAd: 'Anzeige löschen',
