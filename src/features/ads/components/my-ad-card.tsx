@@ -6,11 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { buildAssetUrl } from "@/lib/api/asset-url";
 import { getApiErrorMessage } from "@/lib/api/api-error";
-import {
-  formatDateTime,
-  formatMinorMoney,
-  formatMoney,
-} from "@/lib/i18n/format";
+import { formatDateTime, formatMoney } from "@/lib/i18n/format";
 
 import { createAdCheckoutSession } from "@/features/ads/api/ads-api";
 import { useDeleteAdMutation } from "@/features/ads/hooks/use-delete-ad-mutation";
