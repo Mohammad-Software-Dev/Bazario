@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { buildAssetUrl } from "@/lib/api/asset-url";
+import { formatMoney } from "@/lib/i18n/format";
 
 import { SponsoredBadge } from "@/features/ads/components/sponsored-badge";
 import type { AdViewModel } from "@/features/ads/types/ad.types";
@@ -13,7 +14,7 @@ interface SponsoredAdCardProps {
 }
 
 function CardBody({ ad, variant = "default" }: SponsoredAdCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const imageUrl = buildAssetUrl(ad.image);
   const isCompact = variant === "compact";
   const isFeatured = variant === "featured";
@@ -76,9 +77,9 @@ function CardBody({ ad, variant = "default" }: SponsoredAdCardProps) {
               <p className="text-muted-foreground">{ad.ownerName}</p>
             ) : null}
           </div>
-          {ad.price ? (
+          {ad.price !== null ? (
             <p className="shrink-0 self-end font-semibold text-foreground">
-              {ad.price}
+              {formatMoney(ad.price, ad.currency, i18n.language)}
             </p>
           ) : null}
         </div>

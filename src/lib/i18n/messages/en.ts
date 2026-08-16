@@ -141,7 +141,7 @@ const en = {
     deleteDescription: 'This unpaid sponsored ad will be removed permanently.',
     deleteError: 'Unable to delete this sponsored ad right now.',
     startingPayment: 'Starting payment...',
-    priceLabel: 'Price €{{price}}',
+    priceLabel: 'Price: {{price}}',
     targetUnavailable: 'Target unavailable',
     refundTitle: 'Refund',
     refundStatus: 'Status: {{status}}',

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { formatDateTime, formatMoney } from '@/lib/i18n/format'
+import { formatDateTime, formatMinorMoney, formatMoney } from '@/lib/i18n/format'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
 import { createListingCheckoutSession } from '@/features/listings/api/listings-api'
@@ -115,7 +115,7 @@ export function MyListingCard({ listing }: MyListingCardProps) {
               {refundSummary.amount !== null ? (
                 <p>
                   {t('listings.refundAmount', {
-                    amount: formatMoney(refundSummary.amount, currency, i18n.language),
+                    amount: formatMinorMoney(refundSummary.amount, currency, i18n.language),
                   })}
                 </p>
               ) : null}

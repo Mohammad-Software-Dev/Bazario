@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { buildAssetUrl } from '@/lib/api/asset-url'
 import { getApiErrorMessage } from '@/lib/api/api-error'
-import { formatDateTime } from '@/lib/i18n/format'
+import { formatDateTime, formatMinorMoney, formatMoney } from '@/lib/i18n/format'
 
 import { createAdCheckoutSession } from '@/features/ads/api/ads-api'
 import { useDeleteAdMutation } from '@/features/ads/hooks/use-delete-ad-mutation'
@@ -34,7 +34,7 @@ function statusTone(status: string) {
 }
 
 export function MyAdCard({ ad }: MyAdCardProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isStartingCheckout, setIsStartingCheckout] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
@@ -103,7 +103,13 @@ export function MyAdCard({ ad }: MyAdCardProps) {
             {ad.createdAt ? (
               <span>{t('ads.createdOn', { date: formatDateTime(ad.createdAt, { dateStyle: 'medium' }) })}</span>
             ) : null}
-            {ad.price ? <span>{t('ads.priceLabel', { price: ad.price })}</span> : null}
+            {ad.price !== null ? (
+              <span>
+                {t('ads.priceLabel', {
+                  price: formatMoney(ad.price, ad.currency, i18n.language),
+                })}
+              </span>
+            ) : null}
           </div>
 
           {ad.status === 'pending_payment' ? (
@@ -130,7 +136,13 @@ export function MyAdCard({ ad }: MyAdCardProps) {
             <div className="rounded-2xl border border-rose-100 bg-rose-50/70 px-3 py-2 text-sm text-rose-900">
               <p className="font-medium">{t('ads.refundTitle')}</p>
               <p>{t('ads.refundStatus', { status: ad.refundStatus })}</p>
-              {ad.refundAmount ? <p>{t('ads.refundAmount', { amount: `€${ad.refundAmount}` })}</p> : null}
+              {ad.refundAmount !== null ? (
+                <p>
+                  {t('ads.refundAmount', {
+                    amount: formatMinorMoney(ad.refundAmount, ad.currency, i18n.language),
+                  })}
+                </p>
+              ) : null}
             </div>
           ) : null}
         </div>

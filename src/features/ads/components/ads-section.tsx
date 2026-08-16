@@ -2,7 +2,11 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface AdsSectionProps {
   title: string;
-  emptyMessage: string;
+  /**
+   * Wird nur benoetigt, wenn der Abschnitt ohne Inhalt gerendert wird.
+   * Die Startseite blendet leere Bereiche stattdessen ganz aus.
+   */
+  emptyMessage?: string;
   children?: React.ReactNode;
 }
 

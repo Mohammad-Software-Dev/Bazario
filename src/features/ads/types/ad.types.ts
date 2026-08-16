@@ -72,11 +72,14 @@ export interface AdViewModel {
   targetDescription: string | null
   ownerName: string | null
   href: string | null
-  price: string | null
+  /** Betrag in ganzen Waehrungseinheiten, z. B. 19 fuer 19,00 Euro */
+  price: number | null
+  currency: string
   status: Ad['status']
   paymentState: 'paid' | 'payment_required'
   refundStatus: string | null
-  refundAmount: string | null
+  /** Betrag in kleinster Waehrungseinheit, z. B. 1900 fuer 19,00 Euro */
+  refundAmount: number | null
   expiresAt: string | null
   createdAt: string
 }

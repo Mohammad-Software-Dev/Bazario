@@ -165,16 +165,14 @@ export function mapAdToViewModel(ad: Ad): AdViewModel {
     targetDescription: getTargetDescription(ad),
     ownerName: getOwnerName(ad),
     href: getAdTargetHref(ad),
-    price:
-      priceValue !== null && Number.isFinite(priceValue)
-        ? priceValue.toFixed(2).replace(/\.00$/, '.00').replace(/(\.\d)$/, '$10')
-        : null,
+    price: priceValue !== null && Number.isFinite(priceValue) ? priceValue : null,
+    currency: ad.currency_iso ?? 'EUR',
     status: ad.status,
     paymentState: ad.paid_at ? 'paid' : 'payment_required',
     refundStatus: ad.refund?.applied ? (ad.refund.status ?? ad.refund_status ?? 'pending') : null,
     refundAmount:
       ad.refund?.applied && ad.refund.amount !== null && Number.isFinite(ad.refund.amount)
-        ? ad.refund.amount.toFixed(2).replace(/\.00$/, '.00').replace(/(\.\d)$/, '$10')
+        ? ad.refund.amount
         : null,
     expiresAt: ad.expires_at,
     createdAt: ad.created_at,

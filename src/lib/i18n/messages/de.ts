@@ -141,7 +141,7 @@ const de = {
     deleteDescription: 'Diese unbezahlte gesponserte Anzeige wird dauerhaft entfernt.',
     deleteError: 'Diese gesponserte Anzeige konnte gerade nicht gelöscht werden.',
     startingPayment: 'Zahlung wird gestartet...',
-    priceLabel: 'Preis €{{price}}',
+    priceLabel: 'Preis: {{price}}',
     targetUnavailable: 'Ziel nicht verfügbar',
     refundTitle: 'Rückerstattung',
     refundStatus: 'Status: {{status}}',
