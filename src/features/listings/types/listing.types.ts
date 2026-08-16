@@ -67,10 +67,7 @@ export interface ListingRecord {
 export interface CreateListingPayload {
   title: string
   description?: string
-  price?: number | null
-  attributes?: Record<string, string> | null
-  images?: FileList | null
-  cover_index?: number
+  images: FileList
 }
 
 export type ListingsResult = LaravelPaginatedResponse<ListingRecord>

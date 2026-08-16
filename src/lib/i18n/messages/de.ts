@@ -162,7 +162,7 @@ const de = {
       selectTarget: 'Bitte auswählen',
       targetUnavailable: 'Dieses Ziel wird automatisch ausgewählt.',
       images: 'Anzeigenbilder',
-      imagesHint: 'Optional. Lade bis zu fünf Bilder für die gesponserte Platzierung hoch.',
+      imagesHint: 'Pflicht. Lade mindestens ein Bild für die gesponserte Platzierung hoch.',
     },
     targetType: {
       product: 'Produkt',
@@ -228,11 +228,8 @@ const de = {
     form: {
       title: 'Titel der Ankündigung',
       description: 'Beschreibung',
-      price: 'Optionaler Preis',
       images: 'Bilder',
       imagesHint: 'Pflicht. Bilder sind für Marktplatz-Updates verpflichtend.',
-      attributes: 'Optionale Attribute als JSON',
-      attributesInvalid: 'Die Attribute müssen gültiges JSON sein.',
     },
     status: {
       pending: 'Prüfung ausstehend',

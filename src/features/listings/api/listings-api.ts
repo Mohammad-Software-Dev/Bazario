@@ -21,23 +21,9 @@ function buildCreateListingFormData(payload: CreateListingPayload) {
     formData.append('description', payload.description)
   }
 
-  if (typeof payload.price === 'number') {
-    formData.append('price', String(payload.price))
-  }
-
-  if (payload.attributes && Object.keys(payload.attributes).length) {
-    formData.append('attributes', JSON.stringify(payload.attributes))
-  }
-
-  if (typeof payload.cover_index === 'number') {
-    formData.append('cover_index', String(payload.cover_index))
-  }
-
-  if (payload.images) {
-    Array.from(payload.images).forEach((file) => {
-      formData.append('images[]', file)
-    })
-  }
+  Array.from(payload.images).forEach((file) => {
+    formData.append('images[]', file)
+  })
 
   return formData
 }

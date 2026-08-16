@@ -263,6 +263,7 @@ export function AdForm({
         <Label htmlFor="ad-images">{t('ads.form.images')}</Label>
         <Input id="ad-images" type="file" accept="image/*" multiple {...register('images')} />
         <p className="text-xs text-muted-foreground">{t('ads.form.imagesHint')}</p>
+        {errors.images ? <p className="text-sm text-destructive">{errors.images.message}</p> : null}
       </div>
 
       <Button type="submit" disabled={isSubmitting}>

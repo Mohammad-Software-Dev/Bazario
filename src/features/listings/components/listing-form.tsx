@@ -19,41 +19,26 @@ export function ListingForm({ isSubmitting, onSubmit }: ListingFormProps) {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm<ListingFormValues>({
     resolver: zodResolver(listingFormSchema),
     defaultValues: {
       title: '',
       description: '',
-      price: '',
-      attributes: '',
     },
   })
 
   const submit = handleSubmit(async (values) => {
-    let attributes: Record<string, string> | null = null
+    const images = values.images as FileList | null | undefined
 
-    if (values.attributes) {
-      try {
-        const parsed = JSON.parse(values.attributes) as Record<string, string>
-        attributes = parsed
-      } catch {
-        setError('attributes', {
-          type: 'manual',
-          message: t('listings.form.attributesInvalid'),
-        })
-        return
-      }
+    if (!images?.length) {
+      return
     }
 
     await onSubmit({
       title: values.title,
       description: values.description || undefined,
-      price: values.price ? Number(values.price) : null,
-      attributes,
-      images: (values.images as FileList | null | undefined) ?? null,
-      cover_index: 0,
+      images,
     })
   })
 
@@ -71,24 +56,11 @@ export function ListingForm({ isSubmitting, onSubmit }: ListingFormProps) {
         {errors.description ? <p className="text-sm text-destructive">{errors.description.message}</p> : null}
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="listing-price">{t('listings.form.price')}</Label>
-          <Input id="listing-price" type="number" min="0" step="0.01" {...register('price')} />
-          {errors.price ? <p className="text-sm text-destructive">{errors.price.message}</p> : null}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="listing-images">{t('listings.form.images')}</Label>
-          <Input id="listing-images" type="file" accept="image/*" multiple {...register('images')} />
-          <p className="text-xs text-muted-foreground">{t('listings.form.imagesHint')}</p>
-        </div>
-      </div>
-
       <div className="space-y-2">
-        <Label htmlFor="listing-attributes">{t('listings.form.attributes')}</Label>
-        <Textarea id="listing-attributes" rows={4} placeholder='{"location":"Berlin"}' {...register('attributes')} />
-        {errors.attributes ? <p className="text-sm text-destructive">{errors.attributes.message}</p> : null}
+        <Label htmlFor="listing-images">{t('listings.form.images')}</Label>
+        <Input id="listing-images" type="file" accept="image/*" multiple {...register('images')} />
+        <p className="text-xs text-muted-foreground">{t('listings.form.imagesHint')}</p>
+        {errors.images ? <p className="text-sm text-destructive">{errors.images.message}</p> : null}
       </div>
 
       <Button type="submit" disabled={isSubmitting}>

@@ -162,7 +162,7 @@ const en = {
       selectTarget: 'Select one option',
       targetUnavailable: 'This target is selected automatically.',
       images: 'Ad images',
-      imagesHint: 'Optional. Upload up to five images for the sponsored placement.',
+      imagesHint: 'Required. Upload at least one image for the sponsored placement.',
     },
     targetType: {
       product: 'Product',
@@ -228,11 +228,8 @@ const en = {
     form: {
       title: 'Announcement title',
       description: 'Description',
-      price: 'Optional price',
       images: 'Images',
       imagesHint: 'Required. Images are mandatory for marketplace updates.',
-      attributes: 'Optional attributes JSON',
-      attributesInvalid: 'Attributes must be valid JSON.',
     },
     status: {
       pending: 'Pending review',
