@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { Info } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,9 +20,10 @@ import { useAuth } from '@/lib/auth/use-auth'
 
 interface ActionLinkRowProps {
   title: string
-  description: string
+  description?: string
   to: string
   badge?: React.ReactNode
+  infoText?: string
 }
 
 interface OrderHistoryCardProps {
@@ -37,14 +39,25 @@ interface BusinessActivityCardProps {
   recentProviderBookings: RecentProviderBooking[]
 }
 
-function ActionLinkRow({ title, description, to, badge }: ActionLinkRowProps) {
+function ActionLinkRow({ title, description, to, badge, infoText }: ActionLinkRowProps) {
   return (
     <Link to={to} className="block rounded-xl px-3 py-3 transition-colors hover:bg-muted/50">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-medium text-foreground">{title}</p>
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="font-medium text-foreground">{title}</p>
+          {infoText ? (
+            <span
+              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+              title={infoText}
+              aria-label={infoText}
+            >
+              <Info className="h-4 w-4" />
+            </span>
+          ) : null}
+        </div>
         {badge}
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
     </Link>
   )
 }
@@ -359,23 +372,20 @@ export function AccountPage() {
                   <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                     <ActionLinkRow
                       title={t('account.manageProducts')}
-                      description={t('account.manageProductsDescription')}
                       to="/account/seller/products"
                     />
                     <ActionLinkRow
                       title={t('ads.manageAds')}
-                      description={t('ads.manageAdsDescription')}
                       to="/account/ads"
+                      infoText={t('ads.manageAdsDescription')}
                     />
                     <ActionLinkRow
                       title={t('account.stripeAccount')}
-                      description={t('account.stripeAccountDescription')}
                       to="/account/stripe"
                       badge={stripeStatusBadge}
                     />
                     <ActionLinkRow
                       title={t('account.earnings')}
-                      description={t('account.earningsDescription')}
                       to="/account/earnings"
                     />
                   </div>
@@ -388,33 +398,28 @@ export function AccountPage() {
                   <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                     <ActionLinkRow
                       title={t('account.manageServices')}
-                      description={t('account.manageServicesDescription')}
                       to="/account/provider/services"
                     />
                     <ActionLinkRow
                       title={t('account.manageAvailability')}
-                      description={t('account.manageAvailabilityDescription')}
                       to="/account/provider/availability"
                     />
                     <ActionLinkRow
                       title={t('account.customerBookings')}
-                      description={t('account.customerBookingsDescription')}
                       to="/account/provider/bookings"
                     />
                     <ActionLinkRow
                       title={t('ads.manageAds')}
-                      description={t('ads.manageAdsDescription')}
                       to="/account/ads"
+                      infoText={t('ads.manageAdsDescription')}
                     />
                     <ActionLinkRow
                       title={t('account.stripeAccount')}
-                      description={t('account.stripeAccountDescription')}
                       to="/account/stripe"
                       badge={stripeStatusBadge}
                     />
                     <ActionLinkRow
                       title={t('account.earnings')}
-                      description={t('account.earningsDescription')}
                       to="/account/earnings"
                     />
                   </div>
@@ -426,12 +431,10 @@ export function AccountPage() {
                 <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                   <ActionLinkRow
                     title={t('account.reviewOrderHistory')}
-                    description={t('account.reviewOrderHistoryDescription')}
                     to="/account/orders"
                   />
                   <ActionLinkRow
                     title={t('account.trackServiceBookings')}
-                    description={t('account.trackServiceBookingsDescription')}
                     to="/account/bookings"
                   />
                 </div>
@@ -442,13 +445,12 @@ export function AccountPage() {
                 <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                   <ActionLinkRow
                     title={t('listings.manageListings')}
-                    description={t('listings.manageListingsDescription')}
                     to="/account/announcements"
                   />
                   <ActionLinkRow
                     title={t('listings.create')}
-                    description={t('listings.createListingDescription')}
                     to="/account/announcements/new"
+                    infoText={t('listings.createListingDescription')}
                   />
                 </div>
               </div>
