@@ -223,7 +223,7 @@ const en = {
       description: 'Description',
       price: 'Optional price',
       images: 'Images',
-      imagesHint: 'Optional. Add images to make the announcement more useful in marketplace updates.',
+      imagesHint: 'Required. Images are mandatory for marketplace updates.',
       attributes: 'Optional attributes JSON',
       attributesInvalid: 'Attributes must be valid JSON.',
     },

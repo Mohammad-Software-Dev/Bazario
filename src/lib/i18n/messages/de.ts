@@ -223,7 +223,7 @@ const de = {
       description: 'Beschreibung',
       price: 'Optionaler Preis',
       images: 'Bilder',
-      imagesHint: 'Optional. Bilder machen die Ankündigung im Bereich der Marktplatz-Updates hilfreicher.',
+      imagesHint: 'Pflicht. Bilder sind für Marktplatz-Updates verpflichtend.',
       attributes: 'Optionale Attribute als JSON',
       attributesInvalid: 'Die Attribute müssen gültiges JSON sein.',
     },
