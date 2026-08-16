@@ -12,7 +12,7 @@ export const adFormSchema = z
       z.literal('service_provider'),
     ]),
     adable_id: z.number().int().positive().nullable(),
-    expires_at: z.string().optional().or(z.literal('')),
+    duration_days: z.number().int().min(1, 'Please choose a duration.').max(7, 'Maximum 7 days.'),
     images: z.custom<FileList | null | undefined>(() => true).optional(),
   })
   .superRefine((values, ctx) => {

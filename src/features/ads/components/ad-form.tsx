@@ -34,6 +34,16 @@ function getPositionIdByTier(positions: AdPosition[], tier: AdTier) {
   return positions.find((position) => position.name === map[tier])?.id ?? null
 }
 
+function getPositionByTier(positions: AdPosition[], tier: AdTier) {
+  const map = {
+    gold: 'golden_ad',
+    silver: 'silver_ad',
+    normal: 'normal_ad',
+  } satisfies Record<AdTier, string>
+
+  return positions.find((position) => position.name === map[tier]) ?? null
+}
+
 export function AdForm({
   positions,
   products,
@@ -59,11 +69,23 @@ export function AdForm({
       tier: 'normal',
       adable_type: sellerProfile ? 'seller' : serviceProviderProfile ? 'service_provider' : 'product',
       adable_id: null,
-      expires_at: '',
+      duration_days: 1,
     },
   })
 
   const selectedType = watch('adable_type')
+  const selectedTier = watch('tier')
+  const selectedDuration = watch('duration_days')
+  const selectedPosition = useMemo(
+    () => getPositionByTier(positions, selectedTier),
+    [positions, selectedTier],
+  )
+  const allowedDurations = selectedPosition?.allowed_durations?.length
+    ? selectedPosition.allowed_durations
+    : [1, 2, 3, 4, 5, 6, 7]
+  const pricePerDay = selectedPosition?.price_per_day ?? null
+  const totalPrice =
+    pricePerDay !== null && Number.isFinite(selectedDuration) ? pricePerDay * selectedDuration : null
   const availableTargets = useMemo(() => {
     if (selectedType === 'product') {
       return products.map((product) => ({
@@ -148,6 +170,41 @@ export function AdForm({
         </div>
       </div>
 
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="ad-duration">{t('ads.form.duration')}</Label>
+          <select
+            id="ad-duration"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            {...register('duration_days', {
+              setValueAs: (value) => Number(value),
+            })}
+          >
+            {allowedDurations.map((duration) => (
+              <option key={duration} value={duration}>
+                {t('ads.form.durationOption', { count: duration })}
+              </option>
+            ))}
+          </select>
+          {errors.duration_days ? (
+            <p className="text-sm text-destructive">{errors.duration_days.message}</p>
+          ) : null}
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+          <p>
+            {t('ads.form.pricePerDay', {
+              price: pricePerDay?.toFixed(2) ?? '0.00',
+            })}
+          </p>
+          <p className="mt-1 font-medium text-foreground">
+            {t('ads.form.totalPrice', {
+              price: totalPrice?.toFixed(2) ?? '0.00',
+            })}
+          </p>
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="ad-subtitle">{t('ads.form.subtitle')}</Label>
         <Textarea id="ad-subtitle" rows={3} {...register('subtitle')} />
@@ -202,17 +259,10 @@ export function AdForm({
         </div>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="ad-expires-at">{t('ads.form.expiresAt')}</Label>
-          <Input id="ad-expires-at" type="datetime-local" {...register('expires_at')} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="ad-images">{t('ads.form.images')}</Label>
-          <Input id="ad-images" type="file" accept="image/*" multiple {...register('images')} />
-          <p className="text-xs text-muted-foreground">{t('ads.form.imagesHint')}</p>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="ad-images">{t('ads.form.images')}</Label>
+        <Input id="ad-images" type="file" accept="image/*" multiple {...register('images')} />
+        <p className="text-xs text-muted-foreground">{t('ads.form.imagesHint')}</p>
       </div>
 
       <Button type="submit" disabled={isSubmitting}>

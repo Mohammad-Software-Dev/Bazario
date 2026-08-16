@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface AdsSectionProps {
   title: string;
-  emptyMessage: string;
+  emptyMessage?: string;
   children?: React.ReactNode;
 }
 
@@ -15,13 +15,13 @@ export function AdsSection({ title, emptyMessage, children }: AdsSectionProps) {
 
       {children ? (
         children
-      ) : (
+      ) : emptyMessage ? (
         <Card>
           <CardContent className="py-6 text-sm text-muted-foreground">
             {emptyMessage}
           </CardContent>
         </Card>
-      )}
+      ) : null}
     </section>
   );
 }

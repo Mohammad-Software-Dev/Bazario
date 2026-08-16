@@ -34,9 +34,7 @@ function buildCreateAdFormData(payload: CreateAdPayload) {
     formData.append('subtitle', payload.subtitle)
   }
 
-  if (payload.expires_at) {
-    formData.append('expires_at', payload.expires_at)
-  }
+  formData.append('duration_days', String(payload.duration_days))
 
   if (typeof payload.adable_id === 'number') {
     formData.append('adable_id', String(payload.adable_id))

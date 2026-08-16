@@ -47,6 +47,8 @@ export interface ListingRecord {
   attributes: Record<string, unknown> | null
   status?: ListingStatus | null
   paid_at?: string | null
+  expires_at?: string | null
+  duration_days?: number | null
   refund_status?: string | null
   metadata?: Record<string, unknown> | null
   refund?: {
@@ -75,7 +77,9 @@ export type ListingsResult = LaravelPaginatedResponse<ListingRecord>
 export type ListingsResponse = ApiSuccessResponse<ListingsResult>
 
 export interface ListingPricingResult {
-  price: number
+  price_per_day: number
+  duration_days: number
+  total_price: number
   currency_iso: string
 }
 

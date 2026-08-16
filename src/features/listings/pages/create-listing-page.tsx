@@ -58,10 +58,11 @@ export function CreateListingPage() {
             <p className="rounded-2xl bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
               {t('listings.paymentNotice', {
                 price: formatMoney(
-                  listingPricingQuery.data.result.price,
+                  listingPricingQuery.data.result.total_price,
                   listingPricingQuery.data.result.currency_iso,
                   i18n.language,
                 ),
+                days: listingPricingQuery.data.result.duration_days,
               })}
             </p>
           ) : null}

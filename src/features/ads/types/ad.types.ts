@@ -23,7 +23,8 @@ export interface AdPosition {
   label: string
   priority: number
   tier: AdTier | null
-  price: number | null
+  price_per_day: number | null
+  allowed_durations: number[]
   currency_iso: string
 }
 
@@ -53,6 +54,7 @@ export interface Ad {
     amount: number | null
     stripe_refund_id: string | null
   }
+  duration_days?: number | null
   metadata?: Record<string, unknown> | null
   created_at: string
   updated_at: string
@@ -74,9 +76,7 @@ export interface AdViewModel {
   href: string | null
   price: string | null
   status: Ad['status']
-  paymentState: 'paid' | 'payment_required'
-  refundStatus: string | null
-  refundAmount: string | null
+  paymentState: 'paid' | 'payment_required' | 'refunded'
   expiresAt: string | null
   createdAt: string
 }
@@ -95,7 +95,7 @@ export type AdPositionsResponse = ApiSuccessResponse<AdPosition[]>
 export interface CreateAdPayload {
   title: string
   subtitle?: string
-  expires_at?: string
+  duration_days: number
   ad_position_id: number
   adable_type: AdTargetType
   adable_id?: number | null

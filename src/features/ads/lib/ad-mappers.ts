@@ -153,6 +153,15 @@ export function mapAdToViewModel(ad: Ad): AdViewModel {
       : typeof ad.price === 'string'
         ? Number.parseFloat(ad.price)
         : null
+  const refund = ad.refund
+  const refundApplied = refund?.applied === true
+  const paymentState: AdViewModel['paymentState'] = refundApplied
+    ? 'refunded'
+    : ad.status === 'rejected' && ad.paid_at
+      ? 'refunded'
+      : ad.paid_at
+        ? 'paid'
+        : 'payment_required'
 
   return {
     id: ad.id,
@@ -170,12 +179,7 @@ export function mapAdToViewModel(ad: Ad): AdViewModel {
         ? priceValue.toFixed(2).replace(/\.00$/, '.00').replace(/(\.\d)$/, '$10')
         : null,
     status: ad.status,
-    paymentState: ad.paid_at ? 'paid' : 'payment_required',
-    refundStatus: ad.refund?.applied ? (ad.refund.status ?? ad.refund_status ?? 'pending') : null,
-    refundAmount:
-      ad.refund?.applied && ad.refund.amount !== null && Number.isFinite(ad.refund.amount)
-        ? ad.refund.amount.toFixed(2).replace(/\.00$/, '.00').replace(/(\.\d)$/, '$10')
-        : null,
+    paymentState,
     expiresAt: ad.expires_at,
     createdAt: ad.created_at,
   }

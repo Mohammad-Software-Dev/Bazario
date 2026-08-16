@@ -27,7 +27,6 @@ export function MyListingCard({ listing }: MyListingCardProps) {
   const imageUrl = getListingImageUrl(listing)
   const price = typeof listing.price === 'number' ? listing.price : typeof listing.price === 'string' ? Number(listing.price) : null
   const currency = listing.currency_iso ?? 'EUR'
-  const refundSummary = listing.refund?.applied ? listing.refund : null
 
   async function handleCompletePayment() {
     setCheckoutError(null)
@@ -105,20 +104,6 @@ export function MyListingCard({ listing }: MyListingCardProps) {
               </div>
               {checkoutError ? <p className="text-sm text-destructive">{checkoutError}</p> : null}
               {deleteError ? <p className="text-sm text-destructive">{deleteError}</p> : null}
-            </div>
-          ) : null}
-
-          {refundSummary ? (
-            <div className="rounded-2xl border border-rose-100 bg-rose-50/70 px-3 py-2 text-sm text-rose-900">
-              <p className="font-medium">{t('listings.refundTitle')}</p>
-              <p>{t('listings.refundStatus', { status: refundSummary.status ?? t('orders.pending') })}</p>
-              {refundSummary.amount !== null ? (
-                <p>
-                  {t('listings.refundAmount', {
-                    amount: formatMoney(refundSummary.amount, currency, i18n.language),
-                  })}
-                </p>
-              ) : null}
             </div>
           ) : null}
         </div>

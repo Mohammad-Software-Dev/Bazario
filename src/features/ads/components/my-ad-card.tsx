@@ -33,6 +33,17 @@ function statusTone(status: string) {
   }
 }
 
+function paymentTone(paymentState: AdViewModel['paymentState']) {
+  switch (paymentState) {
+    case 'paid':
+      return 'bg-emerald-100 text-emerald-700'
+    case 'refunded':
+      return 'bg-sky-100 text-sky-700'
+    default:
+      return 'bg-sky-100 text-sky-700'
+  }
+}
+
 export function MyAdCard({ ad }: MyAdCardProps) {
   const { t } = useTranslation()
   const [isStartingCheckout, setIsStartingCheckout] = useState(false)
@@ -42,7 +53,12 @@ export function MyAdCard({ ad }: MyAdCardProps) {
   const deleteAdMutation = useDeleteAdMutation()
   const imageUrl = buildAssetUrl(ad.image)
   const targetTypeLabel = ad.targetType ? t(`ads.targetType.${ad.targetType}`) : t('ads.targetUnavailable')
-  const paymentLabel = ad.paymentState === 'paid' ? t('ads.paymentPaid') : t('ads.paymentRequired')
+  const paymentLabel =
+    ad.paymentState === 'paid'
+      ? t('ads.paymentPaid')
+      : ad.paymentState === 'refunded'
+        ? t('ads.paymentRefunded')
+        : t('ads.paymentRequired')
 
   async function handleCompletePayment() {
     setCheckoutError(null)
@@ -87,7 +103,7 @@ export function MyAdCard({ ad }: MyAdCardProps) {
             <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusTone(ad.status)}`}>
               {t(`ads.status.${ad.status}`, { defaultValue: ad.status })}
             </span>
-            <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${paymentTone(ad.paymentState)}`}>
               {paymentLabel}
             </span>
           </div>
@@ -123,14 +139,6 @@ export function MyAdCard({ ad }: MyAdCardProps) {
               </div>
               {checkoutError ? <p className="text-sm text-destructive">{checkoutError}</p> : null}
               {deleteError ? <p className="text-sm text-destructive">{deleteError}</p> : null}
-            </div>
-          ) : null}
-
-          {ad.refundStatus ? (
-            <div className="rounded-2xl border border-rose-100 bg-rose-50/70 px-3 py-2 text-sm text-rose-900">
-              <p className="font-medium">{t('ads.refundTitle')}</p>
-              <p>{t('ads.refundStatus', { status: ad.refundStatus })}</p>
-              {ad.refundAmount ? <p>{t('ads.refundAmount', { amount: `€${ad.refundAmount}` })}</p> : null}
             </div>
           ) : null}
         </div>
