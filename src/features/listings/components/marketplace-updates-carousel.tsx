@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { MarketplaceUpdateCard } from '@/features/listings/components/marketplace-update-card'
 import type { ListingRecord } from '@/features/listings/types/listing.types'
 
@@ -6,6 +8,8 @@ interface MarketplaceUpdatesCarouselProps {
 }
 
 export function MarketplaceUpdatesCarousel({ listings }: MarketplaceUpdatesCarouselProps) {
+  const [isPaused, setIsPaused] = useState(false)
+
   if (!listings.length) {
     return null
   }
@@ -13,7 +17,11 @@ export function MarketplaceUpdatesCarousel({ listings }: MarketplaceUpdatesCarou
   const repeatedListings = listings.length > 1 ? [...listings, ...listings] : listings
 
   return (
-    <div className="group overflow-hidden">
+    <div
+      className="overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <style>{`
         @keyframes bazarioMarketplaceUpdatesMarquee {
           from { transform: translate3d(0, 0, 0); }
@@ -22,11 +30,12 @@ export function MarketplaceUpdatesCarousel({ listings }: MarketplaceUpdatesCarou
       `}</style>
 
       <div
-        className="flex w-max gap-4 group-hover:[animation-play-state:paused]"
+        className="flex w-max gap-4"
         style={
           listings.length > 1
             ? {
                 animation: 'bazarioMarketplaceUpdatesMarquee 28s linear infinite',
+                animationPlayState: isPaused ? 'paused' : 'running',
               }
             : undefined
         }
