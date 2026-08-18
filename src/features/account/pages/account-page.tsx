@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Info } from 'lucide-react'
@@ -69,7 +69,7 @@ function PendingUpgradeRow({ title, description }: { title: string; description:
     <div className="rounded-xl px-3 py-3">
       <div className="flex items-center justify-between gap-3">
         <p className="font-medium text-foreground">{title}</p>
-        <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
+        <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground">
           {t('account.applicationPending')}
         </span>
       </div>
@@ -97,14 +97,14 @@ function StripeStatusBadge() {
 
   if (status.account?.payouts_enabled && status.account?.details_submitted) {
     return (
-      <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
+      <span className="rounded-full bg-primary/12 px-2.5 py-1 text-xs font-medium text-primary">
         {t('account.stripeReady')}
       </span>
     )
   }
 
   return (
-    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
+    <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground">
       {t('account.stripeOnboarding')}
     </span>
   )
@@ -179,8 +179,8 @@ function OrderHistoryCard({ orders, totalOrders, compact = false }: OrderHistory
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <div className="rounded-full bg-slate-50 px-4 py-2 ring-1 ring-slate-200">
-            <p className="text-sm font-medium text-slate-700">
+          <div className="rounded-full bg-muted px-4 py-2 ring-1 ring-border">
+            <p className="text-sm font-medium text-muted-foreground">
               {t('orders.totalOrders', { count: totalOrders })}
             </p>
           </div>
@@ -296,12 +296,13 @@ function BusinessActivityCard({
 
 export function AccountPage() {
   const { t } = useTranslation()
-  const { session } = useAuth()
+  const { session, setSession } = useAuth()
   const meQuery = useMeQuery(true, 5)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const user = meQuery.data?.result.user ?? session?.user
-  const roles = session?.roles ?? user?.roles ?? []
+  const verifiedUser = meQuery.data?.result.user
+  const user = verifiedUser ?? session?.user
+  const roles = user?.roles ?? session?.user?.roles ?? session?.roles ?? []
   const isSeller = roles.includes('seller')
   const isServiceProvider = roles.includes('service_provider')
   const sellerUpgradePending = user?.upgrade_requests?.seller === 'pending'
@@ -312,6 +313,28 @@ export function AccountPage() {
   const recentSales = meQuery.data?.result.recent_sales ?? []
   const recentProviderBookings = meQuery.data?.result.recent_provider_bookings ?? []
   const stripeStatusBadge = hasBusinessWorkspace ? <StripeStatusBadge /> : null
+
+  useEffect(() => {
+    if (!session?.token || !verifiedUser) {
+      return
+    }
+
+    const currentRoles = session.user.roles ?? session.roles ?? []
+    const nextRoles = verifiedUser.roles ?? []
+    const rolesChanged =
+      currentRoles.length !== nextRoles.length ||
+      currentRoles.some((role) => !nextRoles.includes(role))
+
+    if (!rolesChanged) {
+      return
+    }
+
+    setSession({
+      token: session.token,
+      user: verifiedUser,
+      roles: nextRoles,
+    })
+  }, [session, setSession, verifiedUser])
 
   return (
     <>

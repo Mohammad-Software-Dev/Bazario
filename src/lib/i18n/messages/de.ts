@@ -751,10 +751,12 @@ const de = {
     quantity: 'Menge',
     addToCart: 'In den Warenkorb legen',
     added: 'Zum Warenkorb hinzugefügt.',
+    ownerBlocked: 'Du kannst dein eigenes Produkt nicht in den Warenkorb legen.',
   },
   serviceBooking: {
     title: 'Buchen und in den Warenkorb legen',
     notBookable: 'Diese Dienstleistung ist derzeit nicht buchbar.',
+    ownerBlocked: 'Du kannst deine eigene Dienstleistung nicht buchen.',
     loadSlotsError: 'Die verfügbaren Zeitfenster konnten gerade nicht geladen werden.',
     conflictsWithCart: 'Überschneidet sich mit einer Buchung in deinem Warenkorb.',
     conflictHint:

@@ -10,6 +10,7 @@ import { getLocationTypeLabel } from '@/features/services/lib/location-type'
 import type { ServiceAvailabilitySlot, ServiceListItem } from '@/features/services/types/service.types'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 import { resolveMediaUrl } from '@/lib/api/asset-url'
+import { useAuth } from '@/lib/auth/use-auth'
 import { getLocalizedValue } from '@/lib/localized-value'
 
 interface ServiceBookingCardProps {
@@ -37,6 +38,7 @@ function isSlotOverlapping(
 
 export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
   const { t } = useTranslation()
+  const { session } = useAuth()
   const { addServiceItem } = useCartActions()
   const cartItems = useCartItems()
   const [date, setDate] = useState('')
@@ -46,6 +48,9 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
   const availabilityQuery = useServiceAvailabilityQuery({ serviceId: service.id, date, timezone })
   const minimumDate = useMemo(() => getMinimumDate(), [])
   const isBookable = Boolean(service.is_active)
+  const isOwner =
+    session?.user.id ===
+    (service.service_provider?.user_id ?? service.serviceProvider?.user_id)
 
   const conflictingCartBookings = useMemo(
     () =>
@@ -79,7 +84,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
   const activeSelectedSlot = selectedSlot && !isSlotBlockedByCart(selectedSlot) ? selectedSlot : null
 
   function handleAddToCart() {
-    if (!activeSelectedSlot) {
+    if (!activeSelectedSlot || isOwner) {
       return
     }
 
@@ -109,6 +114,8 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
       <CardContent className="space-y-5">
         {!isBookable ? (
           <p className="text-sm text-destructive">{t('serviceBooking.notBookable')}</p>
+        ) : isOwner ? (
+          <p className="text-sm text-muted-foreground">{t('serviceBooking.ownerBlocked')}</p>
         ) : null}
 
         <ServiceSlotPicker
@@ -117,7 +124,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
           minDate={minimumDate}
           selectedSlot={activeSelectedSlot}
           slots={availabilityQuery.data?.slots ?? []}
-          disabled={!isBookable}
+          disabled={!isBookable || Boolean(isOwner)}
           isLoading={availabilityQuery.isLoading}
           errorMessage={
             availabilityQuery.isError
@@ -134,7 +141,7 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
 
         <Button
           onClick={handleAddToCart}
-          disabled={!activeSelectedSlot || !isBookable}
+          disabled={!activeSelectedSlot || !isBookable || Boolean(isOwner)}
           className="w-full"
         >
           {t('serviceBooking.addToCart')}

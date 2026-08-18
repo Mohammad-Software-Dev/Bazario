@@ -8,6 +8,7 @@ import { renderWithProviders } from '@/test/render-with-providers'
 const addServiceItemMock = vi.fn()
 const mockUseCartItems = vi.fn()
 const mockUseServiceAvailabilityQuery = vi.fn()
+const mockUseAuth = vi.fn()
 
 vi.mock('@/features/cart/hooks/use-cart', () => ({
   useCartActions: () => ({
@@ -18,6 +19,10 @@ vi.mock('@/features/cart/hooks/use-cart', () => ({
 
 vi.mock('@/features/services/hooks/use-service-availability-query', () => ({
   useServiceAvailabilityQuery: () => mockUseServiceAvailabilityQuery(),
+}))
+
+vi.mock('@/lib/auth/use-auth', () => ({
+  useAuth: () => mockUseAuth(),
 }))
 
 vi.mock('@/features/services/components/service-slot-picker', () => ({
@@ -72,7 +77,13 @@ describe('ServiceBookingCard', () => {
     addServiceItemMock.mockReset()
     mockUseCartItems.mockReset()
     mockUseServiceAvailabilityQuery.mockReset()
+    mockUseAuth.mockReset()
     mockUseCartItems.mockReturnValue([])
+    mockUseAuth.mockReturnValue({
+      session: {
+        user: { id: 25 },
+      },
+    })
     mockUseServiceAvailabilityQuery.mockReturnValue({
       data: {
         slots: [
@@ -111,5 +122,19 @@ describe('ServiceBookingCard', () => {
         ends_at: '2026-08-20T11:00:00Z',
       }),
     )
+  })
+
+  it('blocks booking the owner service', () => {
+    mockUseAuth.mockReturnValue({
+      session: {
+        user: { id: 10 },
+      },
+    })
+
+    renderWithProviders(<ServiceBookingCard service={service} />)
+
+    expect(screen.getByRole('button', { name: 'Add booking to cart' })).toBeDisabled()
+    expect(screen.getByText('You cannot book your own service.')).toBeInTheDocument()
+    expect(addServiceItemMock).not.toHaveBeenCalled()
   })
 })

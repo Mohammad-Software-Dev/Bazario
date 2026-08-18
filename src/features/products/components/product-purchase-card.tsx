@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { useCartActions } from '@/features/cart/hooks/use-cart'
 import { buildProductCartItem } from '@/features/products/lib/build-product-cart-item'
 import type { ProductListItem } from '@/features/products/types/product.types'
+import { useAuth } from '@/lib/auth/use-auth'
 
 interface ProductPurchaseCardProps {
   product: ProductListItem
@@ -14,11 +15,17 @@ interface ProductPurchaseCardProps {
 
 export function ProductPurchaseCard({ product }: ProductPurchaseCardProps) {
   const { t } = useTranslation()
+  const { session } = useAuth()
   const { addProductItem } = useCartActions()
   const [quantity, setQuantity] = useState(1)
   const [isAdded, setIsAdded] = useState(false)
+  const isOwner = session?.user.id === product.seller?.user_id
 
   function handleAddToCart() {
+    if (isOwner) {
+      return
+    }
+
     const nextQuantity = Number.isFinite(quantity) ? quantity : 1
 
     addProductItem(buildProductCartItem(product, nextQuantity))
@@ -47,9 +54,13 @@ export function ProductPurchaseCard({ product }: ProductPurchaseCardProps) {
           />
         </div>
 
-        <Button onClick={handleAddToCart} className="w-full">
+        <Button onClick={handleAddToCart} disabled={Boolean(isOwner)} className="w-full">
           {t('productPurchase.addToCart')}
         </Button>
+
+        {isOwner ? (
+          <p className="text-sm text-muted-foreground">{t('productPurchase.ownerBlocked')}</p>
+        ) : null}
 
         {isAdded ? (
           <p className="text-sm text-muted-foreground">{t('productPurchase.added')}</p>

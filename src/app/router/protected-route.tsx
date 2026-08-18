@@ -27,7 +27,7 @@ export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps)
   }
 
   if (requiredRoles?.length) {
-    const roles = session?.roles ?? []
+    const roles = session?.user?.roles ?? session?.roles ?? []
     const hasRequiredRole = requiredRoles.some((role) => roles.includes(role))
 
     if (!hasRequiredRole) {

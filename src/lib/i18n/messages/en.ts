@@ -751,10 +751,12 @@ const en = {
     quantity: 'Quantity',
     addToCart: 'Add to cart',
     added: 'Added to cart.',
+    ownerBlocked: 'You cannot add your own product to the cart.',
   },
   serviceBooking: {
     title: 'Book and add to cart',
     notBookable: 'This service is not currently bookable.',
+    ownerBlocked: 'You cannot book your own service.',
     loadSlotsError: 'Unable to load available slots right now.',
     conflictsWithCart: 'Conflicts with a booking already in your cart.',
     conflictHint:
