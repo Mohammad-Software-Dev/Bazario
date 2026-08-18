@@ -402,15 +402,6 @@ export function AccountPage() {
                       to="/account/ads"
                       infoText={t('ads.manageAdsDescription')}
                     />
-                    <ActionLinkRow
-                      title={t('account.stripeAccount')}
-                      to="/account/stripe"
-                      badge={stripeStatusBadge}
-                    />
-                    <ActionLinkRow
-                      title={t('account.earnings')}
-                      to="/account/earnings"
-                    />
                   </div>
                 </div>
               ) : null}
@@ -436,6 +427,14 @@ export function AccountPage() {
                       to="/account/ads"
                       infoText={t('ads.manageAdsDescription')}
                     />
+                  </div>
+                </div>
+              ) : null}
+
+              {hasBusinessWorkspace ? (
+                <div className="space-y-2 border-t border-border/70 pt-6">
+                  <p className="font-medium text-foreground">{t('account.stripeAccount')}</p>
+                  <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                     <ActionLinkRow
                       title={t('account.stripeAccount')}
                       to="/account/stripe"
