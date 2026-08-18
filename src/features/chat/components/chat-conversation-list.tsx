@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDateTime } from '@/lib/i18n/format'
+import { useAppLanguage } from '@/lib/i18n/use-app-language'
 import { cn } from '@/lib/utils'
 
 import type { ChatConversationListItem } from '@/features/chat/types/chat.types'
@@ -17,6 +18,7 @@ export function ChatConversationList({
   activeConversationId,
 }: ChatConversationListProps) {
   const { t } = useTranslation()
+  const { isRtl } = useAppLanguage()
 
   return (
     <Card className="h-full border-border/70 shadow-sm">
@@ -41,7 +43,7 @@ export function ChatConversationList({
                     : 'border-border bg-background hover:bg-muted/40',
                 )}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className={cn('flex items-start justify-between gap-3', isRtl && 'flex-row-reverse')}>
                   <div className="min-w-0 space-y-1">
                     <p className="truncate text-sm font-semibold">
                       {conversation.peer?.name ?? t('chat.unknownContact')}
@@ -55,7 +57,7 @@ export function ChatConversationList({
                       {latestBody}
                     </p>
                   </div>
-                  <div className="shrink-0 text-right">
+                  <div className={cn('shrink-0 text-start', !isRtl && 'text-right')}>
                     {latestAt ? (
                       <p className={cn('text-xs', isActive ? 'text-background/70' : 'text-muted-foreground')}>
                         {formatDateTime(latestAt, {

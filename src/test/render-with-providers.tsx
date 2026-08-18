@@ -6,7 +6,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import i18n from '@/lib/i18n'
 
-export function renderWithProviders(ui: ReactElement) {
+interface RenderWithProvidersOptions {
+  initialEntries?: string[]
+  language?: 'en' | 'de' | 'ar'
+}
+
+export function renderWithProviders(ui: ReactElement, options: RenderWithProvidersOptions = {}) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -18,11 +23,13 @@ export function renderWithProviders(ui: ReactElement) {
     },
   })
 
+  void i18n.changeLanguage(options.language ?? 'en')
+
   function Wrapper({ children }: PropsWithChildren) {
     return (
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
-          <MemoryRouter>{children}</MemoryRouter>
+          <MemoryRouter initialEntries={options.initialEntries}>{children}</MemoryRouter>
         </QueryClientProvider>
       </I18nextProvider>
     )

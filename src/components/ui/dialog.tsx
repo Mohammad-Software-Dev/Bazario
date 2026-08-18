@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useAppLanguage } from '@/lib/i18n/use-app-language'
 import { cn } from '@/lib/utils'
 
 function Dialog(props: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -33,6 +34,7 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
 
 function DialogContent({ className, children, ...props }: React.ComponentProps<typeof DialogPrimitive.Content>) {
   const { t } = useTranslation()
+  const { isRtl } = useAppLanguage()
 
   return (
     <DialogPortal>
@@ -47,7 +49,10 @@ function DialogContent({ className, children, ...props }: React.ComponentProps<t
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className={cn(
+            'absolute top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+            isRtl ? 'left-4' : 'right-4',
+          )}
           aria-label={t('common.closeDialog')}
         >
           <X className="size-4" />
@@ -59,7 +64,7 @@ function DialogContent({ className, children, ...props }: React.ComponentProps<t
 }
 
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex flex-col space-y-1.5 text-left', className)} {...props} />
+  return <div className={cn('flex flex-col space-y-1.5 text-start', className)} {...props} />
 }
 
 function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useStartDirectConversationMutation } from '@/features/chat/hooks/use-start-direct-conversation-mutation'
 import { useAuth } from '@/lib/auth/use-auth'
+import { useAppLanguage } from '@/lib/i18n/use-app-language'
+import { cn } from '@/lib/utils'
 import { useUiStore } from '@/stores/ui-store'
 
 interface ContactUserButtonProps {
@@ -17,6 +19,7 @@ export function ContactUserButton({ userId, isOwner, label }: ContactUserButtonP
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
+  const { isRtl } = useAppLanguage()
   const openLoginDialog = useUiStore((state) => state.openLoginDialog)
   const directConversationMutation = useStartDirectConversationMutation()
 
@@ -46,8 +49,10 @@ export function ContactUserButton({ userId, isOwner, label }: ContactUserButtonP
 
   return (
     <Button onClick={handleClick} disabled={directConversationMutation.isPending} className="w-full">
-      <MessageCircle className="mr-2 size-4" />
-      {directConversationMutation.isPending ? t('chat.openingConversation') : label}
+      <span className={cn('flex items-center gap-2', isRtl && 'flex-row-reverse')}>
+        <MessageCircle className="size-4 shrink-0" />
+        <span>{directConversationMutation.isPending ? t('chat.openingConversation') : label}</span>
+      </span>
     </Button>
   )
 }

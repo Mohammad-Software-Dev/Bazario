@@ -100,6 +100,8 @@ export function OtpCodeInput({
           inputMode="numeric"
           autoComplete={index === 0 ? 'one-time-code' : 'off'}
           maxLength={1}
+          dir="ltr"
+          data-ltr="true"
           value={digit}
           disabled={disabled}
           aria-label={`Verification code digit ${index + 1}`}

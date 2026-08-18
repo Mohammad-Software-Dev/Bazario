@@ -1,8 +1,12 @@
 import i18n from '@/lib/i18n'
 import type { AppLanguage } from '@/lib/i18n/types'
 
-export function getAppLanguage(language?: string | null): AppLanguage {
+export function normalizeAppLanguage(language?: string | null): AppLanguage {
   const value = language ?? i18n.resolvedLanguage ?? i18n.language ?? 'en'
+
+  if (value.startsWith('ar')) {
+    return 'ar'
+  }
 
   if (value.startsWith('de')) {
     return 'de'
@@ -11,8 +15,22 @@ export function getAppLanguage(language?: string | null): AppLanguage {
   return 'en'
 }
 
+export function getAppLanguage(language?: string | null): AppLanguage {
+  return normalizeAppLanguage(language)
+}
+
+export function isRtlLanguage(language?: string | null) {
+  return getAppLanguage(language) === 'ar'
+}
+
 export function getIntlLocale(language?: string | null) {
-  if (getAppLanguage(language) === 'de') {
+  const appLanguage = getAppLanguage(language)
+
+  if (appLanguage === 'ar') {
+    return 'ar'
+  }
+
+  if (appLanguage === 'de') {
     return 'de-DE'
   }
 

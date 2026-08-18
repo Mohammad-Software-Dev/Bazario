@@ -1,1 +1,1 @@
-export type AppLanguage = 'en' | 'de'
+export type AppLanguage = 'en' | 'de' | 'ar'

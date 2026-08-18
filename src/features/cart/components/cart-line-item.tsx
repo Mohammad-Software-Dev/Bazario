@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { buildAssetUrl } from '@/lib/api/asset-url'
+import { useAppLanguage } from '@/lib/i18n/use-app-language'
+import { cn } from '@/lib/utils'
 
 import { formatCartBookingWindow, formatCartMoney } from '@/features/cart/lib/cart-calculations'
 import type { CartItem } from '@/features/cart/types/cart.types'
@@ -16,6 +18,7 @@ interface CartLineItemProps {
 
 export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemProps) {
   const { t } = useTranslation()
+  const { isRtl } = useAppLanguage()
   const imageUrl = buildAssetUrl(item.image)
   const lineTotal = item.price * item.quantity
 
@@ -51,7 +54,7 @@ export function CartLineItem({ item, onRemove, onQuantityChange }: CartLineItemP
             </p>
             {item.category_name ? <p className="text-sm text-muted-foreground">{item.category_name}</p> : null}
           </div>
-          <div className="space-y-1 text-left md:text-right">
+          <div className={cn('space-y-1 text-start', !isRtl && 'md:text-right')}>
             <p className="text-sm text-muted-foreground">{t('cart.unitPrice')}: {formatCartMoney(item.price)}</p>
             <p className="text-base font-semibold text-foreground">{t('cart.lineTotal')}: {formatCartMoney(lineTotal)}</p>
           </div>

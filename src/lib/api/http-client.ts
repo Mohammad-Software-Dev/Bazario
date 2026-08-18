@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { InternalAxiosRequestConfig } from "axios";
 
 import { getAuthToken } from "@/lib/auth/auth-storage";
 import { getAppLanguage } from "@/lib/i18n/format";
@@ -18,7 +19,7 @@ export const httpClient = axios.create({
   },
 });
 
-httpClient.interceptors.request.use((config) => {
+export function applyHttpClientRequestContext(config: InternalAxiosRequestConfig) {
   const token = getAuthToken();
   const language = getAppLanguage(i18n.resolvedLanguage ?? i18n.language);
 
@@ -29,4 +30,6 @@ httpClient.interceptors.request.use((config) => {
   config.headers["Accept-Language"] = language;
 
   return config;
-});
+}
+
+httpClient.interceptors.request.use(applyHttpClientRequestContext);

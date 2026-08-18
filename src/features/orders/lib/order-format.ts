@@ -76,7 +76,8 @@ export function getBookingPrimaryProviderName(booking: CustomerBookingRecord) {
 }
 
 export function getBookingLocalDateValue(booking: Pick<CustomerBookingRecord, 'starts_at' | 'timezone'>) {
-  const locale = getAppLanguage() === 'de' ? 'de-DE' : 'en-CA'
+  const language = getAppLanguage()
+  const locale = language === 'ar' ? 'ar' : language === 'de' ? 'de-DE' : 'en-CA'
   const formatter = new Intl.DateTimeFormat(locale, {
     timeZone: booking.timezone || 'UTC',
     year: 'numeric',

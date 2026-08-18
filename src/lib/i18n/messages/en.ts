@@ -21,6 +21,7 @@ const en = {
     edit: 'Edit',
     german: 'German',
     english: 'English',
+    arabic: 'Arabic',
     items: 'Items',
     language: 'Language',
     loading: 'Loading...',
@@ -848,6 +849,6 @@ const en = {
     cancelled_by_provider: 'Cancelled by provider',
     succeeded: 'Succeeded',
   },
-} as const
+}
 
 export default en

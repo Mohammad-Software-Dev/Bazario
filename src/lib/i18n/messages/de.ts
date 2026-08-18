@@ -21,6 +21,7 @@ const de = {
     edit: 'Bearbeiten',
     german: 'Deutsch',
     english: 'Englisch',
+    arabic: 'Arabisch',
     items: 'Artikel',
     language: 'Sprache',
     loading: 'Wird geladen...',
@@ -848,6 +849,6 @@ const de = {
     cancelled_by_provider: 'Vom Anbieter storniert',
     succeeded: 'Erfolgreich',
   },
-} as const
+}
 
 export default de

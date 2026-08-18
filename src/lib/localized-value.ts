@@ -23,6 +23,10 @@ export function getLocalizedValue(value: LocalizedValue, preferredLanguage?: App
 
   const language = getAppLanguage(preferredLanguage ?? i18n.resolvedLanguage ?? i18n.language)
 
+  if (language === 'ar') {
+    return value.ar ?? value.en ?? value.de ?? ''
+  }
+
   if (language === 'de') {
     return value.de ?? value.en ?? value.ar ?? ''
   }

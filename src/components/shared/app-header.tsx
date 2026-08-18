@@ -15,6 +15,7 @@ import { useChatUnreadCountQuery } from "@/features/chat/hooks/use-chat-unread-c
 import { useChatUnreadSubscription } from "@/features/chat/hooks/use-chat-unread-subscription";
 import { useAuth } from "@/lib/auth/use-auth";
 import { useAppLanguage } from "@/lib/i18n/use-app-language";
+import type { AppLanguage } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/stores/ui-store";
 
@@ -34,7 +35,7 @@ export function AppHeader() {
   const isMobileNavOpen = useUiStore((state) => state.isMobileNavOpen);
   const setMobileNavOpen = useUiStore((state) => state.setMobileNavOpen);
   const cartCount = useCartCount();
-  const { language, changeLanguage } = useAppLanguage();
+  const { language, isRtl, changeLanguage } = useAppLanguage();
   const unreadCountQuery = useChatUnreadCountQuery(isAuthenticated);
   const unreadConversationCount = unreadCountQuery.data?.result.total ?? 0;
 
@@ -61,9 +62,15 @@ export function AppHeader() {
     logoutMutation.mutate();
   }
 
-  function handleChangeLanguage(nextLanguage: "en" | "de") {
+  function handleChangeLanguage(nextLanguage: AppLanguage) {
     changeLanguage(nextLanguage);
   }
+
+  const languageOptions: Array<{ value: AppLanguage; label: string; ariaLabel: string }> = [
+    { value: "en", label: "EN", ariaLabel: t("common.english") },
+    { value: "de", label: "DE", ariaLabel: t("common.german") },
+    { value: "ar", label: "AR", ariaLabel: t("common.arabic") },
+  ];
 
   return (
     <header className="border-b border-primary/20 bg-foreground text-background shadow-sm">
@@ -103,34 +110,23 @@ export function AppHeader() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <div className="flex items-center rounded-md border border-primary-foreground/16 bg-background/10 p-1">
-            <Button
-              type="button"
-              variant={language === "en" ? "secondary" : "ghost"}
-              size="sm"
-              className={cn(
-                "h-8 px-2",
-                language !== "en" &&
-                  "text-primary-foreground hover:bg-background/10 hover:text-primary-foreground",
-              )}
-              onClick={() => changeLanguage("en")}
-              aria-label={t("common.english")}
-            >
-              EN
-            </Button>
-            <Button
-              type="button"
-              variant={language === "de" ? "secondary" : "ghost"}
-              size="sm"
-              className={cn(
-                "h-8 px-2",
-                language !== "de" &&
-                  "text-primary-foreground hover:bg-background/10 hover:text-primary-foreground",
-              )}
-              onClick={() => changeLanguage("de")}
-              aria-label={t("common.german")}
-            >
-              DE
-            </Button>
+            {languageOptions.map((option) => (
+              <Button
+                key={option.value}
+                type="button"
+                variant={language === option.value ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "h-8 px-2",
+                  language !== option.value &&
+                    "text-primary-foreground hover:bg-background/10 hover:text-primary-foreground",
+                )}
+                onClick={() => handleChangeLanguage(option.value)}
+                aria-label={option.ariaLabel}
+              >
+                {option.label}
+              </Button>
+            ))}
           </div>
 
           <Button
@@ -139,10 +135,12 @@ export function AppHeader() {
             className="px-3 text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             onClick={handleOpenChat}
           >
-            <MessageCircle className="mr-2 size-4" />
-            {t("header.chat")}
+            <span className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+              <MessageCircle className="size-4 shrink-0" />
+              <span>{t("header.chat")}</span>
+            </span>
             {isAuthenticated && unreadConversationCount > 0 ? (
-              <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                 {unreadConversationCount}
               </span>
             ) : null}
@@ -154,10 +152,12 @@ export function AppHeader() {
             className="px-3 text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
           >
             <Link to="/cart">
-              <ShoppingCart className="mr-2 size-4" />
-              {t("header.cart")}
+              <span className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                <ShoppingCart className="size-4 shrink-0" />
+                <span>{t("header.cart")}</span>
+              </span>
               {cartCount ? (
-                <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
+                <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                   {cartCount}
                 </span>
               ) : null}
@@ -203,13 +203,18 @@ export function AppHeader() {
             type="button"
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
+            className="relative text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             onClick={handleOpenChat}
             aria-label={t("header.chat")}
           >
             <MessageCircle className="size-5" />
             {isAuthenticated && unreadConversationCount > 0 ? (
-              <span className="absolute mt-[-1.25rem] ml-[1.25rem] rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+              <span
+                className={cn(
+                  "absolute -top-1 rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground",
+                  isRtl ? "-left-1" : "-right-1",
+                )}
+              >
                 {unreadConversationCount}
               </span>
             ) : null}
@@ -219,13 +224,18 @@ export function AppHeader() {
             asChild
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
+            className="relative text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             aria-label={t("header.cart")}
           >
             <Link to="/cart">
               <ShoppingCart className="size-5" />
               {cartCount ? (
-                <span className="absolute mt-[-1.25rem] ml-[1.25rem] rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                <span
+                  className={cn(
+                    "absolute -top-1 rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground",
+                    isRtl ? "-left-1" : "-right-1",
+                  )}
+                >
                   {cartCount}
                 </span>
               ) : null}
@@ -246,7 +256,12 @@ export function AppHeader() {
       </div>
 
       <Dialog open={isMobileNavOpen} onOpenChange={setMobileNavOpen}>
-        <DialogContent className="top-0 right-0 left-auto h-full max-h-none w-[min(22rem,100%-1rem)] translate-x-0 translate-y-0 rounded-none border-l border-t-0 border-r-0 border-b-0 p-0">
+        <DialogContent
+          className={cn(
+            "top-0 h-full max-h-none w-[min(22rem,100%-1rem)] translate-x-0 translate-y-0 rounded-none border-t-0 border-b-0 p-0",
+            isRtl ? "left-0 right-auto border-r border-l-0" : "right-0 left-auto border-l border-r-0",
+          )}
+        >
           <DialogHeader className="border-b border-border/70 px-5 py-4">
             <DialogTitle>{t("header.menu")}</DialogTitle>
           </DialogHeader>
@@ -275,26 +290,19 @@ export function AppHeader() {
                 {t("common.language")}
               </p>
               <div className="flex items-center rounded-md border border-border/70 p-1">
-                <Button
-                  type="button"
-                  variant={language === "en" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="h-8 flex-1"
-                  onClick={() => handleChangeLanguage("en")}
-                  aria-label={t("common.english")}
-                >
-                  EN
-                </Button>
-                <Button
-                  type="button"
-                  variant={language === "de" ? "secondary" : "ghost"}
-                  size="sm"
-                  className="h-8 flex-1"
-                  onClick={() => handleChangeLanguage("de")}
-                  aria-label={t("common.german")}
-                >
-                  DE
-                </Button>
+                {languageOptions.map((option) => (
+                  <Button
+                    key={option.value}
+                    type="button"
+                    variant={language === option.value ? "secondary" : "ghost"}
+                    size="sm"
+                    className="h-8 flex-1"
+                    onClick={() => handleChangeLanguage(option.value)}
+                    aria-label={option.ariaLabel}
+                  >
+                    {option.label}
+                  </Button>
+                ))}
               </div>
             </div>
 

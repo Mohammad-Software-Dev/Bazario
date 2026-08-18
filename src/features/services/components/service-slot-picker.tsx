@@ -177,7 +177,7 @@ export function ServiceSlotPicker({
                           onClick={() => onSlotSelect(slot)}
                           disabled={isSlotDisabled}
                           className={cn(
-                            'rounded-xl border px-4 py-3 text-left transition-colors',
+                            'rounded-xl border px-4 py-3 text-start transition-colors',
                             isSelected ? 'border-foreground bg-foreground text-background' : 'border-border bg-background hover:border-foreground/40 hover:bg-muted/40',
                             isSlotDisabled && 'cursor-not-allowed border-dashed border-muted-foreground/30 bg-muted/20 text-muted-foreground hover:border-muted-foreground/30 hover:bg-muted/20',
                           )}
