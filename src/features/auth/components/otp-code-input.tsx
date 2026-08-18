@@ -102,7 +102,7 @@ export function OtpCodeInput({
           maxLength={1}
           value={digit}
           disabled={disabled}
-          aria-label={`OTP digit ${index + 1}`}
+          aria-label={`Verification code digit ${index + 1}`}
           className={cn(
             'h-14 w-12 rounded-xl border border-input bg-background text-center text-xl font-semibold text-foreground shadow-xs outline-none transition-[border-color,box-shadow] focus:border-ring focus:ring-2 focus:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-60 sm:w-14',
           )}

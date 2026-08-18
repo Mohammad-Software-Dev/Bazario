@@ -38,7 +38,7 @@ describe('ForgotPasswordForm', () => {
     renderWithProviders(<ForgotPasswordForm />)
 
     await user.type(screen.getByLabelText('Email'), 'wrong@example')
-    await user.click(screen.getByRole('button', { name: 'Send OTP code' }))
+    await user.click(screen.getByRole('button', { name: 'Send verification code' }))
 
     expect(await screen.findByText('Enter a valid email address.')).toBeInTheDocument()
     expect(mutateAsyncMock).not.toHaveBeenCalled()
@@ -48,14 +48,14 @@ describe('ForgotPasswordForm', () => {
     const user = userEvent.setup()
     mutateAsyncMock.mockResolvedValue({
       success: 1 as const,
-      message: 'OTP sent',
-      result: { message: 'OTP sent' },
+      message: 'Code sent',
+      result: { message: 'Code sent' },
     })
 
     renderWithProviders(<ForgotPasswordForm />)
 
     await user.type(screen.getByLabelText('Email'), 'user@example.com')
-    await user.click(screen.getByRole('button', { name: 'Send OTP code' }))
+    await user.click(screen.getByRole('button', { name: 'Send verification code' }))
 
     await waitFor(() => {
       expect(mutateAsyncMock).toHaveBeenCalledWith({
@@ -70,7 +70,7 @@ describe('ForgotPasswordForm', () => {
   it('shows api field error for email', async () => {
     const user = userEvent.setup()
     mutateAsyncMock.mockRejectedValue(
-      createApiError('Unable to send OTP.', {
+      createApiError('Unable to send verification code.', {
         email: ['No user exists for this email.'],
       }),
     )
@@ -78,10 +78,10 @@ describe('ForgotPasswordForm', () => {
     renderWithProviders(<ForgotPasswordForm />)
 
     await user.type(screen.getByLabelText('Email'), 'user@example.com')
-    await user.click(screen.getByRole('button', { name: 'Send OTP code' }))
+    await user.click(screen.getByRole('button', { name: 'Send verification code' }))
 
     expect(await screen.findByText('No user exists for this email.')).toBeInTheDocument()
-    expect(screen.getByText('Unable to send OTP.')).toBeInTheDocument()
+    expect(screen.getByText('Unable to send verification code.')).toBeInTheDocument()
   })
 
   it('shows fallback server error for generic failure', async () => {
@@ -91,7 +91,7 @@ describe('ForgotPasswordForm', () => {
     renderWithProviders(<ForgotPasswordForm />)
 
     await user.type(screen.getByLabelText('Email'), 'user@example.com')
-    await user.click(screen.getByRole('button', { name: 'Send OTP code' }))
+    await user.click(screen.getByRole('button', { name: 'Send verification code' }))
 
     expect(await screen.findByText('Request failed')).toBeInTheDocument()
   })

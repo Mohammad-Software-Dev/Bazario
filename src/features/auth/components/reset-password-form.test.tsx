@@ -55,7 +55,7 @@ describe('ResetPasswordForm', () => {
 
     renderWithProviders(<ResetPasswordForm />)
 
-    expect(await screen.findByText('Missing reset token. Please verify the OTP code first.')).toBeInTheDocument()
+    expect(await screen.findByText('Missing reset token. Please verify the code first.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reset password' })).toBeDisabled()
   })
 

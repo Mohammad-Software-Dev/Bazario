@@ -53,7 +53,7 @@ describe('auth schemas', () => {
     expect(z.flattenError(result.error!).fieldErrors.email).toContain('Enter a valid email address.')
   })
 
-  it('accepts a six-digit otp', () => {
+  it('accepts a six-digit verification code', () => {
     const result = verifyResetOtpSchema.safeParse({
       otp: '123456',
     })
@@ -61,31 +61,31 @@ describe('auth schemas', () => {
     expect(result.success).toBe(true)
   })
 
-  it('rejects a short otp', () => {
+  it('rejects a short verification code', () => {
     const result = verifyResetOtpSchema.safeParse({
       otp: '12345',
     })
 
     expect(result.success).toBe(false)
-    expect(z.flattenError(result.error!).fieldErrors.otp).toContain('Enter the 6-digit OTP code.')
+    expect(z.flattenError(result.error!).fieldErrors.otp).toContain('Enter the 6-digit verification code.')
   })
 
-  it('rejects a long otp', () => {
+  it('rejects a long verification code', () => {
     const result = verifyResetOtpSchema.safeParse({
       otp: '1234567',
     })
 
     expect(result.success).toBe(false)
-    expect(z.flattenError(result.error!).fieldErrors.otp).toContain('Enter the 6-digit OTP code.')
+    expect(z.flattenError(result.error!).fieldErrors.otp).toContain('Enter the 6-digit verification code.')
   })
 
-  it('rejects a non-numeric otp', () => {
+  it('rejects a non-numeric verification code', () => {
     const result = verifyResetOtpSchema.safeParse({
       otp: '12ab56',
     })
 
     expect(result.success).toBe(false)
-    expect(z.flattenError(result.error!).fieldErrors.otp).toContain('Enter the 6-digit OTP code.')
+    expect(z.flattenError(result.error!).fieldErrors.otp).toContain('Enter the 6-digit verification code.')
   })
 
   it('accepts matching reset-password values', () => {
