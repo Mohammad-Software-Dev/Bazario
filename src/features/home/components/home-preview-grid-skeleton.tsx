@@ -55,7 +55,7 @@ function SponsoredAdCardSkeleton({ featured = false }: { featured?: boolean }) {
 function PreviewCardSkeleton({ warm = false }: { warm?: boolean }) {
   return (
     <Card className="overflow-hidden rounded-2xl border-border/70 bg-background shadow-sm">
-      <div className={`aspect-4/3 animate-pulse ${warm ? 'bg-amber-50' : 'bg-muted'}`} />
+      <div className={`aspect-4/3 animate-pulse ${warm ? 'bg-accent' : 'bg-muted'}`} />
       <CardContent className="space-y-4 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 space-y-3">

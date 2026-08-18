@@ -66,13 +66,13 @@ export function AppHeader() {
   }
 
   return (
-    <header className="border-b border-primary/20 bg-[#071952] text-primary-foreground shadow-sm">
+    <header className="border-b border-primary/20 bg-foreground text-background shadow-sm">
       <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between gap-4 px-4">
         <div className="flex items-center gap-6">
           <Button
             asChild
             variant="ghost"
-            className="px-2 text-2xl font-semibold text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+            className="px-2 text-2xl font-semibold text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
           >
             <Link to="/">{t("common.appName")}</Link>
           </Button>
@@ -86,12 +86,12 @@ export function AppHeader() {
                 key={item.to}
                 asChild
                 variant="ghost"
-                className="px-3 text-sm text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+                className="px-3 text-sm text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
               >
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
-                    isActive ? "text-white" : "text-white/78"
+                    isActive ? "text-primary-foreground" : "text-primary-foreground/78"
                   }
                 >
                   {t(item.labelKey)}
@@ -102,7 +102,7 @@ export function AppHeader() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <div className="flex items-center rounded-md border border-white/16 bg-white/6 p-1">
+          <div className="flex items-center rounded-md border border-primary-foreground/16 bg-background/10 p-1">
             <Button
               type="button"
               variant={language === "en" ? "secondary" : "ghost"}
@@ -110,7 +110,7 @@ export function AppHeader() {
               className={cn(
                 "h-8 px-2",
                 language !== "en" &&
-                  "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground",
+                  "text-primary-foreground hover:bg-background/10 hover:text-primary-foreground",
               )}
               onClick={() => changeLanguage("en")}
               aria-label={t("common.english")}
@@ -124,7 +124,7 @@ export function AppHeader() {
               className={cn(
                 "h-8 px-2",
                 language !== "de" &&
-                  "text-primary-foreground hover:bg-white/10 hover:text-primary-foreground",
+                  "text-primary-foreground hover:bg-background/10 hover:text-primary-foreground",
               )}
               onClick={() => changeLanguage("de")}
               aria-label={t("common.german")}
@@ -136,13 +136,13 @@ export function AppHeader() {
           <Button
             type="button"
             variant="ghost"
-            className="px-3 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+            className="px-3 text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             onClick={handleOpenChat}
           >
             <MessageCircle className="mr-2 size-4" />
             {t("header.chat")}
             {isAuthenticated && unreadConversationCount > 0 ? (
-              <span className="ml-2 rounded-full bg-[#37B7C3] px-2 py-0.5 text-xs font-medium text-[#071952]">
+              <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                 {unreadConversationCount}
               </span>
             ) : null}
@@ -151,13 +151,13 @@ export function AppHeader() {
           <Button
             asChild
             variant="ghost"
-            className="px-3 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+            className="px-3 text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
           >
             <Link to="/cart">
               <ShoppingCart className="mr-2 size-4" />
               {t("header.cart")}
               {cartCount ? (
-                <span className="ml-2 rounded-full bg-[#37B7C3] px-2 py-0.5 text-xs font-medium text-[#071952]">
+                <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                   {cartCount}
                 </span>
               ) : null}
@@ -177,7 +177,7 @@ export function AppHeader() {
               </Button>
               <Button
                 variant="outline"
-                className="border-white/18 bg-white text-[#071952] hover:bg-[#EBF4F6]"
+                className="border-primary-foreground/18 bg-background text-foreground hover:bg-background/90"
                 onClick={() => {
                   logoutMutation.mutate();
                 }}
@@ -190,7 +190,7 @@ export function AppHeader() {
             </>
           ) : (
             <Button
-              className="bg-[#37B7C3] text-[#071952] hover:bg-[#37B7C3]/90"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90"
               onClick={openLoginDialog}
             >
               {t("common.login")}
@@ -203,13 +203,13 @@ export function AppHeader() {
             type="button"
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+            className="text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             onClick={handleOpenChat}
             aria-label={t("header.chat")}
           >
             <MessageCircle className="size-5" />
             {isAuthenticated && unreadConversationCount > 0 ? (
-              <span className="absolute mt-[-1.25rem] ml-[1.25rem] rounded-full bg-[#37B7C3] px-1.5 py-0.5 text-[10px] font-medium text-[#071952]">
+              <span className="absolute mt-[-1.25rem] ml-[1.25rem] rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
                 {unreadConversationCount}
               </span>
             ) : null}
@@ -219,13 +219,13 @@ export function AppHeader() {
             asChild
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+            className="text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             aria-label={t("header.cart")}
           >
             <Link to="/cart">
               <ShoppingCart className="size-5" />
               {cartCount ? (
-                <span className="absolute mt-[-1.25rem] ml-[1.25rem] rounded-full bg-[#37B7C3] px-1.5 py-0.5 text-[10px] font-medium text-[#071952]">
+                <span className="absolute mt-[-1.25rem] ml-[1.25rem] rounded-full bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
                   {cartCount}
                 </span>
               ) : null}
@@ -236,7 +236,7 @@ export function AppHeader() {
             type="button"
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+            className="text-primary-foreground hover:bg-background/10 hover:text-primary-foreground"
             onClick={() => setMobileNavOpen(true)}
             aria-label={t("header.openMenu")}
           >

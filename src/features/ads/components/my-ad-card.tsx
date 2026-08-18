@@ -19,28 +19,28 @@ interface MyAdCardProps {
 function statusTone(status: string) {
   switch (status) {
     case "pending_payment":
-      return "bg-sky-100 text-sky-700";
+      return "bg-secondary/20 text-secondary-foreground";
     case "pending_review":
-      return "bg-amber-100 text-amber-700";
+      return "bg-accent text-accent-foreground";
     case "approved":
-      return "bg-emerald-100 text-emerald-700";
+      return "bg-primary/12 text-primary";
     case "rejected":
-      return "bg-rose-100 text-rose-700";
+      return "bg-destructive/10 text-destructive";
     case "expired":
-      return "bg-zinc-100 text-zinc-700";
+      return "bg-muted text-muted-foreground";
     default:
-      return "bg-amber-100 text-amber-700";
+      return "bg-accent text-accent-foreground";
   }
 }
 
 function paymentTone(paymentState: AdViewModel["paymentState"]) {
   switch (paymentState) {
     case "paid":
-      return "bg-emerald-100 text-emerald-700";
+      return "bg-primary/12 text-primary";
     case "refunded":
-      return "bg-sky-100 text-sky-700";
+      return "bg-secondary/20 text-secondary-foreground";
     default:
-      return "bg-sky-100 text-sky-700";
+      return "bg-secondary/20 text-secondary-foreground";
   }
 }
 

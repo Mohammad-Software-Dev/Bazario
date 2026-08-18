@@ -7,9 +7,9 @@ interface AdTierBadgeProps {
 }
 
 const toneClasses: Record<AdTier, string> = {
-  gold: 'bg-amber-100 text-amber-800',
-  silver: 'bg-slate-100 text-slate-700',
-  normal: 'bg-zinc-100 text-zinc-700',
+  gold: 'bg-secondary/20 text-secondary-foreground',
+  silver: 'bg-muted text-muted-foreground',
+  normal: 'bg-accent text-accent-foreground',
 }
 
 export function AdTierBadge({ tier }: AdTierBadgeProps) {

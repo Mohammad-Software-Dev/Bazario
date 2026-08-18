@@ -9,15 +9,15 @@ interface ListingStatusBadgeProps {
 function statusTone(status: ListingStatus) {
   switch (status) {
     case 'pending_payment':
-      return 'bg-sky-100 text-sky-700'
+      return 'bg-secondary/20 text-secondary-foreground'
     case 'pending_review':
-      return 'bg-amber-100 text-amber-700'
+      return 'bg-accent text-accent-foreground'
     case 'approved':
-      return 'bg-emerald-100 text-emerald-700'
+      return 'bg-primary/12 text-primary'
     case 'rejected':
-      return 'bg-rose-100 text-rose-700'
+      return 'bg-destructive/10 text-destructive'
     default:
-      return 'bg-amber-100 text-amber-700'
+      return 'bg-accent text-accent-foreground'
   }
 }
 

@@ -43,7 +43,7 @@ export function ProviderServiceCard({ service, onDelete }: ProviderServiceCardPr
           <CardTitle className="line-clamp-2 text-lg leading-5.5">{title}</CardTitle>
           <span
             className={`rounded-full px-2 py-1 text-xs font-medium ${
-              service.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-200 text-stone-700'
+              service.is_active ? 'bg-primary/12 text-primary' : 'bg-muted text-muted-foreground'
             }`}
           >
             {service.is_active ? t('details.active') : t('details.inactive')}

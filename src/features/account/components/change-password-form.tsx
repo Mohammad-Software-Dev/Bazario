@@ -99,7 +99,7 @@ export function ChangePasswordForm() {
           ) : null}
 
           {updatePasswordMutation.isSuccess ? (
-            <p className="text-sm text-emerald-700">{t('password.updated')}</p>
+            <p className="text-sm text-primary">{t('password.updated')}</p>
           ) : null}
 
           <div className="flex justify-end">

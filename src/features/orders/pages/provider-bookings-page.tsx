@@ -46,8 +46,8 @@ export function ProviderBookingsPage() {
                   <CardTitle>{t('providerBookings.queueTitle')}</CardTitle>
                   <CardDescription>{t('providerBookings.queueDescription')}</CardDescription>
                 </div>
-                <div className="rounded-full bg-slate-50 px-4 py-2 ring-1 ring-slate-200">
-                  <p className="text-sm font-medium text-slate-700">
+                <div className="rounded-full bg-muted px-4 py-2 ring-1 ring-border">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {t('providerBookings.total')}{' '}
                     <span className="font-semibold text-foreground">{bookingsQuery.data.total}</span>
                   </p>

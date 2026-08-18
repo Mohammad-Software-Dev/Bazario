@@ -38,7 +38,7 @@ export function SellerPreviewCard({ seller }: SellerPreviewCardProps) {
               className="block h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-stone-100 to-stone-200 text-sm text-muted-foreground">
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-muted to-accent text-sm text-muted-foreground">
               No logo
             </div>
           )}

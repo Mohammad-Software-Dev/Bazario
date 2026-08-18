@@ -40,7 +40,7 @@ export function ServiceProviderPreviewCard({
               className="block h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-amber-100 to-stone-200 text-sm text-muted-foreground">
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-accent to-muted text-sm text-muted-foreground">
               No logo
             </div>
           )}
