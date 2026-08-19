@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BalanceList } from "@/features/earnings/components/balance-list";
 import { TransferList } from "@/features/earnings/components/transfer-list";
 import { useConnectSummaryQuery } from "@/features/connect/hooks/use-connect-summary-query";
+import type { ConnectRoleEarningsSummary } from "@/features/connect/types/connect.types";
 import { getApiErrorMessage } from "@/lib/api/api-error";
 
 function formatEligibleType(value: string | null | undefined, fallback: string) {
@@ -14,6 +15,47 @@ function formatEligibleType(value: string | null | undefined, fallback: string) 
   }
 
   return value.replace(/_/g, " ");
+}
+
+interface RoleEarningsSectionProps {
+  title: string;
+  pendingRows: ConnectRoleEarningsSummary["platform_pending_balance"];
+  transfers: ConnectRoleEarningsSummary["transfers"];
+  noPendingLabel: string;
+}
+
+function RoleEarningsSection({
+  title,
+  pendingRows,
+  transfers,
+  noPendingLabel,
+}: RoleEarningsSectionProps) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4 text-sm text-muted-foreground">
+            {t("earnings.platformPending")}
+          </p>
+          <BalanceList emptyLabel={noPendingLabel} rows={pendingRows} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("earnings.recentTransfers")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TransferList transfers={transfers} />
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export function EarningsPage() {
@@ -126,7 +168,7 @@ export function EarningsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("earnings.platformPending")}</CardTitle>
+            <CardTitle>{t("earnings.platformPendingTotal")}</CardTitle>
           </CardHeader>
           <CardContent>
             <BalanceList
@@ -138,8 +180,28 @@ export function EarningsPage() {
       </div>
 
       <Card>
+        <CardContent className="py-6 text-sm text-muted-foreground">
+          {t("earnings.sharedStripeHint")}
+        </CardContent>
+      </Card>
+
+      <RoleEarningsSection
+        title={t("earnings.sellerSection")}
+        pendingRows={summary.earnings_by_role.seller.platform_pending_balance}
+        transfers={summary.earnings_by_role.seller.transfers}
+        noPendingLabel={t("earnings.noSellerPending")}
+      />
+
+      <RoleEarningsSection
+        title={t("earnings.providerSection")}
+        pendingRows={summary.earnings_by_role.service_provider.platform_pending_balance}
+        transfers={summary.earnings_by_role.service_provider.transfers}
+        noPendingLabel={t("earnings.noProviderPending")}
+      />
+
+      <Card>
         <CardHeader>
-          <CardTitle>{t("earnings.recentTransfers")}</CardTitle>
+          <CardTitle>{t("earnings.allTransfers")}</CardTitle>
         </CardHeader>
         <CardContent>
           <TransferList transfers={summary.transfers} />

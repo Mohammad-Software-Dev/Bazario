@@ -48,11 +48,15 @@ describe('EarningsPage', () => {
         stripe_balance: { available: [], pending: [] },
         platform_pending_balance: [],
         transfers: [],
+        earnings_by_role: {
+          seller: { platform_pending_balance: [], transfers: [] },
+          service_provider: { platform_pending_balance: [], transfers: [] },
+        },
       },
     } as never)
     renderWithProviders(<EarningsPage />)
-    expect(screen.getAllByText('Balance rows 0')).toHaveLength(3)
-    expect(screen.getByText('Transfers 0')).toBeInTheDocument()
+    expect(screen.getAllByText('Balance rows 0')).toHaveLength(5)
+    expect(screen.getAllByText('Transfers 0')).toHaveLength(3)
     expect(screen.getByRole('link', { name: 'Go to Stripe account' })).toBeInTheDocument()
   })
 })

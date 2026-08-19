@@ -25,6 +25,12 @@ export interface ConnectTransferRecord {
   currency_iso: string
   status: string
   created_at: string | null
+  earning_role?: 'seller' | 'service_provider' | null
+}
+
+export interface ConnectRoleEarningsSummary {
+  platform_pending_balance: ConnectBalanceRow[]
+  transfers: ConnectTransferRecord[]
 }
 
 export interface ConnectStatusResult {
@@ -55,4 +61,8 @@ export interface ConnectSummaryResult {
   }
   platform_pending_balance: ConnectBalanceRow[]
   transfers: ConnectTransferRecord[]
+  earnings_by_role: {
+    seller: ConnectRoleEarningsSummary
+    service_provider: ConnectRoleEarningsSummary
+  }
 }
