@@ -88,7 +88,7 @@ export function VerifyResetOtpForm() {
       })
 
       setPasswordResetToken(response.result.token)
-      navigate('/reset-password')
+      navigate('/reset-password', { replace: true })
     } catch (error) {
       const fieldErrors = getApiFieldErrors(error)
       const otpError = fieldErrors?.otp?.[0]
