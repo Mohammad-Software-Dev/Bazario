@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCartActions } from '@/features/cart/hooks/use-cart'
-import { formatOrderMoney } from '@/features/orders/lib/order-format'
+import { formatOrderMoney, getCheckoutSuccessDestination } from '@/features/orders/lib/order-format'
 import { useCheckoutResultQuery } from '@/features/orders/hooks/use-checkout-result-query'
 import { getApiErrorMessage } from '@/lib/api/api-error'
 
@@ -65,6 +65,7 @@ export function CheckoutSuccessPage() {
   }
 
   const order = checkoutResultQuery.data?.order
+  const successDestination = getCheckoutSuccessDestination(order)
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-12">
@@ -109,14 +110,13 @@ export function CheckoutSuccessPage() {
 
             <div className="flex flex-wrap gap-3">
               {checkoutResultQuery.data.is_paid ? (
-                <>
-                  <Button asChild>
+                <Button asChild>
+                  {successDestination === '/account/bookings' ? (
+                    <Link to={successDestination}>{t('checkout.viewMyBookings')}</Link>
+                  ) : (
                     <Link to="/account/orders">{t('checkout.viewMyOrders')}</Link>
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link to="/account/bookings">{t('checkout.viewMyBookings')}</Link>
-                  </Button>
-                </>
+                  )}
+                </Button>
               ) : (
                 <Button asChild variant="outline">
                   <Link to="/cart">{t('common.backToCart')}</Link>

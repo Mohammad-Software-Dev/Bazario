@@ -4,6 +4,7 @@ import {
   formatOrderDate,
   getBookingLocalDateValue,
   getBookingPrimaryProviderName,
+  getCheckoutSuccessDestination,
   getLatestRefund,
   getOrderItemDisplayTitle,
   getOrderPrimaryDate,
@@ -42,6 +43,15 @@ describe('order format helpers', () => {
         created_at: '2026-08-10T10:00:00Z',
       } as never),
     ).toBe('2026-08-12T10:00:00Z')
+  })
+
+  it('selects one checkout destination based on the purchased items', () => {
+    const productItem = { service_booking: null }
+    const bookingItem = { service_booking: { id: 1 } }
+
+    expect(getCheckoutSuccessDestination({ items: [productItem] } as never)).toBe('/account/orders')
+    expect(getCheckoutSuccessDestination({ items: [bookingItem] } as never)).toBe('/account/bookings')
+    expect(getCheckoutSuccessDestination({ items: [productItem, bookingItem] } as never)).toBe('/account/orders')
   })
 
   it('falls back to independent provider when provider name is missing', () => {

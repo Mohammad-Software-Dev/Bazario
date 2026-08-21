@@ -71,6 +71,13 @@ export function getOrderPrimaryDate(order: OrderRecord) {
   return order.paid_at || order.placed_at || order.created_at || null
 }
 
+export function getCheckoutSuccessDestination(order?: Pick<OrderRecord, 'items'> | null) {
+  const containsOnlyBookings =
+    Boolean(order?.items.length) && order?.items.every((item) => Boolean(item.service_booking))
+
+  return containsOnlyBookings ? '/account/bookings' : '/account/orders'
+}
+
 export function getBookingPrimaryProviderName(booking: CustomerBookingRecord) {
   return booking.provider_user?.name || i18n.t('catalog.independentProvider')
 }
