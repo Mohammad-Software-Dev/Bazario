@@ -18,7 +18,7 @@ export function ResetPasswordPage() {
         <CardContent className="space-y-4">
           <ResetPasswordForm />
           <Button asChild className="w-full" variant="outline">
-            <Link to="/verify-reset-otp">{t('common.previous')}</Link>
+            <Link to="/forgot-password">{t('common.previous')}</Link>
           </Button>
         </CardContent>
       </Card>

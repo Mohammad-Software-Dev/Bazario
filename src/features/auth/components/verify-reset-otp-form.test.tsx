@@ -76,7 +76,7 @@ describe('VerifyResetOtpForm', () => {
     expect(mutateAsyncMock).not.toHaveBeenCalled()
   })
 
-  it('submits stored email and entered otp, then stores token and navigates', async () => {
+  it('submits stored email and entered otp, then stores token and replaces navigation to reset password', async () => {
     const user = userEvent.setup()
     window.sessionStorage.setItem('bazario-reset-email', 'user@example.com')
     mutateAsyncMock.mockResolvedValue({
@@ -98,7 +98,7 @@ describe('VerifyResetOtpForm', () => {
     })
 
     expect(window.sessionStorage.getItem('bazario-reset-token')).toBe('reset-token-123')
-    expect(navigateMock).toHaveBeenCalledWith('/reset-password')
+    expect(navigateMock).toHaveBeenCalledWith('/reset-password', { replace: true })
   })
 
   it('shows api otp error when returned', async () => {
