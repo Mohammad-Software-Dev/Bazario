@@ -26,8 +26,8 @@ export function ResetPasswordForm() {
   const openLoginDialog = useUiStore((state) => state.openLoginDialog);
   const resetPasswordMutation = useResetPasswordMutation();
   const [serverError, setServerError] = useState<string | null>(null);
-  const resetEmail = getPasswordResetEmail() ?? "";
-  const missingToken = !getPasswordResetToken();
+  const [resetEmail] = useState(() => getPasswordResetEmail() ?? "");
+  const [missingToken] = useState(() => !getPasswordResetToken());
   const {
     register,
     handleSubmit,
