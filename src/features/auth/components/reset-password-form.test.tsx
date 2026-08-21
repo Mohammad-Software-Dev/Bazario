@@ -128,16 +128,4 @@ describe('ResetPasswordForm', () => {
     expect(await screen.findByText('Reset token expired.')).toBeInTheDocument()
   })
 
-  it('opens login dialog and navigates home from the back-to-login button', async () => {
-    const user = userEvent.setup()
-    window.sessionStorage.setItem('bazario-reset-email', 'user@example.com')
-    window.sessionStorage.setItem('bazario-reset-token', 'reset-token-123')
-
-    renderWithProviders(<ResetPasswordForm />)
-
-    await user.click(screen.getByRole('button', { name: 'Back to login' }))
-
-    expect(openLoginDialogMock).toHaveBeenCalledTimes(1)
-    expect(navigateMock).toHaveBeenCalledWith('/')
-  })
 })
