@@ -279,6 +279,7 @@ const en = {
     goBackHome: 'Go back home',
     age: 'Age',
     phone: 'Phone',
+    phoneOptional: 'Phone (optional)',
     confirmPassword: 'Confirm password',
     createAccount: 'Register',
     creatingAccount: 'Creating account...',

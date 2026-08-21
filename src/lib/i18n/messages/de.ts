@@ -279,6 +279,7 @@ const de = {
     goBackHome: 'Zur Startseite',
     age: 'Alter',
     phone: 'Telefon',
+    phoneOptional: 'Telefon (optional)',
     confirmPassword: 'Passwort bestätigen',
     createAccount: 'Registrieren',
     creatingAccount: 'Konto wird erstellt...',

@@ -279,6 +279,7 @@ const ar = {
     goBackHome: 'العودة إلى الصفحة الرئيسية',
     age: 'العمر',
     phone: 'الهاتف',
+    phoneOptional: 'الهاتف (اختياري)',
     confirmPassword: 'تأكيد كلمة المرور',
     createAccount: 'إنشاء حساب',
     creatingAccount: 'جارٍ إنشاء الحساب...',

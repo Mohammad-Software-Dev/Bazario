@@ -105,7 +105,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-phone">{t('auth.phone')}</Label>
+        <Label htmlFor="register-phone">{t('auth.phoneOptional')}</Label>
         <Input
           id="register-phone"
           type="tel"
