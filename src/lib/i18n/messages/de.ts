@@ -417,6 +417,7 @@ const de = {
     availableUntilServiceStarts: 'Verfügbar bis zum Start des Dienstleistungen.',
     cancellationUnavailable: 'Stornierung ist nicht verfügbar.',
     reschedulingUnavailable: 'Umbuchung ist nicht verfügbar.',
+    alreadyCancelled: 'Buchung ist bereits storniert.',
     timezone: 'Zeitzone: {{value}}',
     location: 'Ort: {{value}}',
     refund: 'Rückerstattung',

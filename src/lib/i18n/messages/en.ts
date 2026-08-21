@@ -417,6 +417,7 @@ const en = {
     availableUntilServiceStarts: 'Available until the service starts.',
     cancellationUnavailable: 'Cancellation is not available.',
     reschedulingUnavailable: 'Rescheduling is not available.',
+    alreadyCancelled: 'The booking has already been cancelled.',
     timezone: 'Timezone: {{value}}',
     location: 'Location: {{value}}',
     refund: 'Refund',
