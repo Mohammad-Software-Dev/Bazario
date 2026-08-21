@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   formatOrderDate,
+  getBookingLocalDateValue,
   getBookingPrimaryProviderName,
   getLatestRefund,
   getOrderItemDisplayTitle,
@@ -62,5 +63,21 @@ describe('order format helpers', () => {
         '2026-08-20T11:00:00Z',
       ),
     ).toBe(true)
+  })
+
+  it('returns a locale-independent booking date for the API and date picker', () => {
+    expect(
+      getBookingLocalDateValue({
+        starts_at: '2026-08-20T23:30:00Z',
+        timezone: 'Europe/Berlin',
+      }),
+    ).toBe('2026-08-21')
+
+    expect(
+      getBookingLocalDateValue({
+        starts_at: '2026-08-20T23:30:00Z',
+        timezone: 'Asia/Riyadh',
+      }),
+    ).toBe('2026-08-21')
   })
 })

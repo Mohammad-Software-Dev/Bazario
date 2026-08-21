@@ -76,16 +76,25 @@ export function getBookingPrimaryProviderName(booking: CustomerBookingRecord) {
 }
 
 export function getBookingLocalDateValue(booking: Pick<CustomerBookingRecord, 'starts_at' | 'timezone'>) {
-  const language = getAppLanguage()
-  const locale = language === 'ar' ? 'ar' : language === 'de' ? 'de-DE' : 'en-CA'
-  const formatter = new Intl.DateTimeFormat(locale, {
+  const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: booking.timezone || 'UTC',
+    calendar: 'gregory',
+    numberingSystem: 'latn',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
   })
 
-  return formatter.format(new Date(booking.starts_at))
+  const parts = formatter.formatToParts(new Date(booking.starts_at))
+  const year = parts.find((part) => part.type === 'year')?.value
+  const month = parts.find((part) => part.type === 'month')?.value
+  const day = parts.find((part) => part.type === 'day')?.value
+
+  if (!year || !month || !day) {
+    return ''
+  }
+
+  return `${year}-${month}-${day}`
 }
 
 export function isSameBookingWindow(booking: Pick<CustomerBookingRecord, 'starts_at' | 'ends_at'>, startsAt: string, endsAt: string) {
