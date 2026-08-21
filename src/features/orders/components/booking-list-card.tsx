@@ -26,16 +26,22 @@ export function BookingListCard({ booking }: BookingListCardProps) {
   const cancelDeadline = formatBookingCutoff(booking.cutoffs.cancel_deadline, booking.timezone)
   const rescheduleDeadline = formatBookingCutoff(booking.cutoffs.reschedule_deadline, booking.timezone)
   const refundSummary = booking.refund_summary.applied ? booking.refund_summary : null
+  const isCancelled = ['cancelled_by_customer', 'cancelled_by_provider'].includes(booking.status)
+  const cancelledSummary = t('bookings.alreadyCancelled')
   const shouldShowRescheduleAction =
     booking.actions.can_reschedule || Boolean(booking.actions.reschedule_block_reason)
   const shouldShowCancelAction =
     booking.actions.can_cancel || Boolean(booking.actions.cancel_block_reason)
-  const cancelSummary = booking.actions.can_cancel
+  const cancelSummary = isCancelled
+    ? cancelledSummary
+    : booking.actions.can_cancel
     ? cancelDeadline
       ? t('bookings.availableUntil', { date: cancelDeadline })
       : t('bookings.availableUntilServiceStarts')
     : booking.actions.cancel_block_reason ?? t('bookings.cancellationUnavailable')
-  const rescheduleSummary = booking.actions.can_reschedule
+  const rescheduleSummary = isCancelled
+    ? cancelledSummary
+    : booking.actions.can_reschedule
     ? rescheduleDeadline
       ? t('bookings.availableUntil', { date: rescheduleDeadline })
       : t('bookings.availableUntilServiceStarts')
@@ -43,7 +49,8 @@ export function BookingListCard({ booking }: BookingListCardProps) {
   const unavailableSummaries = [
     !booking.actions.can_reschedule ? rescheduleSummary : null,
     !booking.actions.can_cancel ? cancelSummary : null,
-  ].filter(Boolean)
+  ].filter((summary): summary is string => Boolean(summary))
+  const uniqueUnavailableSummaries = [...new Set(unavailableSummaries)]
 
   return (
     <>
@@ -112,8 +119,8 @@ export function BookingListCard({ booking }: BookingListCardProps) {
               ) : null}
             </div>
 
-            {unavailableSummaries.length ? (
-              <p className="text-sm text-muted-foreground">{unavailableSummaries.join(' ')}</p>
+            {uniqueUnavailableSummaries.length ? (
+              <p className="text-sm text-muted-foreground">{uniqueUnavailableSummaries.join(' ')}</p>
             ) : null}
           </div>
         </CardContent>

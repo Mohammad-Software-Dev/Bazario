@@ -417,6 +417,7 @@ const ar = {
     availableUntilServiceStarts: 'متاح حتى بدء الخدمة.',
     cancellationUnavailable: 'الإلغاء غير متاح.',
     reschedulingUnavailable: 'إعادة الجدولة غير متاحة.',
+    alreadyCancelled: 'تم إلغاء الحجز بالفعل.',
     timezone: 'المنطقة الزمنية: {{value}}',
     location: 'الموقع: {{value}}',
     refund: 'الاسترداد'
