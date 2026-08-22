@@ -323,6 +323,10 @@ const de = {
     location: 'Ort',
     quantity: 'Menge',
     oneBooking: '1 Buchung',
+    clearTitle: 'Warenkorb leeren?',
+    clearDescription:
+      'Alle Positionen werden entfernt. Gebuchte Termine müssen anschließend neu ausgewählt werden.',
+    keepCart: 'Warenkorb behalten',
   },
   orders: {
     pageEyebrow: 'Konto',

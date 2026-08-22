@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ConfirmDialog } from '@/components/shared/confirm-dialog'
 
 import { CartLineItem } from '@/features/cart/components/cart-line-item'
 import { CartSummary } from '@/features/cart/components/cart-summary'
@@ -18,6 +20,12 @@ export function CartPage() {
   const checkoutMutation = useCheckoutMutation()
   const { isAuthenticated } = useAuth()
   const openLoginDialog = useUiStore((state) => state.openLoginDialog)
+  const [isClearDialogOpen, setClearDialogOpen] = useState(false)
+
+  function handleConfirmClear() {
+    clearCart()
+    setClearDialogOpen(false)
+  }
 
   function handleCheckout() {
     if (!isAuthenticated) {
@@ -69,13 +77,24 @@ export function CartPage() {
         <aside>
           <CartSummary
             onCheckout={handleCheckout}
-            onClear={clearCart}
+            onClear={() => setClearDialogOpen(true)}
             summary={summary}
             checkoutLabel={t('cart.checkout')}
             isCheckoutPending={checkoutMutation.isPending}
           />
         </aside>
       </div>
+
+      <ConfirmDialog
+        open={isClearDialogOpen}
+        onOpenChange={setClearDialogOpen}
+        title={t('cart.clearTitle')}
+        description={t('cart.clearDescription')}
+        confirmLabel={t('common.clearCart')}
+        cancelLabel={t('cart.keepCart')}
+        onConfirm={handleConfirmClear}
+        variant="destructive"
+      />
     </div>
   )
 }

@@ -323,6 +323,10 @@ const en = {
     location: 'Location',
     quantity: 'Quantity',
     oneBooking: '1 booking',
+    clearTitle: 'Clear cart?',
+    clearDescription:
+      'All items will be removed. Booked appointments have to be selected again afterwards.',
+    keepCart: 'Keep cart',
   },
   orders: {
     pageEyebrow: 'Account',

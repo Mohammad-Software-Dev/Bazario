@@ -322,7 +322,10 @@ const ar = {
     timezone: 'المنطقة الزمنية',
     location: 'الموقع',
     quantity: 'الكمية',
-    oneBooking: 'حجز واحد'
+    oneBooking: 'حجز واحد',
+    clearTitle: 'تفريغ السلة؟',
+    clearDescription: 'ستتم إزالة جميع العناصر. سيتعين اختيار المواعيد المحجوزة من جديد.',
+    keepCart: 'الاحتفاظ بالسلة'
   },
   orders: {
     pageEyebrow: 'الحساب',
