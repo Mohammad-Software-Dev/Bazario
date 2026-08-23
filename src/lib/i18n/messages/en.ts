@@ -51,6 +51,7 @@ const en = {
     viewDetails: 'View details',
     yes: 'Yes',
     no: 'No',
+    loadingView: 'Loading view',
   },
   header: {
     cart: 'Cart',

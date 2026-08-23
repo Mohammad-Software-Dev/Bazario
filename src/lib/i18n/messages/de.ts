@@ -51,6 +51,7 @@ const de = {
     viewDetails: 'Details anzeigen',
     yes: 'Ja',
     no: 'Nein',
+    loadingView: 'Ansicht wird geladen',
   },
   header: {
     cart: 'Warenkorb',

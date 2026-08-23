@@ -50,7 +50,8 @@ const ar = {
     viewAll: 'عرض الكل',
     viewDetails: 'عرض التفاصيل',
     yes: 'نعم',
-    no: 'لا'
+    no: 'لا',
+    loadingView: 'جارٍ تحميل الصفحة'
   },
   header: {
     cart: 'السلة',
