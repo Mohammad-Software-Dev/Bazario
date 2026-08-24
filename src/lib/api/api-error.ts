@@ -18,8 +18,19 @@ export interface ApiErrorResponse {
   result: ApiErrorResult | unknown
 }
 
+// Most endpoints answer with the envelope { success, message, result },
+// while validation failures use the framework default { message, errors }.
+// Both carry a message meant for the user, so both are accepted here.
 function isApiErrorResponse(data: unknown): data is ApiErrorResponse {
-  return typeof data === 'object' && data !== null && 'success' in data && data.success === 0
+  if (typeof data !== 'object' || data === null) {
+    return false
+  }
+
+  if ('success' in data && data.success === 0) {
+    return true
+  }
+
+  return 'message' in data || 'errors' in data
 }
 
 function getApiErrorResponse(error: unknown) {
@@ -41,21 +52,31 @@ export function getApiErrorMessage(error: unknown, fallback = 'Something went wr
     return apiError.message
   }
 
-  if (error instanceof Error && error.message) {
-    return error.message
-  }
-
+  // The message of a transport error names a status code or a network
+  // failure. It is not written for a user, so the translated fallback
+  // stays in place instead.
   return fallback
 }
 
 export function getApiFieldErrors(error: unknown): ApiFieldErrors | undefined {
-  const result = getApiErrorResponse(error)?.result
+  const response = getApiErrorResponse(error)
 
-  if (typeof result !== 'object' || result === null || !('errors' in result)) {
+  if (!response) {
     return undefined
   }
 
-  const fieldErrors = result.errors
+  // Field errors sit inside the envelope's result, or at the top level
+  // when the framework answers a validation failure directly.
+  const container =
+    typeof response.result === 'object' && response.result !== null && 'errors' in response.result
+      ? response.result
+      : response
+
+  if (typeof container !== 'object' || container === null || !('errors' in container)) {
+    return undefined
+  }
+
+  const fieldErrors = container.errors
 
   if (!fieldErrors || typeof fieldErrors !== 'object') {
     return undefined
