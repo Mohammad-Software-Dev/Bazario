@@ -454,6 +454,7 @@ const de = {
     accountActions: 'Kontoaktionen',
     accountActionsDescription: 'Schneller Zugriff auf die Werkzeuge und Einstellungen passend zu deinen Rollen.',
     sellerWorkspace: 'Verkäuferbereich',
+    adsWorkspace: 'Werbung',
     providerWorkspace: 'Anbieterbereich',
     customerWorkspace: 'Kundenbereich',
     security: 'Sicherheit',

@@ -397,11 +397,6 @@ export function AccountPage() {
                       title={t('account.manageProducts')}
                       to="/account/seller/products"
                     />
-                    <ActionLinkRow
-                      title={t('ads.manageAds')}
-                      to="/account/ads"
-                      infoText={t('ads.manageAdsDescription')}
-                    />
                   </div>
                 </div>
               ) : null}
@@ -422,6 +417,16 @@ export function AccountPage() {
                       title={t('account.customerBookings')}
                       to="/account/provider/bookings"
                     />
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Both provider roles may place ads, so the entry point is
+                  listed once instead of being repeated per role. */}
+              {hasBusinessWorkspace ? (
+                <div className="space-y-2 border-t border-border/70 pt-6">
+                  <p className="font-medium text-foreground">{t('account.adsWorkspace')}</p>
+                  <div className="space-y-1 rounded-2xl border border-border/70 p-2">
                     <ActionLinkRow
                       title={t('ads.manageAds')}
                       to="/account/ads"

@@ -453,6 +453,7 @@ const ar = {
     accountActions: 'إجراءات الحساب',
     accountActionsDescription: 'وصول سريع إلى الأدوات والإعدادات المناسبة لأدوار حسابك.',
     sellerWorkspace: 'مساحة البائع',
+    adsWorkspace: 'الإعلانات',
     providerWorkspace: 'مساحة مقدم الخدمة',
     customerWorkspace: 'مساحة العميل',
     security: 'الأمان',

@@ -454,6 +454,7 @@ const en = {
     accountActions: 'Account actions',
     accountActionsDescription: 'Quick access to the tools and settings that match your account roles.',
     sellerWorkspace: 'Seller workspace',
+    adsWorkspace: 'Advertising',
     providerWorkspace: 'Provider workspace',
     customerWorkspace: 'Customer workspace',
     security: 'Security',
