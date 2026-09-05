@@ -865,6 +865,16 @@ const en = {
     cancelled_by_provider: 'Cancelled by provider',
     succeeded: 'Succeeded',
   },
+  notFound: {
+    eyebrow: 'Error 404',
+    title: 'This page does not exist',
+    cardTitle: 'Address not found',
+    description:
+      'The requested address does not exist or has changed. Use the links below to get back.',
+    backHome: 'Go to home page',
+    browseProducts: 'Browse products',
+    browseServices: 'Browse services',
+  },
 }
 
 export default en

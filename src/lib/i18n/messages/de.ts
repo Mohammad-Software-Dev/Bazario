@@ -865,6 +865,16 @@ const de = {
     cancelled_by_provider: 'Vom Anbieter storniert',
     succeeded: 'Erfolgreich',
   },
+  notFound: {
+    eyebrow: 'Fehler 404',
+    title: 'Diese Seite gibt es nicht',
+    cardTitle: 'Adresse nicht gefunden',
+    description:
+      'Die aufgerufene Adresse existiert nicht oder hat sich geändert. Über die folgenden Links kommen Sie zurück.',
+    backHome: 'Zur Startseite',
+    browseProducts: 'Produkte ansehen',
+    browseServices: 'Dienstleistungen ansehen',
+  },
 }
 
 export default de

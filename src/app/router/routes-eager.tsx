@@ -19,6 +19,7 @@ import { ChatPage } from '@/features/chat/pages/chat-page'
 import { ConnectAccountPage } from '@/features/connect/pages/connect-account-page'
 import { EarningsPage } from '@/features/earnings/pages/earnings-page'
 import { HomePage } from '@/features/home/pages/home-page'
+import { NotFoundPage } from '@/features/home/pages/not-found-page'
 import { BookingReschedulePage } from '@/features/orders/pages/booking-reschedule-page'
 import { BookingsPage } from '@/features/orders/pages/bookings-page'
 import { CheckoutCancelPage } from '@/features/orders/pages/checkout-cancel-page'
@@ -315,6 +316,9 @@ export const eagerRoutes: RouteObject[] = [
           </ProtectedRoute>
         ),
       },
+      // Catch-all. Must stay last so it only matches addresses no other
+      // route claims.
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]

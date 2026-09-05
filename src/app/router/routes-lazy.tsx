@@ -313,6 +313,12 @@ export const lazyRoutes: RouteObject[] = [
           ['service_provider'],
         ),
       },
+      // Catch-all. Must stay last so it only matches addresses no other
+      // route claims.
+      {
+        path: '*',
+        ...lazyPage(() => import('@/features/home/pages/not-found-page'), 'NotFoundPage'),
+      },
     ],
   },
 ]

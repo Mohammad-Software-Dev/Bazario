@@ -858,6 +858,15 @@ const ar = {
     cancelled_by_customer: 'ألغاه العميل',
     cancelled_by_provider: 'ألغاه مقدم الخدمة',
     succeeded: 'ناجح'
+  },
+  notFound: {
+    eyebrow: 'خطأ 404',
+    title: 'هذه الصفحة غير موجودة',
+    cardTitle: 'العنوان غير موجود',
+    description: 'العنوان المطلوب غير موجود أو تم تغييره. استخدم الروابط أدناه للعودة.',
+    backHome: 'إلى الصفحة الرئيسية',
+    browseProducts: 'تصفح المنتجات',
+    browseServices: 'تصفح الخدمات'
   }
 }
 
