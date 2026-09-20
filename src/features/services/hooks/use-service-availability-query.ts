@@ -5,7 +5,6 @@ import { getServiceAvailability } from '@/features/services/api/services-api'
 interface UseServiceAvailabilityQueryOptions {
   serviceId: number
   date: string
-  timezone: string
   ignoreBookingId?: number
   enabled?: boolean
 }
@@ -13,13 +12,12 @@ interface UseServiceAvailabilityQueryOptions {
 export function useServiceAvailabilityQuery({
   serviceId,
   date,
-  timezone,
   ignoreBookingId,
   enabled = true,
 }: UseServiceAvailabilityQueryOptions) {
   return useQuery({
-    queryKey: ['service-availability', serviceId, date, timezone, ignoreBookingId ?? null],
-    queryFn: () => getServiceAvailability(serviceId, date, timezone, ignoreBookingId),
+    queryKey: ['service-availability', serviceId, date, ignoreBookingId ?? null],
+    queryFn: () => getServiceAvailability(serviceId, date, ignoreBookingId),
     enabled: enabled && serviceId > 0 && date.length > 0,
   })
 }

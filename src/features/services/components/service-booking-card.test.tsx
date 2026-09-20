@@ -86,6 +86,7 @@ describe('ServiceBookingCard', () => {
     })
     mockUseServiceAvailabilityQuery.mockReturnValue({
       data: {
+        timezone: 'Asia/Riyadh',
         slots: [
           {
             starts_at: '2026-08-20T10:00:00Z',
@@ -120,6 +121,7 @@ describe('ServiceBookingCard', () => {
         provider_name: 'Provider One',
         starts_at: '2026-08-20T10:00:00Z',
         ends_at: '2026-08-20T11:00:00Z',
+        timezone: 'Asia/Riyadh',
       }),
     )
   })

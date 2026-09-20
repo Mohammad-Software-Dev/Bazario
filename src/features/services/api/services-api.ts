@@ -126,13 +126,11 @@ export async function getService(serviceId: number) {
 export async function getServiceAvailability(
   serviceId: number,
   date: string,
-  timezone: string,
   ignoreBookingId?: number,
 ) {
   const response = await httpClient.get<ServiceAvailabilityResult>(serviceEndpoints.availability(serviceId), {
     params: {
       date,
-      timezone,
       ignore_booking_id: ignoreBookingId,
     },
   })

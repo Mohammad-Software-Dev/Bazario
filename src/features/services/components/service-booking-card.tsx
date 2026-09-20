@@ -17,14 +17,6 @@ interface ServiceBookingCardProps {
   service: ServiceListItem
 }
 
-function getInitialTimezone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-  } catch {
-    return 'UTC'
-  }
-}
-
 function getMinimumDate() {
   return new Date().toISOString().slice(0, 10)
 }
@@ -42,10 +34,10 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
   const { addServiceItem } = useCartActions()
   const cartItems = useCartItems()
   const [date, setDate] = useState('')
-  const [timezone, setTimezone] = useState(getInitialTimezone)
   const [selectedSlot, setSelectedSlot] = useState<ServiceAvailabilitySlot | null>(null)
 
-  const availabilityQuery = useServiceAvailabilityQuery({ serviceId: service.id, date, timezone })
+  const availabilityQuery = useServiceAvailabilityQuery({ serviceId: service.id, date })
+  const timezone = availabilityQuery.data?.timezone ?? ''
   const minimumDate = useMemo(() => getMinimumDate(), [])
   const isBookable = Boolean(service.is_active)
   const isOwner =
@@ -69,11 +61,6 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
 
   function handleSelectDate(value: string) {
     setDate(value)
-    setSelectedSlot(null)
-  }
-
-  function handleSelectTimezone(value: string) {
-    setTimezone(value)
     setSelectedSlot(null)
   }
 
@@ -135,7 +122,6 @@ export function ServiceBookingCard({ service }: ServiceBookingCardProps) {
             isSlotBlockedByCart(slot) ? t('serviceBooking.conflictsWithCart') : null
           }
           onDateChange={handleSelectDate}
-          onTimezoneChange={handleSelectTimezone}
           onSlotSelect={handleSelectSlot}
         />
 

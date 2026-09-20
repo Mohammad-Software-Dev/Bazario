@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Input } from '@/components/ui/input'
 import { BookingDatePicker } from '@/features/services/components/booking-date-picker'
 import type { ServiceAvailabilitySlot } from '@/features/services/types/service.types'
 import { formatDateTime, getIntlLocale } from '@/lib/i18n/format'
@@ -24,7 +23,6 @@ interface ServiceSlotPickerProps {
   emptyMessage?: string
   getSlotDisabledReason?: (slot: ServiceAvailabilitySlot) => string | null
   onDateChange: (value: string) => void
-  onTimezoneChange: (value: string) => void
   onSlotSelect: (slot: ServiceAvailabilitySlot) => void
 }
 
@@ -115,7 +113,6 @@ export function ServiceSlotPicker({
   emptyMessage,
   getSlotDisabledReason,
   onDateChange,
-  onTimezoneChange,
   onSlotSelect,
 }: ServiceSlotPickerProps) {
   const { t } = useTranslation()
@@ -132,12 +129,12 @@ export function ServiceSlotPicker({
         <BookingDatePicker value={date} minDate={minDate} onChange={onDateChange} disabled={disabled} />
       </div>
 
-      <div className="space-y-2">
-        <label htmlFor="service-booking-timezone" className="text-sm font-medium text-foreground">
-          {t('slotPicker.timezone')}
-        </label>
-        <Input id="service-booking-timezone" value={timezone} onChange={(event) => onTimezoneChange(event.target.value)} disabled={disabled} />
-      </div>
+      {timezone ? (
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-foreground">{t('slotPicker.timezone')}</p>
+          <p className="text-sm text-muted-foreground">{timezone}</p>
+        </div>
+      ) : null}
 
       {selectedSlot ? (
         <div className="rounded-xl border bg-muted/30 p-4">

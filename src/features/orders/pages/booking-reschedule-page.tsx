@@ -30,14 +30,6 @@ function parseBookingId(value: string | undefined) {
   return parsed
 }
 
-function getInitialTimezone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-  } catch {
-    return 'UTC'
-  }
-}
-
 function getMinimumDate() {
   return new Date().toISOString().slice(0, 10)
 }
@@ -50,20 +42,18 @@ export function BookingReschedulePage() {
   const bookingQuery = useBookingQuery(bookingId ?? 0, Boolean(bookingId))
   const rescheduleBookingMutation = useRescheduleBookingMutation()
   const [dateOverride, setDateOverride] = useState<string | null>(null)
-  const [timezoneOverride, setTimezoneOverride] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<ServiceAvailabilitySlot | null>(null)
 
   const booking = bookingQuery.data
   const minimumDate = useMemo(() => getMinimumDate(), [])
   const date = booking ? dateOverride ?? getBookingLocalDateValue(booking) : ''
-  const timezone = timezoneOverride ?? booking?.timezone ?? getInitialTimezone()
   const availabilityQuery = useServiceAvailabilityQuery({
     serviceId: booking?.service.id ?? 0,
     date,
-    timezone,
     ignoreBookingId: booking?.id,
     enabled: Boolean(booking?.actions.can_reschedule),
   })
+  const timezone = availabilityQuery.data?.timezone ?? booking?.timezone ?? ''
 
   if (!bookingId) {
     return (
@@ -77,11 +67,6 @@ export function BookingReschedulePage() {
 
   function handleDateChange(value: string) {
     setDateOverride(value)
-    setSelectedSlot(null)
-  }
-
-  function handleTimezoneChange(value: string) {
-    setTimezoneOverride(value)
     setSelectedSlot(null)
   }
 
@@ -203,7 +188,6 @@ export function BookingReschedulePage() {
                     : null
                 }
                 onDateChange={handleDateChange}
-                onTimezoneChange={handleTimezoneChange}
                 onSlotSelect={setSelectedSlot}
               />
 
